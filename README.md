@@ -1,7 +1,2 @@
-## Vesta Si Erpnext
-
-A custom Frappe App for Vesta Si Sweden AB
-
-#### License
-
-MIT
+# Vesta Si ERPNext
+A custom Frappe application for Vesta Si Sweden AB
