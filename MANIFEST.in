@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include vesta_si_erpnext *.css
+recursive-include vesta_si_erpnext *.csv
+recursive-include vesta_si_erpnext *.html
+recursive-include vesta_si_erpnext *.ico
+recursive-include vesta_si_erpnext *.js
+recursive-include vesta_si_erpnext *.json
+recursive-include vesta_si_erpnext *.md
+recursive-include vesta_si_erpnext *.png
+recursive-include vesta_si_erpnext *.py
+recursive-include vesta_si_erpnext *.svg
+recursive-include vesta_si_erpnext *.txt
+recursive-exclude vesta_si_erpnext *.pyc
