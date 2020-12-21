@@ -91,13 +91,17 @@ app_license = "MIT"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-#	}
-# }
+doc_events = {
+	"Quality Inspection": {
+		"validate": "vesta_si_erpnext.quality_inspection.quality_inspection.accept_reject_inspection"
+	},
+	"Stock Entry": {
+		"on_submit": "vest_si_erpnext.stock_entry.link_supplier_bag_to_batch"
+	},
+	"Purchase Receipt": {
+		"on_submit": "vest_si_erpnext.purchase_receipt.link_supplier_bag_to_batch"
+	}
+}
 
 # Scheduled Tasks
 # ---------------
