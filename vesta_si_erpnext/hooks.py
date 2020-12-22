@@ -33,7 +33,7 @@ app_license = "MIT"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {"Quality Inspection" : "public/js/quality_inspection.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -93,13 +93,14 @@ app_license = "MIT"
 
 doc_events = {
 	"Quality Inspection": {
-		"validate": "vesta_si_erpnext.quality_inspection.quality_inspection.accept_reject_inspection"
+		"validate": "vesta_si_erpnext.vesta_si_erpnext.quality_inspection.accept_reject_inspection",
+		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.quality_inspection.validate_analysis"
 	},
 	"Stock Entry": {
-		"on_submit": "vest_si_erpnext.stock_entry.link_supplier_bag_to_batch"
+		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.link_supplier_bag_to_batch"
 	},
 	"Purchase Receipt": {
-		"on_submit": "vest_si_erpnext.purchase_receipt.link_supplier_bag_to_batch"
+		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.link_supplier_bag_to_batch"
 	}
 }
 
