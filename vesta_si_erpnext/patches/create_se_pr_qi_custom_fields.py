@@ -9,7 +9,7 @@ from frappe.custom.doctype.property_setter.property_setter import make_property_
 def execute():
 	stock_entry_detail_fields = [
 		dict(fieldname='supplier_bag_no', label='Supplier Bag No.', fieldtype='Data',
-			 insert_after='col_break4', depends_on='eval:parent.purpose =="Material Receipt"')
+			 insert_after='col_break4', depends_on='eval:in_list(["Material Receipt", "Manufacture"], parent.purpose)')
 	]
 
 	purchase_receipt_item_fields = [
@@ -42,17 +42,12 @@ def execute():
 			insert_after='analysed_item_code', options='Inspection Summary')
 	]
 
-	work_order_fields = [
-		dict(fieldname='batch_size', fieldtype='Int', label='Batch Size', insert_after='bom_no')
-	]
-
 	custom_fields = {
 		"Stock Entry Detail": stock_entry_detail_fields,
 		"Purchase Receipt Item": purchase_receipt_item_fields,
 		"Batch": batch_fields,
 		"Quality Inspection Template": qi_template_fields,
-		"Quality Inspection": qi_fields,
-		"Work Order": work_order_fields
+		"Quality Inspection": qi_fields
 	}
 
 	create_custom_fields(custom_fields, update=True)

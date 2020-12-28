@@ -7,7 +7,7 @@ frappe.ui.form.on("Quality Inspection", {
 				return (doc.status && doc.status === "Accepted") ? "green" : "orange";
 			});
 
-		frm.set_query("item_code", {}); // unset ite code query
+		frm.set_query("item_code", {}); // unset item code query
 
 		frm.set_query("analysed_item_code", () => {
 			let accepted_items = frm.doc.inspection_summary_table.filter(
@@ -30,9 +30,9 @@ frappe.ui.form.on("Quality Inspection", {
 					doc: frm.doc,
 					callback: function() {
 						refresh_field(['quality_inspection_template', 'readings']);
+						frm.events.auto_fill_inspection_summary(frm, true);
 					}
 				});
-				frm.events.auto_fill_inspection_summary(frm, true);
 			} else {
 				// if analysis is done, only overwrite template field and min/max values.
 				// Dont touch input data and analysis summary
