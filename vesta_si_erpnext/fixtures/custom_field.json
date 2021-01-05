@@ -8441,7 +8441,7 @@
   "dt": "Quality Inspection Reading",
   "fetch_from": null,
   "fetch_if_empty": 0,
-  "fieldname": "column_break_10",
+  "fieldname": "column_break_reading",
   "fieldtype": "Column Break",
   "hidden": 0,
   "hide_border": 0,
