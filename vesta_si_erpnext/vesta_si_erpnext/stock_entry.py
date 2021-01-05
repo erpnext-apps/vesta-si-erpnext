@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 import frappe, erpnext
+from erpnext.stock.doctype.batch.batch import make_batch
 
 def link_supplier_bag_to_batch(doc, method=None):
 	if (doc.purpose in ("Material Receipt", "Manufacture")):
@@ -12,3 +13,39 @@ def link_supplier_bag_to_batch(doc, method=None):
 
 			# if item.get("quality_inspection") and item.get("batch_no"):
 			# 	frappe.db.set_value("Quality Inspection", item.quality_inspection, "batch_no", item.batch_no)
+
+def before_submit_events(doc, method=None):
+	if doc.purpose == "Manufacture":
+		update_item_code_in_batch(doc)
+
+def update_item_code_in_batch(doc):
+	for row in doc.items:
+		if not row.batch_no: continue
+
+		batch_item_code = frappe.get_cached_value("Batch", row.batch_no, "item")
+		if ((row.is_finished_item or row.is_scrap_item) and row.batch_no
+			and batch_item_code != row.item_code):
+
+			new_batch = make_batch(batch_item_code)
+			if new_batch:
+				frappe.db.sql(""" UPDATE `tabWork Order Batch`
+					SET batch_no = %s WHERE batch_no = %s
+				""", (new_batch, row.batch_no))
+
+				frappe.db.set_value("Batch", row.batch_no, {
+					"item": row.item_code,
+					"item_name": row.item_name,
+					"stock_uom": row.stock_uom
+				})
+
+def before_validate_events(doc, method=None):
+	if doc.purpose == "Manufacture":
+		update_fg_completed_qty(doc)
+
+def update_fg_completed_qty(doc):
+	fg_completed_qty = 0.0
+	for row in doc.items:
+		if row.is_finished_item:
+			fg_completed_qty += row.qty
+
+	doc.fg_completed_qty = fg_completed_qty

@@ -1,1 +1,0 @@
-vesta_si_erpnext.patches.create_se_pr_qi_custom_fields

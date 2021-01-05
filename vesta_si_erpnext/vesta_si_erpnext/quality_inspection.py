@@ -50,7 +50,7 @@ def run_analysis(readings=None, priority_list=None):
 
 	summary = []
 	for analysis in priority_list:
-		if not analysis["inspection_template"]: continue
+		if not analysis.get("inspection_template"): continue
 
 		status, rejected_params = analyse_item(readings, analysis["inspection_template"])
 		rejected_params = ','.join(rejected_params)

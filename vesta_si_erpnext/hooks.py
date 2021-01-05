@@ -94,13 +94,17 @@ doctype_js = {
 # ---------------
 # Hook on document methods and events
 
+fixtures = ["Custom Field", "Property Setter"]
+
 doc_events = {
 	"Quality Inspection": {
 		"validate": "vesta_si_erpnext.vesta_si_erpnext.quality_inspection.accept_reject_inspection",
 		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.quality_inspection.validate_analysis"
 	},
 	"Stock Entry": {
-		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.link_supplier_bag_to_batch"
+		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.link_supplier_bag_to_batch",
+		"before_validate": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.before_validate_events",
+		"before_submit": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.before_submit_events"
 	},
 	"Purchase Receipt": {
 		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.link_supplier_bag_to_batch"
