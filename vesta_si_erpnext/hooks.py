@@ -94,7 +94,7 @@ doctype_js = {
 # ---------------
 # Hook on document methods and events
 
-fixtures = ["Custom Field", "Property Setter"]
+fixtures = ["Custom Field"]
 
 doc_events = {
 	"Quality Inspection": {
