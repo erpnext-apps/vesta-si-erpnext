@@ -26,17 +26,18 @@ def update_item_code_in_batch(doc):
 		if ((row.is_finished_item or row.is_scrap_item) and row.batch_no
 			and batch_item_code != row.item_code):
 
-			new_batch = make_batch(batch_item_code)
-			if new_batch:
-				frappe.db.sql(""" UPDATE `tabWork Order Batch`
-					SET batch_no = %s WHERE batch_no = %s
-				""", (new_batch, row.batch_no))
+			make_batch(frappe._dict({
+				"item": batch_item_code,
+				"qty_to_produce": row.qty,
+				"reference_doctype": "Work Order",
+				"reference_name": doc.work_order
+			}))
 
-				frappe.db.set_value("Batch", row.batch_no, {
-					"item": row.item_code,
-					"item_name": row.item_name,
-					"stock_uom": row.stock_uom
-				})
+			frappe.db.set_value("Batch", row.batch_no, {
+				"item": row.item_code,
+				"item_name": row.item_name,
+				"stock_uom": row.stock_uom
+			})
 
 def before_validate_events(doc, method=None):
 	if doc.purpose == "Manufacture":
