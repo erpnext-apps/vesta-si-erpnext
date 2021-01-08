@@ -114,5 +114,11 @@ frappe.ui.form.on("Quality Inspection", {
 				}
 			}
 		})
+	},
+
+	analysed_item_code: function(frm) {
+		if (frm.doc.analysed_item_code) {
+			frm.set_value("item_code", frm.doc.analysed_item_code);
+		}
 	}
 })
