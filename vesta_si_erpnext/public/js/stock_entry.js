@@ -1,6 +1,7 @@
 frappe.ui.form.on("Stock Entry", {
 	setup_quality_inspection: function(frm) {
 		if (!frm.doc.inspection_required) {
+			frappe.msgprint({message: _("Please enable 'Inspection Required'."), title:_("Note")});
 			return;
 		}
 
@@ -19,7 +20,6 @@ frappe.ui.form.on("Stock Entry", {
 		}
 
 		frm.set_query("quality_inspection", "items", function(doc, cdt, cdn) {
-			debugger
 			return {
 				filters: {
 					docstatus: 1,
