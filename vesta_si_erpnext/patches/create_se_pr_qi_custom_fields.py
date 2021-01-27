@@ -7,9 +7,18 @@ from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 from frappe.custom.doctype.property_setter.property_setter import make_property_setter
 
 def execute():
+	item_fields = [
+		dict(fieldname='inspection_col_break', fieldtype='Column Break',
+			insert_after='inspection_required_before_delivery'),
+		dict(fieldname='analysis_frequency', label='Analysis Frequency', fieldtype='Int',
+			insert_after='inspection_col_break')
+	]
+
 	stock_entry_detail_fields = [
 		dict(fieldname='supplier_bag_no', label='Supplier Bag No.', fieldtype='Data',
-			 insert_after='col_break4', depends_on='eval:in_list(["Material Receipt", "Manufacture"], parent.purpose)')
+			 insert_after='col_break4', depends_on='eval:in_list(["Material Receipt", "Manufacture"], parent.purpose)'),
+		dict(fieldname='analysis_required', label='Analysis Required', fieldtype='Check',
+			 insert_after='quality_inspection')
 	]
 
 	purchase_receipt_item_fields = [
@@ -28,6 +37,8 @@ def execute():
 	]
 
 	qi_fields = [
+		dict(fieldname='analysis_frequency', label='Item Analysis Frequency', fieldtype='Int',
+			insert_after='description', fetch_from='item_code.analysis_frequency', read_only=1),
 		dict(fieldname='customer', label='Customer', fieldtype='Link', options='Customer',
 			 insert_after='status'),
 		dict(fieldname='product_analysis', label='Product Analysis', fieldtype='Check',
@@ -43,6 +54,7 @@ def execute():
 	]
 
 	custom_fields = {
+		"Item": item_fields,
 		"Stock Entry Detail": stock_entry_detail_fields,
 		"Purchase Receipt Item": purchase_receipt_item_fields,
 		"Batch": batch_fields,

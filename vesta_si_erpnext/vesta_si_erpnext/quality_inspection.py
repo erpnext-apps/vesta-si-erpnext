@@ -9,14 +9,23 @@ from six import string_types
 from collections import defaultdict
 from frappe.utils import cint, flt
 
-def accept_reject_inspection(doc, method=None):
+def validate_events(doc, method=None):
+	accept_reject_inspection(doc)
+
+def on_submit_events(doc, method=None):
+	validate_analysis(doc)
+
+	if doc.reference_type == "Stock Entry":
+		update_qc_reference_as_per_frequency(doc)
+
+def accept_reject_inspection(doc):
 	if not doc.product_analysis:
 		if any(reading.status == "Rejected" for reading in doc.readings):
 			doc.status = "Rejected"
 		else:
 			doc.status = "Accepted"
 
-def validate_analysis(doc, method=None):
+def validate_analysis(doc):
 	if doc.product_analysis:
 		if not doc.analysed_item_code:
 			frappe.throw(_("{0} is required in the Analysis Summary.")
@@ -26,6 +35,30 @@ def validate_analysis(doc, method=None):
 		if doc.item_code != doc.analysed_item_code:
 			frappe.throw(_("Item Code must be the same as Analysed Item Code."),
 				title=_("Mismatch"))
+
+def update_qc_reference_as_per_frequency(doc):
+	if not doc.analysis_frequency or not doc.batch_no: return
+	ref_doc = frappe.get_doc(doc.reference_type, doc.reference_name)
+
+	batch_idx = None
+	for row in ref_doc.get("items"):
+		if row.get("batch_no") == doc.batch_no:
+			batch_idx = (row.idx - 1) if row.idx else row.idx
+			break
+
+	for row in ref_doc.get("items")[batch_idx : (batch_idx + doc.analysis_frequency)]:
+		batch_item = frappe.db.get_value("Batch", doc.batch_no, "item")
+		# before submit the whole set of drums must be of the same item in the batch
+		# this is to avoid accidentally updating rows of a different item
+		if row.item_code == batch_item:
+			row.quality_inspection = doc.name
+			if row.item_code != doc.item_code: # analysis determines it is a different item
+				row.item_code = doc.item_code
+				row.is_scrap_item = 1
+				row.is_finished_item = 0
+				row.bom_no = ""
+
+	ref_doc.save()
 
 @frappe.whitelist()
 def fetch_analysis_priority_list(item=None, template=None):

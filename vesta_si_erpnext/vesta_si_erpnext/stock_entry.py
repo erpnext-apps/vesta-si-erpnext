@@ -42,6 +42,8 @@ def update_item_code_in_batch(doc):
 def before_validate_events(doc, method=None):
 	if doc.purpose == "Manufacture":
 		update_fg_completed_qty(doc)
+		if doc.is_new():
+			set_indicators(doc)
 
 def update_fg_completed_qty(doc):
 	fg_completed_qty = 0.0
@@ -50,3 +52,22 @@ def update_fg_completed_qty(doc):
 			fg_completed_qty += row.qty
 
 	doc.fg_completed_qty = fg_completed_qty
+
+def set_indicators(doc):
+	start_idx, fg_analysis_frequency, fg_item = None, None, None
+	last_idx = doc.items[-1].idx
+	for row in doc.items:
+		# get finished item first row
+		if row.is_finished_item:
+			start_idx = row.idx
+			fg_item = row.item_code
+			fg_analysis_frequency = frappe.db.get_value("Item", row.item_code, "analysis_frequency")
+			break
+
+	if not start_idx or not fg_analysis_frequency: return
+
+	inspect_idx = start_idx
+	while inspect_idx <= last_idx:
+		if doc.items[inspect_idx - 1].item_code == fg_item:
+			doc.items[inspect_idx - 1].analysis_required = 1
+			inspect_idx += fg_analysis_frequency

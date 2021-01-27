@@ -98,8 +98,8 @@ fixtures = ["Custom Field"]
 
 doc_events = {
 	"Quality Inspection": {
-		"validate": "vesta_si_erpnext.vesta_si_erpnext.quality_inspection.accept_reject_inspection",
-		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.quality_inspection.validate_analysis"
+		"validate": "vesta_si_erpnext.vesta_si_erpnext.quality_inspection.validate_events",
+		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.quality_inspection.on_submit_events"
 	},
 	"Stock Entry": {
 		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.link_supplier_bag_to_batch",

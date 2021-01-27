@@ -1,3 +1,5 @@
+frappe.provide("erpnext.stock");
+
 frappe.ui.form.on("Stock Entry", {
 	setup_quality_inspection: function(frm) {
 		if (!frm.doc.inspection_required) {
@@ -60,5 +62,20 @@ frappe.ui.form.on("Stock Entry Detail", {
 				}
 			});
 		}
+	},
+});
+
+erpnext.stock.StockEntry = erpnext.stock.StockController.extend({
+	setup: function() {
+		this.frm.set_indicator_formatter('item_code',
+			function(doc) {
+				if (doc.analysis_required) {
+					return "yellow";
+				} else if (!doc.s_warehouse) {
+					return "blue";
+				} else {
+					return (doc.qty<=doc.actual_qty) ? "green" : "orange";
+				}
+			});
 	},
 });
