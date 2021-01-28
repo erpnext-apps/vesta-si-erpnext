@@ -54,19 +54,18 @@ def update_fg_completed_qty(doc):
 	doc.fg_completed_qty = fg_completed_qty
 
 def set_indicators(doc):
+	"""Set 'Analysis Required' on rows as a helper for js color indicators."""
 	start_idx, fg_analysis_frequency, fg_item = None, None, None
 	last_idx = doc.items[-1].idx
-	for row in doc.items:
-		# get finished item first row
-		if row.is_finished_item:
-			start_idx = row.idx
-			fg_item = row.item_code
-			fg_analysis_frequency = frappe.db.get_value("Item", row.item_code, "analysis_frequency")
-			break
+
+	# get finished item first row
+	start_idx = [row.idx for row in doc.items if row.is_finished_item][0]
+	fg_item = doc.items[start_idx - 1].item_code
+	fg_analysis_frequency = frappe.db.get_value("Item", fg_item, "analysis_frequency")
 
 	if not start_idx or not fg_analysis_frequency: return
 
-	inspect_idx = start_idx
+	inspect_idx = start_idx # start marking from start_idx
 	while inspect_idx <= last_idx:
 		if doc.items[inspect_idx - 1].item_code == fg_item:
 			doc.items[inspect_idx - 1].analysis_required = 1

@@ -42,6 +42,8 @@ def update_qc_reference_as_per_frequency(doc):
 
 	batch_idx = None
 	for row in ref_doc.get("items"):
+		# search for drum that was analysed
+		# to update next n drum rows
 		if row.get("batch_no") == doc.batch_no:
 			batch_idx = (row.idx - 1) if row.idx else row.idx
 			break
@@ -58,6 +60,7 @@ def update_qc_reference_as_per_frequency(doc):
 				row.is_finished_item = 0
 				row.bom_no = ""
 
+	# to run validate method and set missing data
 	ref_doc.save()
 
 @frappe.whitelist()
