@@ -1,0 +1,41 @@
+{
+ "actions": [],
+ "creation": "2021-09-13 09:12:05.908000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "report_parameter"
+ ],
+ "fields": [
+  {
+   "fieldname": "report_parameter",
+   "fieldtype": "Table",
+   "label": "Report Parameter",
+   "options": "Inspection Report Parameter"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2021-09-13 09:12:30.726820",
+ "modified_by": "Administrator",
+ "module": "Vesta Si Erpnext",
+ "name": "Quality Inspection Report Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

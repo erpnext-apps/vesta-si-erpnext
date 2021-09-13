@@ -1,0 +1,31 @@
+{
+ "actions": [],
+ "creation": "2021-09-13 09:08:33.680615",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "inspection_parameter"
+ ],
+ "fields": [
+  {
+   "fieldname": "inspection_parameter",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Inspection Parameter",
+   "options": "Quality Inspection Parameter"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2021-09-13 09:53:26.108703",
+ "modified_by": "Administrator",
+ "module": "Vesta Si Erpnext",
+ "name": "Inspection Report Parameter",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
