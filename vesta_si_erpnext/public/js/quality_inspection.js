@@ -25,10 +25,18 @@ frappe.ui.form.on("Quality Inspection", {
 		if (frm.doc.item_code) {
 			if (!frm.doc.analysed_item_code) {
 				// if no analysed item code, overwrite tables, analysis isnt done
+				frm.doc.readings = []
+				// gets only paramters where frequency of the parameter is equal/multiple of drum_no
 				frappe.call({
-					method: "get_quality_inspection_template",
-					doc: frm.doc,
-					callback: function() {
+					method: "vesta_si_erpnext.vesta_si_erpnext.quality_inspection.get_frequency_specific_parameters",
+					args: {
+						doc: frm.doc
+					},
+					callback: function(res) {
+						frm.doc.quality_inspection_template = res.message.template;
+						for (const [key, value] of Object.entries(res.message.freq_readings)) {
+							frm.add_child("readings", value);
+						}
 						refresh_field(['quality_inspection_template', 'readings']);
 						frm.events.auto_fill_inspection_summary(frm, true);
 					}
@@ -56,9 +64,8 @@ frappe.ui.form.on("Quality Inspection", {
 				});
 			}
 		}
-
 	},
-
+	
 	quality_inspection_template: function(frm) {
 		if (frm.doc.quality_inspection_template && !frm.doc.analysed_item_code) {
 			frm.events.auto_fill_inspection_summary(frm, false);
