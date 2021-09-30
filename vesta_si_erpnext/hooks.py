@@ -97,6 +97,9 @@ doctype_js = {
 fixtures = ["Custom Field"]
 
 doc_events = {
+	"Quality Inspection Template": {
+		"validate": "vesta_si_erpnext.vesta_si_erpnext.quality_inspection_template.validate"
+	},
 	"Quality Inspection": {
 		"validate": "vesta_si_erpnext.vesta_si_erpnext.quality_inspection.validate_events",
 		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.quality_inspection.on_submit_events"
