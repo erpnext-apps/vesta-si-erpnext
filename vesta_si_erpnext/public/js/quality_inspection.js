@@ -33,12 +33,17 @@ frappe.ui.form.on("Quality Inspection", {
 						doc: frm.doc
 					},
 					callback: function(res) {
+						if (Object.keys(res.message).length == 1) {
+							frm.set_value("quality_inspection_template", res.message.template);
+						}
+						else {
 						frm.doc.quality_inspection_template = res.message.template;
 						for (const [key, value] of Object.entries(res.message.freq_readings)) {
 							frm.add_child("readings", value);
 						}
 						refresh_field(['quality_inspection_template', 'readings']);
 						frm.events.auto_fill_inspection_summary(frm, true);
+						}
 					}
 				});
 			} else {

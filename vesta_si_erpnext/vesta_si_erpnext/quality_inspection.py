@@ -215,6 +215,7 @@ def get_frequency_specific_parameters(doc):
 	ref_doc = frappe.get_doc(doc.reference_type, doc.reference_name)
 	fg_idx = None
 	batch_idx = None
+	drum_no = None
 	for item in ref_doc.get("items"):
 		if item.is_finished_item:
 			if item.get("batch_no") == doc.batch_no:
@@ -223,7 +224,11 @@ def get_frequency_specific_parameters(doc):
 		else:
 			fg_idx = item.idx
 
-	drum_no = cint(batch_idx) - cint(fg_idx)
+	if cint(batch_idx) >= cint(fg_idx):
+		drum_no = cint(batch_idx) - cint(fg_idx)
+
+	if not drum_no:
+		return {"template": template}
 
 	freq_readings = {}
 	idx = 1
