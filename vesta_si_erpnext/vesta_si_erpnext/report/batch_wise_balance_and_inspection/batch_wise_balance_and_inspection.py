@@ -82,8 +82,8 @@ def get_stock_ledger_entries(filters, params):
 	param_conditions = ""
 	for param in params:
 		param_conditions += ",MAX(case when specification = {0} then reading_1 end) {1}" \
-			.format(frappe.db.escape(param['inspection_parameter']), param['col_name'])
-	
+			.format(frappe.db.escape(param['inspection_parameter'], percent = False), param['col_name'])
+
 	col_conditions = ""
 	for col in params:
 		col_conditions += ", reading." + col['col_name'] + " as " + col['col_name']
