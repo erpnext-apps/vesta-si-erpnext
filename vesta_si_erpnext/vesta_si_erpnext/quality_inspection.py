@@ -240,6 +240,21 @@ def get_frequency_specific_parameters(doc):
 
 	return {"freq_readings": freq_readings, "template": template}
 
+@frappe.whitelist()
+def get_min_max_values(template, parameter):
+	template_readings = get_template_details_with_frequency(template)
+	readings = {}
+	for reading in template_readings:
+		readings[reading.specification] = {
+			"min": reading.min_value,
+			"max": reading.max_value
+		}
+	
+	if parameter not in readings:
+		readings[parameter] = {"min": 0, "max": 0}
+
+	return readings[parameter]
+
 def convert_from_string(value):
 	if isinstance(value, string_types):
 		return json.loads(value)

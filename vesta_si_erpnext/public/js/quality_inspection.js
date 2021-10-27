@@ -134,3 +134,24 @@ frappe.ui.form.on("Quality Inspection", {
 		}
 	}
 })
+frappe.ui.form.on('Quality Inspection Reading', {
+	specification(frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
+		if (row.specification) {
+			frappe.xcall("vesta_si_erpnext.vesta_si_erpnext.quality_inspection.get_min_max_values", {
+				"template": frm.doc.quality_inspection_template, 
+				"parameter": row.specification
+			})
+			.then((values) => {
+				row.min_value = values.min;
+				row.max_value = values.max;
+				frm.refresh_fields("readings");
+			})
+		}
+		else {
+			row.min_value = 0;
+			row.max_value = 0;
+			frm.refresh_fields("readings");
+		}
+	}
+})
