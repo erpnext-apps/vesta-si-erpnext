@@ -1,0 +1,130 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2021-10-18 20:03:47.603941",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "drum",
+  "weight",
+  "fe_wt",
+  "ca_wt",
+  "al_wt",
+  "o_wt",
+  "c_wt",
+  "alpha_beta",
+  "si_wt",
+  "bet",
+  "charge",
+  "d10",
+  "d50",
+  "d90"
+ ],
+ "fields": [
+  {
+   "columns": 1,
+   "fieldname": "drum",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Drum",
+   "options": "Batch"
+  },
+  {
+   "columns": 1,
+   "fieldname": "weight",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Weight"
+  },
+  {
+   "columns": 1,
+   "fieldname": "fe_wt",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Fe wt%"
+  },
+  {
+   "columns": 1,
+   "fieldname": "ca_wt",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Ca wt%"
+  },
+  {
+   "columns": 1,
+   "fieldname": "al_wt",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Al wt%"
+  },
+  {
+   "columns": 1,
+   "fieldname": "o_wt",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "O wt%"
+  },
+  {
+   "columns": 1,
+   "fieldname": "c_wt",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "C wt%"
+  },
+  {
+   "fieldname": "alpha_beta",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Alpha Beta%"
+  },
+  {
+   "fieldname": "si_wt",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Si wt%"
+  },
+  {
+   "fieldname": "bet",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "BET%"
+  },
+  {
+   "fieldname": "charge",
+   "fieldtype": "Link",
+   "label": "Charge",
+   "options": "Batch"
+  },
+  {
+   "fieldname": "d10",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "D10 (Microns)"
+  },
+  {
+   "fieldname": "d50",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "D50 (Microns)"
+  },
+  {
+   "fieldname": "d90",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "D90 (Microns)"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2021-10-26 11:57:52.586122",
+ "modified_by": "Administrator",
+ "module": "Vesta Si Erpnext",
+ "name": "Analytical Certificate Drum",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
