@@ -28,7 +28,7 @@ def execute(filters=None):
 					if batch_dict.bal_qty:
 						row = [item, item_map[item]["item_name"], wh, batch,
 							flt(batch_dict.bal_qty, float_precision),
-							item_map[item]["stock_uom"], batch_dict.qi, batch_dict.supplier_bag_no
+							item_map[item]["stock_uom"], batch_dict.qi, batch_dict.desc, batch_dict.supplier_bag_no
 						]
 						for param in param_columns:
 							row.append(batch_dict[param['col_name']])
@@ -42,7 +42,7 @@ def get_columns(filters, params):
 
 	columns = [_("Item") + ":Link/Item:100"] + [_("Item Name") + "::150"] + [_("Warehouse") + ":Link/Warehouse:100"] + \
 		[_("Batch") + ":Link/Batch:100"] + [_("Balance Qty") + ":Float:90"] + [_("UOM") + "::90"] + \
-		[_("Quality Inspection") + ":Link/Quality Inspection:140"] + [_("Supplier Bag No.") + "::140"]
+		[_("Quality Inspection") + ":Link/Quality Inspection:140"] +[_("Description") + "::95"] + [_("Supplier Bag No.") + "::120"]
 	
 	for param in params:
 		columns += [_(param['inspection_parameter']) + ":Float:100"] 
@@ -120,6 +120,7 @@ def get_item_warehouse_batch_map(filters, float_precision, params):
 				"out_qty": 0.0,
 				"bal_qty": 0.0,
 				"qi": "",
+				"desc": get_batch_desc(d.batch_no),
 				"supplier_bag_no": ""
 			}))
 		batch_dict = iwb_map[d.item_code][d.warehouse][d.batch_no]
@@ -140,7 +141,9 @@ def get_params():
 		col['col_name'] = col['inspection_parameter'].split()[0].lower()
 	return params
 
-
+def get_batch_desc(batch_no):
+	desc = frappe.get_value('Batch', batch_no, 'description')
+	return desc
 def get_item_details(filters):
 	item_map = {}
 	for d in frappe.db.sql("select name, item_name, description, stock_uom from tabItem", as_dict=1):
