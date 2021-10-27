@@ -233,7 +233,7 @@ def get_frequency_specific_parameters(doc):
 	freq_readings = {}
 	idx = 1
 	for row in template_readings:
-		if cint(drum_no) % cint(row.frequency) == 0:
+		if cint(drum_no) % cint(row.frequency) == 0 or cint(drum_no) == 1:
 			row.idx = idx
 			freq_readings[row.specification] = row
 			idx += 1
