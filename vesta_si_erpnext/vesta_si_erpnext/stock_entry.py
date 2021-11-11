@@ -70,3 +70,11 @@ def set_indicators(doc):
 		if doc.items[inspect_idx - 1].item_code == fg_item:
 			doc.items[inspect_idx - 1].analysis_required = 1
 			inspect_idx += fg_analysis_frequency
+
+def set_quality_inspection(doc,  method=None):
+	qi = frappe.get_all("Quality Inspection", filters={'batch_no': doc.items[0].batch_no})
+	if qi:
+		for item in doc.items[1:]:
+			if item.t_warehouse and item.is_finished_item:
+				item.rm_quality_inspection = qi[0].name
+
