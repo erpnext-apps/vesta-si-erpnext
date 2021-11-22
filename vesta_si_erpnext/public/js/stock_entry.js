@@ -28,7 +28,8 @@ frappe.ui.form.on("Stock Entry", {
 				"item_code": row.doc.item_code,
 				"description": row.doc.description,
 				"item_serial_no": row.doc.serial_no ? row.doc.serial_no.split("\n")[0] : null,
-				"batch_no": row.doc.batch_no
+				"batch_no": row.doc.batch_no,
+				"rm_quality_inspection": row.doc.rm_quality_inspection
 			}
 		}
 
