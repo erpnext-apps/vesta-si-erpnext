@@ -72,9 +72,11 @@ def set_indicators(doc):
 			inspect_idx += fg_analysis_frequency
 
 def set_quality_inspection(doc,  method=None):
-	qi = frappe.get_all("Quality Inspection", filters={'batch_no': doc.items[0].batch_no}, order_by = 'creation desc')
-	if qi:
-		for item in doc.items[1:]:
-			if item.t_warehouse and item.is_finished_item:
-				item.rm_quality_inspection = qi[0].name
+	for item in doc.items:
+		if item.outpacking_rm and not item.t_warehouse and item.is_finished_item:   # there will be only one drum(raw material) in an out-packing work order scenario
+			qi = frappe.get_all("Quality Inspection", filters={'batch_no': item.batch_no}, order_by = 'creation desc')
+			if qi:
+				for fg_item in doc.items:
+					if fg_item.t_warehouse and fg_item.is_finished_item:
+						fg_item.rm_quality_inspection = qi[0].name
 
