@@ -73,6 +73,15 @@ frappe.ui.form.on("Stock Entry Detail", {
 					});
 				}
 			});
+			frappe.db.get_value("Work Order", frm.doc.work_order, "is_outpacking_wo").then((r) => {
+				if (row.is_finished_item && row.t_warehouse) {
+					frm.doc.items.slice(row.idx, frm.doc.items.length).forEach(f => {
+						if (!row.quality_inspection) {
+							frappe.model.set_value(f.doctype, f.name, 'quality_inspection', row.quality_inspection);
+						}
+					});
+				}
+			});
 		}
 	},
 });
