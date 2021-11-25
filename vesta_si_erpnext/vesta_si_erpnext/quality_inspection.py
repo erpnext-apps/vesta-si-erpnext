@@ -16,6 +16,7 @@ def on_submit_events(doc, method=None):
 	validate_analysis(doc)
 
 	if doc.reference_type == "Stock Entry":
+
 		update_qc_reference_as_per_frequency(doc)
 
 def accept_reject_inspection(doc):
@@ -102,7 +103,6 @@ def run_analysis(readings=None, priority_list=None):
 
 def analyse_item(readings, template):
 	template_params = get_template_details(template)
-
 	results, rejected_params = [], []
 	for reading in readings:
 		# inspect every input reading parameter/specification
@@ -193,6 +193,67 @@ def get_template_details(template):
 		param_wise_inspection[row.specification] = row
 
 	return param_wise_inspection
+
+def get_template_details_with_frequency(template):
+
+	if not template: return []
+
+	return frappe.get_all('Item Quality Inspection Parameter',
+		fields=["specification", "frequency", "value", "acceptance_formula",
+			"numeric", "formula_based_criteria", "min_value", "max_value"],
+		filters={'parenttype': 'Quality Inspection Template', 'parent': template},
+		order_by="idx")
+
+@frappe.whitelist()
+def get_frequency_specific_parameters(doc):
+	doc = frappe._dict(json.loads(doc))
+	template = ''
+	template = frappe.db.get_value('Item', doc.item_code, 'quality_inspection_template')
+	doc.quality_inspection_template = template
+	template_readings = get_template_details_with_frequency(template)
+
+	ref_doc = frappe.get_doc(doc.reference_type, doc.reference_name)
+	fg_idx = None
+	batch_idx = None
+	drum_no = None
+	for item in ref_doc.get("items"):
+		if item.is_finished_item:
+			if item.get("batch_no") == doc.batch_no:
+				batch_idx = item.idx
+				break
+		else:
+			fg_idx = item.idx
+
+	if cint(batch_idx) >= cint(fg_idx):
+		drum_no = cint(batch_idx) - cint(fg_idx)
+
+	if not drum_no:
+		return {"template": template}
+
+	freq_readings = {}
+	idx = 1
+	for row in template_readings:
+		if cint(drum_no) % cint(row.frequency) == 0 or cint(drum_no) == 1:
+			row.idx = idx
+			freq_readings[row.specification] = row
+			idx += 1
+
+	return {"freq_readings": freq_readings, "template": template}
+
+@frappe.whitelist()
+def get_min_max_values(template, parameter):
+	template_readings = get_template_details_with_frequency(template)
+	readings = {}
+	for reading in template_readings:
+		readings[reading.specification] = {
+			"min": reading.min_value,
+			"max": reading.max_value
+		}
+	
+	if parameter not in readings:
+		readings[parameter] = {"min": 0, "max": 0}
+
+	return readings[parameter]
 
 def convert_from_string(value):
 	if isinstance(value, string_types):

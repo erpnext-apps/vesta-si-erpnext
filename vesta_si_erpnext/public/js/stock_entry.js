@@ -44,6 +44,28 @@ frappe.ui.form.on("Stock Entry", {
 });
 
 frappe.ui.form.on("Stock Entry Detail", {
+	batch_no(frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
+		if (!row.is_finished_item) {
+			frappe.db
+				.get_list("Quality Inspection", {
+					filters: {"batch_no": row.batch_no},
+					fields: ["name"],
+					order_by: "creation desc",
+					limit: 1,
+				})
+				.then((res) => {
+					console.log(res.length)
+					if (!res.length) {
+						row.quality_inspection = "";
+					}
+					else {
+						row.quality_inspection = res[0].name;
+					}
+					frm.refresh_fields("items");
+				})
+		}
+	},
 	quality_inspection: function(frm, cdt, cdn) {
 		let row = locals[cdt][cdn];
 

@@ -25,12 +25,25 @@ frappe.ui.form.on("Quality Inspection", {
 		if (frm.doc.item_code) {
 			if (!frm.doc.analysed_item_code) {
 				// if no analysed item code, overwrite tables, analysis isnt done
+				frm.doc.readings = []
+				// gets only paramters where frequency of the parameter is equal/multiple of drum_no
 				frappe.call({
-					method: "get_quality_inspection_template",
-					doc: frm.doc,
-					callback: function() {
+					method: "vesta_si_erpnext.vesta_si_erpnext.quality_inspection.get_frequency_specific_parameters",
+					args: {
+						doc: frm.doc
+					},
+					callback: function(res) {
+						if (Object.keys(res.message).length == 1) {
+							frm.set_value("quality_inspection_template", res.message.template);
+						}
+						else {
+						frm.doc.quality_inspection_template = res.message.template;
+						for (const [key, value] of Object.entries(res.message.freq_readings)) {
+							frm.add_child("readings", value);
+						}
 						refresh_field(['quality_inspection_template', 'readings']);
 						frm.events.auto_fill_inspection_summary(frm, true);
+						}
 					}
 				});
 			} else {
@@ -56,9 +69,8 @@ frappe.ui.form.on("Quality Inspection", {
 				});
 			}
 		}
-
 	},
-
+	
 	quality_inspection_template: function(frm) {
 		if (frm.doc.quality_inspection_template && !frm.doc.analysed_item_code) {
 			frm.events.auto_fill_inspection_summary(frm, false);
@@ -119,6 +131,27 @@ frappe.ui.form.on("Quality Inspection", {
 	analysed_item_code: function(frm) {
 		if (frm.doc.analysed_item_code) {
 			frm.set_value("item_code", frm.doc.analysed_item_code);
+		}
+	}
+})
+frappe.ui.form.on('Quality Inspection Reading', {
+	specification(frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
+		if (row.specification) {
+			frappe.xcall("vesta_si_erpnext.vesta_si_erpnext.quality_inspection.get_min_max_values", {
+				"template": frm.doc.quality_inspection_template, 
+				"parameter": row.specification
+			})
+			.then((values) => {
+				row.min_value = values.min;
+				row.max_value = values.max;
+				frm.refresh_fields("readings");
+			})
+		}
+		else {
+			row.min_value = 0;
+			row.max_value = 0;
+			frm.refresh_fields("readings");
 		}
 	}
 })
