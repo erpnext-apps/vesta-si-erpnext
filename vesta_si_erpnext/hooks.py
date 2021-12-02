@@ -107,7 +107,9 @@ doc_events = {
 	"Stock Entry": {
 		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.link_supplier_bag_to_batch",
 		"before_validate": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.before_validate_events",
-		"before_submit": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.before_submit_events"
+		"before_submit": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.before_submit_events",
+		"validate": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.set_quality_inspection",
+
 	},
 	"Purchase Receipt": {
 		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.link_supplier_bag_to_batch"

@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 import frappe, erpnext
+from frappe import _
 from erpnext.stock.doctype.batch.batch import make_batch
 
 def link_supplier_bag_to_batch(doc, method=None):
@@ -70,3 +71,22 @@ def set_indicators(doc):
 		if doc.items[inspect_idx - 1].item_code == fg_item:
 			doc.items[inspect_idx - 1].analysis_required = 1
 			inspect_idx += fg_analysis_frequency
+
+def set_quality_inspection(doc,  method=None):
+	for item in doc.items:
+		if item.outpacking_rm and not item.t_warehouse and item.is_finished_item:   # there will be only one drum(raw material) in an out-packing work order scenario
+			qi = frappe.get_all("Quality Inspection", filters={'batch_no': item.batch_no}, order_by = 'creation desc')
+			if qi:
+				for fg_item in doc.items:
+					if fg_item.t_warehouse and fg_item.is_finished_item:
+						fg_item.rm_quality_inspection = qi[0].name
+
+def validate_outpacking_raw_material(doc, method=None):
+	is_outpacking_wo = frappe.db.get_value("Work Order", doc.work_order, "is_outpacking_wo")
+	if is_outpacking_wo:
+		rm = 0
+		for item in doc.items:
+			if item.outpacking_rm:
+				rm += 1
+		if rm != 1:
+			frappe.throw(_("There can't be multiple drums as raw material in the items table"))

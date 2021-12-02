@@ -28,7 +28,8 @@ frappe.ui.form.on("Stock Entry", {
 				"item_code": row.doc.item_code,
 				"description": row.doc.description,
 				"item_serial_no": row.doc.serial_no ? row.doc.serial_no.split("\n")[0] : null,
-				"batch_no": row.doc.batch_no
+				"batch_no": row.doc.batch_no,
+				"rm_quality_inspection": row.doc.rm_quality_inspection
 			}
 		}
 
@@ -90,6 +91,15 @@ frappe.ui.form.on("Stock Entry Detail", {
 							});
 
 							frm.get_field("items").grid.refresh();
+						}
+					});
+				}
+			});
+			frappe.db.get_value("Work Order", frm.doc.work_order, "is_outpacking_wo").then((r) => {
+				if (row.is_finished_item && row.t_warehouse) {
+					frm.doc.items.slice(row.idx, frm.doc.items.length).forEach(f => {
+						if (!row.quality_inspection) {
+							frappe.model.set_value(f.doctype, f.name, 'quality_inspection', row.quality_inspection);
 						}
 					});
 				}

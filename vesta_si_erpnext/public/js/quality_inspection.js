@@ -46,13 +46,23 @@ frappe.ui.form.on("Quality Inspection", {
 						}
 					}
 				});
+				if (frm.doc.rm_quality_inspection){
+				frappe.db.get_doc('Quality Inspection', frm.doc.rm_quality_inspection).then(qi => {
+					qi.readings.forEach((ref) => {
+						frm.doc.readings.forEach((reading) => {
+							if (ref.specification == reading.specification){
+							frappe.model.set_value(reading.doctype, reading.name, 'reading_1', ref.reading_1);
+							}
+						});
+					});
+				});
+			}
 			} else {
 				// if analysis is done, only overwrite template field and min/max values.
 				// Dont touch input data and analysis summary
 				frappe.db.get_value("Item", frm.doc.item_code, "quality_inspection_template").then((r) => {
 					frm.doc.quality_inspection_template = r.message.quality_inspection_template;
 					frm.refresh_field("quality_inspection_template");
-
 					frappe.call({
 						method: "vesta_si_erpnext.vesta_si_erpnext.quality_inspection.get_template_details",
 						args : {
