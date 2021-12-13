@@ -38,22 +38,25 @@ def validate_analysis(doc):
 				title=_("Mismatch"))
 
 def update_qc_reference_as_per_frequency(doc):
-	if not doc.analysis_frequency or not doc.batch_no: return
+	if not doc.batch_no: return
 	ref_doc = frappe.get_doc(doc.reference_type, doc.reference_name)
 
 	batch_idx = None
 	for row in ref_doc.get("items"):
 		# search for drum that was analysed
-		# to update next n drum rows
+		# to update next n drum rows until the next item that requires analysis.
 		if row.get("batch_no") == doc.batch_no:
 			batch_idx = (row.idx - 1) if row.idx else row.idx
 			break
 
-	for row in ref_doc.get("items")[batch_idx : (batch_idx + doc.analysis_frequency)]:
+	for row in ref_doc.get("items")[batch_idx:]:
 		batch_item = frappe.db.get_value("Batch", doc.batch_no, "item")
 		# before submit the whole set of drums must be of the same item in the batch
 		# this is to avoid accidentally updating rows of a different item
 		if row.item_code == batch_item:
+			if row.analysis_required and not (row.idx == batch_idx + 1):
+				break
+
 			row.quality_inspection = doc.name
 			if row.item_code != doc.item_code: # analysis determines it is a different item
 				row.item_code = doc.item_code
