@@ -6,6 +6,9 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "letter_head_image_section",
+  "image",
+  "section_break_3",
   "customer",
   "item_code",
   "item_name",
@@ -18,8 +21,12 @@
   "template",
   "content_1",
   "content_2",
+  "section_break_16",
+  "get_qi_parameters",
+  "charge_or_drum",
   "section_break_11",
   "batches",
+  "signature",
   "amended_from"
  ],
  "fields": [
@@ -109,12 +116,46 @@
    "fieldname": "content_2",
    "fieldtype": "Text Editor",
    "label": "content 2"
+  },
+  {
+   "fieldname": "signature",
+   "fieldtype": "Signature",
+   "label": "Signature"
+  },
+  {
+   "fieldname": "letter_head_image_section",
+   "fieldtype": "Section Break",
+   "label": "Letter Head Image"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Image"
+  },
+  {
+   "fieldname": "section_break_3",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_16",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "get_qi_parameters",
+   "fieldtype": "Button",
+   "label": "Get Quality Inspection Parameters"
+  },
+  {
+   "fieldname": "charge_or_drum",
+   "fieldtype": "Table",
+   "label": "charge or drum",
+   "options": "Analytical Certificate Batch QI Parameter Mapping"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-10-27 14:54:10.274603",
+ "modified": "2021-12-29 20:15:32.173196",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Analytical Certificate Creation",
