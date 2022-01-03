@@ -7,11 +7,12 @@
  "engine": "InnoDB",
  "field_order": [
   "letter_head_image_section",
-  "image",
+  "fetch_default_letterhead",
   "section_break_3",
   "customer",
   "item_code",
   "item_name",
+  "qi_template",
   "column_break_4",
   "date",
   "qty",
@@ -128,11 +129,6 @@
    "label": "Letter Head Image"
   },
   {
-   "fieldname": "image",
-   "fieldtype": "Attach Image",
-   "label": "Image"
-  },
-  {
    "fieldname": "section_break_3",
    "fieldtype": "Section Break"
   },
@@ -150,12 +146,26 @@
    "fieldtype": "Table",
    "label": "charge or drum",
    "options": "Analytical Certificate Batch QI Parameter Mapping"
+  },
+  {
+   "default": "0",
+   "fieldname": "fetch_default_letterhead",
+   "fieldtype": "Check",
+   "label": "Fetch Default Letter Head"
+  },
+  {
+   "fetch_from": "item_code.quality_inspection_template",
+   "fieldname": "qi_template",
+   "fieldtype": "Link",
+   "label": "Quality Inspection Template",
+   "options": "Quality Inspection Template",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-12-29 20:15:32.173196",
+ "modified": "2021-12-30 20:01:22.975944",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Analytical Certificate Creation",
