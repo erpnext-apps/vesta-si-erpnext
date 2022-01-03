@@ -1,0 +1,32 @@
+{
+ "custom_fields": [],
+ "custom_perms": [],
+ "doctype": "Work Order Item",
+ "property_setters": [
+  {
+   "_assign": null,
+   "_comments": null,
+   "_liked_by": null,
+   "_user_tags": null,
+   "creation": "2021-01-08 18:07:05.771083",
+   "default_value": null,
+   "doc_type": "Work Order Item",
+   "docstatus": 0,
+   "doctype_or_field": "DocField",
+   "field_name": "item_name",
+   "idx": 0,
+   "modified": "2017-11-28 11:58:12.082898",
+   "modified_by": "Administrator",
+   "name": "Production Order Item-item_name-in_list_view",
+   "owner": "Administrator",
+   "parent": null,
+   "parentfield": null,
+   "parenttype": null,
+   "property": "in_list_view",
+   "property_type": "Check",
+   "row_name": null,
+   "value": "1"
+  }
+ ],
+ "sync_on_migrate": 1
+}

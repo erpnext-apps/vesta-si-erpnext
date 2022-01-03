@@ -1,1 +1,2 @@
-vesta_si_erpnext.patches.create_se_pr_qi_custom_fields #27-01-2021
+vesta_si_erpnext.patches.create_se_pr_qi_custom_fields
+vesta_si_erpnext.patches.create_qit_custom_fields 

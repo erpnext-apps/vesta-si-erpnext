@@ -28,7 +28,8 @@ frappe.ui.form.on("Stock Entry", {
 				"item_code": row.doc.item_code,
 				"description": row.doc.description,
 				"item_serial_no": row.doc.serial_no ? row.doc.serial_no.split("\n")[0] : null,
-				"batch_no": row.doc.batch_no
+				"batch_no": row.doc.batch_no,
+				"rm_quality_inspection": row.doc.rm_quality_inspection
 			}
 		}
 
@@ -44,6 +45,28 @@ frappe.ui.form.on("Stock Entry", {
 });
 
 frappe.ui.form.on("Stock Entry Detail", {
+	batch_no(frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
+		if (!row.is_finished_item) {
+			frappe.db
+				.get_list("Quality Inspection", {
+					filters: {"batch_no": row.batch_no},
+					fields: ["name"],
+					order_by: "creation desc",
+					limit: 1,
+				})
+				.then((res) => {
+					console.log(res.length)
+					if (!res.length) {
+						row.quality_inspection = "";
+					}
+					else {
+						row.quality_inspection = res[0].name;
+					}
+					frm.refresh_fields("items");
+				})
+		}
+	},
 	quality_inspection: function(frm, cdt, cdn) {
 		let row = locals[cdt][cdn];
 
@@ -68,6 +91,15 @@ frappe.ui.form.on("Stock Entry Detail", {
 							});
 
 							frm.get_field("items").grid.refresh();
+						}
+					});
+				}
+			});
+			frappe.db.get_value("Work Order", frm.doc.work_order, "is_outpacking_wo").then((r) => {
+				if (row.is_finished_item && row.t_warehouse) {
+					frm.doc.items.slice(row.idx, frm.doc.items.length).forEach(f => {
+						if (!row.quality_inspection) {
+							frappe.model.set_value(f.doctype, f.name, 'quality_inspection', row.quality_inspection);
 						}
 					});
 				}
