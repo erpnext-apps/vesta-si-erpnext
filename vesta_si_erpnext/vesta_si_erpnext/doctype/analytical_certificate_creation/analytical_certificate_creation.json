@@ -6,9 +6,13 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "letter_head_image_section",
+  "fetch_default_letterhead",
+  "section_break_3",
   "customer",
   "item_code",
   "item_name",
+  "qi_template",
   "column_break_4",
   "date",
   "qty",
@@ -18,8 +22,12 @@
   "template",
   "content_1",
   "content_2",
+  "section_break_16",
+  "get_qi_parameters",
+  "charge_or_drum",
   "section_break_11",
   "batches",
+  "signature",
   "amended_from"
  ],
  "fields": [
@@ -102,19 +110,62 @@
    "fetch_from": "template.first_para",
    "fieldname": "content_1",
    "fieldtype": "Text Editor",
-   "label": "content 1"
+   "label": "Content to show above the table"
   },
   {
    "fetch_from": "template.second_para",
    "fieldname": "content_2",
    "fieldtype": "Text Editor",
-   "label": "content 2"
+   "label": "Content to show below the table"
+  },
+  {
+   "fieldname": "signature",
+   "fieldtype": "Signature",
+   "label": "Signature"
+  },
+  {
+   "fieldname": "letter_head_image_section",
+   "fieldtype": "Section Break",
+   "label": "Letter Head Image"
+  },
+  {
+   "fieldname": "section_break_3",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_16",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "get_qi_parameters",
+   "fieldtype": "Button",
+   "label": "Get Quality Inspection Parameters"
+  },
+  {
+   "fieldname": "charge_or_drum",
+   "fieldtype": "Table",
+   "label": "QI Parameter Batch Mapping",
+   "options": "Analytical Certificate Batch QI Parameter Mapping"
+  },
+  {
+   "default": "0",
+   "fieldname": "fetch_default_letterhead",
+   "fieldtype": "Check",
+   "label": "Fetch Default Letter Head"
+  },
+  {
+   "fetch_from": "item_code.quality_inspection_template",
+   "fieldname": "qi_template",
+   "fieldtype": "Link",
+   "label": "Quality Inspection Template",
+   "options": "Quality Inspection Template",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-10-27 14:54:10.274603",
+ "modified": "2022-01-04 11:33:43.841341",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Analytical Certificate Creation",

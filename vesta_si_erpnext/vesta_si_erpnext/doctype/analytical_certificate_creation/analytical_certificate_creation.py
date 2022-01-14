@@ -8,7 +8,7 @@ class AnalyticalCertificateCreation(Document):
 	def validate(doc):
 		qty = 0
 		for item in doc.batches:
-			qty += item.weight
+			qty += int(item.weight)
 		doc.qty = qty
 
 
