@@ -98,8 +98,8 @@ def get_stock_ledger_entries(filters, params):
 			from `tabQuality Inspection Reading` group by parent) as reading	
 		on se.quality_inspection = reading.parent
 		where s.is_cancelled = 0 and s.docstatus < 2 and ifnull(s.batch_no, '') != '' %s
-		group by voucher_no, batch_no, item_code, warehouse
-		order by item_code, warehouse""" %
+		group by voucher_no, batch_no, s.item_code, warehouse
+		order by s.item_code, warehouse""" %
 		(col_conditions, param_conditions, conditions), as_dict=1)
 	
 def get_item_warehouse_batch_map(filters, float_precision, params):
