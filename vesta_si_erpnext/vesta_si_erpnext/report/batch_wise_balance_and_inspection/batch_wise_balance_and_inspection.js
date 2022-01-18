@@ -137,6 +137,7 @@ frappe.query_reports["Batch-Wise Balance and Inspection"] = {
     },
 
     onload: function(report) {
+		// create SE
         report.page.add_inner_button(__("Create Stock Entry"), function() {
 		if (item_dict.length == 0)
 			frappe.throw("Select atleast 1 row to create a Stock Entry!")
@@ -148,7 +149,19 @@ frappe.query_reports["Batch-Wise Balance and Inspection"] = {
 			frappe.set_route("Form", 'Stock Entry', stock_entry.name);
 			});
 		})
-		item_dict = []
+
+		// create certificate
+		report.page.add_inner_button(__("Create Certificate"), function() {
+			if (item_dict.length == 0)
+				frappe.throw("Select atleast 1 row to create a Certificate!")
+			frappe.xcall(
+			'vesta_si_erpnext.vesta_si_erpnext.report.batch_wise_balance_and_inspection.batch_wise_balance_and_inspection.create_certificate', {
+				item_list: item_dict,
+				}).then(analytical_certificate => {
+				frappe.model.sync(analytical_certificate);
+				frappe.set_route("Form", 'Stock Entry', analytical_certificate.name);
+				});
+			})
 
 	}
 }

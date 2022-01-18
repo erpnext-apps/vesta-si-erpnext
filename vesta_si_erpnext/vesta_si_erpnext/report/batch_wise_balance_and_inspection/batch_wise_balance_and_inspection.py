@@ -183,3 +183,35 @@ def create_stock_entry(item_list):
 	stock_entry.set_stock_entry_type()
 
 	return stock_entry.as_dict()
+
+
+@frappe.whitelist()
+def create_certificate(item_list):
+	stock_entry = frappe.new_doc('Analytical Certificate Creation')
+	stock_entry.purpose = 'Material Transfer'
+
+	item_list_obj = json.loads(item_list)
+	final_list = [dict(t) for t in {tuple(d.items()) for d in item_list_obj}]
+
+	for item_details in final_list:							
+		se_child = stock_entry.append('items')
+		se_child.s_warehouse = item_details["warehouse"]
+		se_child.item_code = item_details['item_code']
+		se_child.uom = item_details["uom"] 
+		se_child.qty = flt(item_details["qty"], se_child.precision("qty"))
+		se_child.quality_inspection = item_details['qi']
+		for field in ["idx", "po_detail", "original_item", "expense_account",
+			"description", "item_name", "serial_no", "batch_no", "allow_zero_valuation_rate"]:
+			if item_details.get(field):
+				se_child.set(field, item_details.get(field))
+
+		if se_child.s_warehouse==None:
+			se_child.s_warehouse = stock_entry.from_warehouse
+		if se_child.t_warehouse==None:
+			se_child.t_warehouse = stock_entry.to_warehouse
+
+		se_child.transfer_qty = flt(item_details["qty"], se_child.precision("qty"))
+
+	stock_entry.set_stock_entry_type()
+
+	return stock_entry.as_dict()
