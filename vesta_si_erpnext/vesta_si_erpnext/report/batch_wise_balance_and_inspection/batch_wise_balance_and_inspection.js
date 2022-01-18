@@ -104,15 +104,14 @@ frappe.query_reports["Batch-Wise Balance and Inspection"] = {
 			checkboxColumn: true,
 			events: {
 				onCheckRow: function(data) {
-					console.log('adding now')
 					item_dict.push({
 						"item_code" : data[2].content,
 						"batch_no" : data[5].content,
 						"warehouse" : data[4].content,
 						"qty": data[6].content,
 						"uom": data[7].content,
-						"qi": data[8].content
-					})				
+						"quality_inspection": data[8].content,
+					})
 				},
 			}
 		});
@@ -154,12 +153,13 @@ frappe.query_reports["Batch-Wise Balance and Inspection"] = {
 		report.page.add_inner_button(__("Create Certificate"), function() {
 			if (item_dict.length == 0)
 				frappe.throw("Select atleast 1 row to create a Certificate!")
+
 			frappe.xcall(
 			'vesta_si_erpnext.vesta_si_erpnext.report.batch_wise_balance_and_inspection.batch_wise_balance_and_inspection.create_certificate', {
 				item_list: item_dict,
 				}).then(analytical_certificate => {
 				frappe.model.sync(analytical_certificate);
-				frappe.set_route("Form", 'Stock Entry', analytical_certificate.name);
+				frappe.set_route("Form", 'Analytical Certificate Creation', analytical_certificate.name);
 				});
 			})
 

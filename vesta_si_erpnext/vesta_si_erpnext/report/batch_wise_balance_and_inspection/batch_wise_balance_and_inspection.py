@@ -159,17 +159,15 @@ def create_stock_entry(item_list):
 	stock_entry.purpose = 'Material Transfer'
 
 	item_list_obj = json.loads(item_list)
+	#remove duplicates
 	final_list = [dict(t) for t in {tuple(d.items()) for d in item_list_obj}]
 
 	for item_details in final_list:							
 		se_child = stock_entry.append('items')
 		se_child.s_warehouse = item_details["warehouse"]
-		se_child.item_code = item_details['item_code']
-		se_child.uom = item_details["uom"] 
-		se_child.qty = flt(item_details["qty"], se_child.precision("qty"))
-		se_child.quality_inspection = item_details['qi']
-		for field in ["idx", "po_detail", "original_item", "expense_account",
-			"description", "item_name", "serial_no", "batch_no", "allow_zero_valuation_rate"]:
+	
+		for field in ["item_code","uom","qty","quality_inspection",
+			 "item_name", "batch_no"]:
 			if item_details.get(field):
 				se_child.set(field, item_details.get(field))
 
@@ -187,31 +185,45 @@ def create_stock_entry(item_list):
 
 @frappe.whitelist()
 def create_certificate(item_list):
-	stock_entry = frappe.new_doc('Analytical Certificate Creation')
-	stock_entry.purpose = 'Material Transfer'
-
+	
 	item_list_obj = json.loads(item_list)
+	#remove duplicates
 	final_list = [dict(t) for t in {tuple(d.items()) for d in item_list_obj}]
 
-	for item_details in final_list:							
-		se_child = stock_entry.append('items')
-		se_child.s_warehouse = item_details["warehouse"]
-		se_child.item_code = item_details['item_code']
-		se_child.uom = item_details["uom"] 
-		se_child.qty = flt(item_details["qty"], se_child.precision("qty"))
-		se_child.quality_inspection = item_details['qi']
-		for field in ["idx", "po_detail", "original_item", "expense_account",
-			"description", "item_name", "serial_no", "batch_no", "allow_zero_valuation_rate"]:
-			if item_details.get(field):
-				se_child.set(field, item_details.get(field))
-
-		if se_child.s_warehouse==None:
-			se_child.s_warehouse = stock_entry.from_warehouse
-		if se_child.t_warehouse==None:
-			se_child.t_warehouse = stock_entry.to_warehouse
-
-		se_child.transfer_qty = flt(item_details["qty"], se_child.precision("qty"))
-
-	stock_entry.set_stock_entry_type()
-
-	return stock_entry.as_dict()
+	item_code = item_list_obj[0]["item_code"]
+	analytical_certificate = frappe.new_doc('Analytical Certificate Creation')
+	analytical_certificate.item_code = item_code
+	analytical_certificate.item_name = frappe.get_value("Item",item_code,"item_name")
+	
+	for item_details in item_list_obj:	
+		if item_details["item_code"] != item_code:					
+			frappe.throw("Please select rows of same Item Code, to create a certificate!")
+		drum_child = analytical_certificate.append('batches')
+		drum_child.drum = item_details["batch_no"]
+		qi_doc = frappe.get_doc("Quality Inspection",item_details["quality_inspection"])
+		qi_readings = qi_doc.get("readings")
+		for qi in qi_readings:
+			if 'Iron Content' in qi.specification:
+				drum_child.fe_wt = qi.reading_1
+			if  'Aluminium Content' in qi.specification:
+				drum_child.al_wt = qi.reading_1
+			if 'Calcium Content' in qi.specification:
+				drum_child.ca_wt = qi.reading_1
+			if 'Oxygen Content' in qi.specification:
+				drum_child.o_wt = qi.reading_1
+			if 'Carbon Content' in qi.specification:
+				drum_child.c_wt = qi.reading_1
+			if 'Alpha Phase Content' in qi.specification:
+				drum_child.alpha_beta = qi.reading_1
+			if 'Free Silicon' in qi.specification:
+				drum_child.si_wt = qi.reading_1
+			if 'Specific Surface Area' in qi.specification:
+				drum_child.bet = qi.reading_1
+			if 'D10' in qi.specification:
+				drum_child.d10 = qi.reading_1
+			if 'D50' in qi.specification:
+				drum_child.d50 = qi.reading_1
+			if 'D90' in qi.specification:
+				drum_child.d90 = qi.reading_1
+			
+	return analytical_certificate.as_dict()
