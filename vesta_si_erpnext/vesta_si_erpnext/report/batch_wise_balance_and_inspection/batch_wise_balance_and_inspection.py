@@ -195,7 +195,7 @@ def create_certificate(item_list):
 	analytical_certificate.item_code = item_code
 	analytical_certificate.item_name = frappe.get_value("Item",item_code,"item_name")
 	
-	for item_details in item_list_obj:	
+	for item_details in final_list:	
 		if item_details["item_code"] != item_code:					
 			frappe.throw("Please select rows of same Item Code, to create a certificate!")
 		drum_child = analytical_certificate.append('batches')
