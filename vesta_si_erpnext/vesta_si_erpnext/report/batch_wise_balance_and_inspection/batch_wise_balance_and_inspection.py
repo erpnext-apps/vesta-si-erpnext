@@ -203,27 +203,6 @@ def create_certificate(item_list):
 		qi_doc = frappe.get_doc("Quality Inspection",item_details["quality_inspection"])
 		qi_readings = qi_doc.get("readings")
 		for qi in qi_readings:
-			if 'Iron Content' in qi.specification:
-				drum_child.fe_wt = qi.reading_1
-			if  'Aluminium Content' in qi.specification:
-				drum_child.al_wt = qi.reading_1
-			if 'Calcium Content' in qi.specification:
-				drum_child.ca_wt = qi.reading_1
-			if 'Oxygen Content' in qi.specification:
-				drum_child.o_wt = qi.reading_1
-			if 'Carbon Content' in qi.specification:
-				drum_child.c_wt = qi.reading_1
-			if 'Alpha Phase Content' in qi.specification:
-				drum_child.alpha_beta = qi.reading_1
-			if 'Free Silicon' in qi.specification:
-				drum_child.si_wt = qi.reading_1
-			if 'Specific Surface Area' in qi.specification:
-				drum_child.bet = qi.reading_1
-			if 'D10' in qi.specification:
-				drum_child.d10 = qi.reading_1
-			if 'D50' in qi.specification:
-				drum_child.d50 = qi.reading_1
-			if 'D90' in qi.specification:
-				drum_child.d90 = qi.reading_1
-			
+			mapped_column = frappe.get_value("Quality Inspection Parameter",qi.specification,"certificate_column_name")
+			drum_child.set(mapped_column,qi.reading_1)
 	return analytical_certificate.as_dict()
