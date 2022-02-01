@@ -96,9 +96,26 @@ frappe.xcall(
 			});
 		}
 	})
-
+let item_dict = [];
 frappe.query_reports["Batch-Wise Balance and Inspection"] = {
 	"filters": filters,
+	get_datatable_options(options) {
+		return Object.assign(options, {
+			checkboxColumn: true,
+			events: {
+				onCheckRow: function(data) {
+					item_dict.push({
+						"item_code" : data[2].content,
+						"batch_no" : data[5].content,
+						"warehouse" : data[4].content,
+						"qty": data[6].content,
+						"uom": data[7].content,
+						"quality_inspection": data[8].content,
+					})
+				},
+			}
+		});
+	},
 	"formatter": function (value, row, column, data, default_formatter) {
 		if (column.fieldname == "Batch" && data && !!data["Batch"]) {
 			value = data["Batch"];
@@ -114,5 +131,37 @@ frappe.query_reports["Batch-Wise Balance and Inspection"] = {
 		};
 
 		frappe.set_route("query-report", "Stock Ledger");
+
+
+    },
+
+    onload: function(report) {
+		// create SE
+        report.page.add_inner_button(__("Create Stock Entry"), function() {
+		if (item_dict.length == 0)
+			frappe.throw("Select atleast 1 row to create a Stock Entry!")
+		frappe.xcall(
+		'vesta_si_erpnext.vesta_si_erpnext.report.batch_wise_balance_and_inspection.batch_wise_balance_and_inspection.create_stock_entry', {
+			item_list: item_dict,
+			}).then(stock_entry => {
+			frappe.model.sync(stock_entry);
+			frappe.set_route("Form", 'Stock Entry', stock_entry.name);
+			});
+		})
+
+		// create certificate
+		report.page.add_inner_button(__("Create Certificate"), function() {
+			if (item_dict.length == 0)
+				frappe.throw("Select atleast 1 row to create a Certificate!")
+
+			frappe.xcall(
+			'vesta_si_erpnext.vesta_si_erpnext.report.batch_wise_balance_and_inspection.batch_wise_balance_and_inspection.create_certificate', {
+				item_list: item_dict,
+				}).then(analytical_certificate => {
+				frappe.model.sync(analytical_certificate);
+				frappe.set_route("Form", 'Analytical Certificate Creation', analytical_certificate.name);
+				});
+			})
+
 	}
 }

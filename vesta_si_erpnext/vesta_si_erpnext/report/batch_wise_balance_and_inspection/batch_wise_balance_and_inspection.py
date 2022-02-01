@@ -1,9 +1,11 @@
 # Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
 # License: GNU General Public License v3. See license.txt
 
+import json
 import frappe
 from frappe import _
 from frappe.utils import cint, flt, getdate
+from pypika.terms import JSON
 
 
 def execute(filters=None):
@@ -150,3 +152,57 @@ def get_item_details(filters):
 		item_map.setdefault(d.name, d)
 
 	return item_map
+
+@frappe.whitelist()
+def create_stock_entry(item_list):
+	stock_entry = frappe.new_doc('Stock Entry')
+	stock_entry.purpose = 'Material Transfer'
+
+	item_list_obj = json.loads(item_list)
+	#remove duplicates
+	final_list = [dict(t) for t in {tuple(d.items()) for d in item_list_obj}]
+
+	for item_details in final_list:							
+		se_child = stock_entry.append('items')
+		se_child.s_warehouse = item_details["warehouse"]
+	
+		for field in ["item_code","uom","qty","quality_inspection",
+			 "item_name", "batch_no"]:
+			if item_details.get(field):
+				se_child.set(field, item_details.get(field))
+
+		if se_child.s_warehouse==None:
+			se_child.s_warehouse = stock_entry.from_warehouse
+		if se_child.t_warehouse==None:
+			se_child.t_warehouse = stock_entry.to_warehouse
+
+		se_child.transfer_qty = flt(item_details["qty"], se_child.precision("qty"))
+
+	stock_entry.set_stock_entry_type()
+
+	return stock_entry.as_dict()
+
+
+@frappe.whitelist()
+def create_certificate(item_list):
+	
+	item_list_obj = json.loads(item_list)
+	#remove duplicates
+	final_list = [dict(t) for t in {tuple(d.items()) for d in item_list_obj}]
+
+	item_code = item_list_obj[0]["item_code"]
+	analytical_certificate = frappe.new_doc('Analytical Certificate Creation')
+	analytical_certificate.item_code = item_code
+	analytical_certificate.item_name = frappe.get_value("Item",item_code,"item_name")
+	
+	for item_details in final_list:	
+		if item_details["item_code"] != item_code:					
+			frappe.throw("Please select rows of same Item Code, to create a certificate!")
+		drum_child = analytical_certificate.append('batches')
+		drum_child.drum = item_details["batch_no"]
+		qi_doc = frappe.get_doc("Quality Inspection",item_details["quality_inspection"])
+		qi_readings = qi_doc.get("readings")
+		for qi in qi_readings:
+			mapped_column = frappe.get_value("Quality Inspection Parameter",qi.specification,"certificate_column_name")
+			drum_child.set(mapped_column,qi.reading_1)
+	return analytical_certificate.as_dict()
