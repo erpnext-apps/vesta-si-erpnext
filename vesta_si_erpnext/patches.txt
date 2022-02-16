@@ -1,2 +1,3 @@
 vesta_si_erpnext.patches.create_se_pr_qi_custom_fields
-vesta_si_erpnext.patches.create_qit_custom_fields 
+vesta_si_erpnext.patches.create_qit_custom_fields
+vesta_si_erpnext.patches.create_field_custom_apply_putaway_rule

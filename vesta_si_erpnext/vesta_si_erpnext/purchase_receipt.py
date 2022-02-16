@@ -11,3 +11,18 @@ def link_supplier_bag_to_batch(doc, method=None):
 
 		# if item.get("quality_inspection") and item.get("batch_no"):
 		# 	frappe.db.set_value("Quality Inspection", item.quality_inspection, "batch_no", item.batch_no)
+
+def before_validate(doc, method):
+	from vesta_si_erpnext.vesta_si_erpnext.putaway_rule import apply_putaway_rule
+
+	doc.custom_apply_putaway_rule = 0
+	if doc.apply_putaway_rule:
+		doc.apply_putaway_rule = 0
+
+		apply_putaway_rule(doc.doctype, doc.get("items"), doc.company)
+
+		doc.custom_apply_putaway_rule = 1
+
+def on_update(doc, method):
+	if doc.custom_apply_putaway_rule:
+		doc.db_set('apply_putaway_rule', 1)

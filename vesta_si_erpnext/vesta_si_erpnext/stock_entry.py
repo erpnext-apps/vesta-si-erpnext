@@ -47,6 +47,16 @@ def before_validate_events(doc, method=None):
 		if doc.is_new():
 			set_indicators(doc)
 
+	from vesta_si_erpnext.vesta_si_erpnext.putaway_rule import apply_putaway_rule
+
+	doc.custom_apply_putaway_rule = 0
+	if doc.apply_putaway_rule:
+		doc.apply_putaway_rule = 0
+
+		apply_putaway_rule(doc.doctype, doc.get("items"), doc.company)
+
+		doc.custom_apply_putaway_rule = 1
+
 def update_fg_completed_qty(doc):
 	fg_completed_qty = 0.0
 	for row in doc.items:
