@@ -110,10 +110,12 @@ doc_events = {
 		"before_validate": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.before_validate_events",
 		"before_submit": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.before_submit_events",
 		"validate": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.set_quality_inspection",
-
+		"on_update": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.on_update"
 	},
 	"Purchase Receipt": {
-		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.link_supplier_bag_to_batch"
+		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.link_supplier_bag_to_batch",
+		"before_validate": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.before_validate",
+		"on_update": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.on_update"
 	}
 }
 
@@ -146,9 +148,10 @@ doc_events = {
 # Overriding Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "vesta_si_erpnext.event.get_events"
-# }
+override_whitelisted_methods = {
+	"erpnext.stock.doctype.putaway_rule.putaway_rule.apply_putaway_rule": "vesta_si_erpnext.vesta_si_erpnext.putaway_rule.apply_putaway_rule"
+}
+
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
