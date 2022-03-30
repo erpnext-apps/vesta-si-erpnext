@@ -33,19 +33,10 @@ frappe.ui.form.on("Quality Inspection", {
 						doc: frm.doc
 					},
 					callback: function(res) {
-						if (Object.keys(res.message).length == 1) {
-							frm.set_value("quality_inspection_template", res.message.template);
-						}
-						else {
-						frm.doc.quality_inspection_template = res.message.template;
-						for (const [key, value] of Object.entries(res.message.freq_readings)) {
-							frm.add_child("readings", value);
-						}
-						refresh_field(['quality_inspection_template', 'readings']);
-						frm.events.auto_fill_inspection_summary(frm, true);
-						}
+						frm.events.add_readings(frm, res);
 					}
 				});
+
 				if (frm.doc.rm_quality_inspection){
 				frappe.db.get_doc('Quality Inspection', frm.doc.rm_quality_inspection).then(qi => {
 					qi.readings.forEach((ref) => {
@@ -80,7 +71,35 @@ frappe.ui.form.on("Quality Inspection", {
 			}
 		}
 	},
-	
+
+	add_readings: function(frm, res) {
+		if (Object.keys(res.message).length == 1) {
+			frm.set_value("quality_inspection_template", res.message.template);
+		} else {
+			frm.doc.quality_inspection_template = res.message.template;
+
+			debugger
+			if (res.message.previous_qi_readings && res.message.previous_qi_readings.length) {
+				res.message.previous_qi_readings.forEach(row => {
+					if (Object.keys(res.message.freq_readings).includes(row.specification)) {
+						frm.add_child("readings", res.message.freq_readings[row.specification]);
+					} else {
+						row.name = '';
+						row.parent = '';
+						frm.add_child("readings", row);
+					}
+				});
+			} else {
+				for (const [key, value] of Object.entries(res.message.freq_readings)) {
+					frm.add_child("readings", value);
+				}
+			}
+
+			refresh_field(['quality_inspection_template', 'readings']);
+			frm.events.auto_fill_inspection_summary(frm, true);
+		}
+	},
+
 	quality_inspection_template: function(frm) {
 		if (frm.doc.quality_inspection_template && !frm.doc.analysed_item_code) {
 			frm.events.auto_fill_inspection_summary(frm, false);
@@ -149,7 +168,7 @@ frappe.ui.form.on('Quality Inspection Reading', {
 		let row = locals[cdt][cdn];
 		if (row.specification) {
 			frappe.xcall("vesta_si_erpnext.vesta_si_erpnext.quality_inspection.get_min_max_values", {
-				"template": frm.doc.quality_inspection_template, 
+				"template": frm.doc.quality_inspection_template,
 				"parameter": row.specification
 			})
 			.then((values) => {

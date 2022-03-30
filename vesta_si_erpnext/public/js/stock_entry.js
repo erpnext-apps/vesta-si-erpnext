@@ -14,7 +14,7 @@ frappe.ui.form.on("Stock Entry", {
 
 	setup_quality_inspection: function(frm) {
 		if (!frm.doc.inspection_required) {
-			frappe.msgprint({message: _("Please enable 'Inspection Required'."), title:_("Note")});
+			frappe.msgprint({message: __("Please enable 'Inspection Required'."), title:_("Note")});
 			return;
 		}
 
