@@ -44,8 +44,7 @@ def update_item_code_in_batch(doc):
 def before_validate_events(doc, method=None):
 	if doc.purpose == "Manufacture":
 		update_fg_completed_qty(doc)
-		if doc.is_new():
-			set_indicators(doc)
+		set_indicators(doc)
 
 	from vesta_si_erpnext.vesta_si_erpnext.putaway_rule import apply_putaway_rule
 
@@ -68,6 +67,9 @@ def update_fg_completed_qty(doc):
 # to reduce the number of frequencies while marking the indicators
 def check_if_divisible(drum_no, freqs):
 	for freq in freqs:
+		if freq == 0:
+			freq = 1
+
 		if drum_no % freq == 0:
 			return True
 
@@ -86,13 +88,17 @@ def set_indicators(doc):
 	if not start_idx : return
 
 	inspect_idx = start_idx # start marking from start_idx
+
 	while inspect_idx <= last_idx:
-		drum_no = inspect_idx - (start_idx - 1)
+		drum_no = inspect_idx - (start_idx)
 
 		# mark all drumns that match the freq in the template
-		if (doc.items[inspect_idx - 1].item_code == fg_item and  
+		if (doc.items[inspect_idx - 1].item_code == fg_item and
 			(inspect_idx == start_idx or check_if_divisible(drum_no, freqs))):
 			doc.items[inspect_idx - 1].analysis_required = 1
+		else:
+			doc.items[inspect_idx - 1].analysis_required = 0
+
 		inspect_idx += 1
 
 def set_quality_inspection(doc,  method=None):

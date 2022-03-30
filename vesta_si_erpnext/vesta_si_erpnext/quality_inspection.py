@@ -203,7 +203,7 @@ def get_template_details_with_frequency(template):
 
 	return frappe.get_all('Item Quality Inspection Parameter',
 		fields=["specification", "frequency", "value", "acceptance_formula",
-			"numeric", "formula_based_criteria", "min_value", "max_value"],
+			"numeric", "formula_based_criteria", "min_value", "max_value", "idx"],
 		filters={'parenttype': 'Quality Inspection Template', 'parent': template},
 		order_by="idx")
 
@@ -219,13 +219,19 @@ def get_frequency_specific_parameters(doc):
 	fg_idx = None
 	batch_idx = None
 	drum_no = None
+
+	previous_row_qi = ''
 	for item in ref_doc.get("items"):
 		if item.is_finished_item:
+			if not fg_idx:
+				fg_idx = item.idx
+
 			if item.get("batch_no") == doc.batch_no:
 				batch_idx = item.idx
 				break
-		else:
-			fg_idx = item.idx
+
+			if item.quality_inspection:
+				previous_row_qi = item.quality_inspection
 
 	if cint(batch_idx) >= cint(fg_idx):
 		drum_no = cint(batch_idx) - cint(fg_idx)
@@ -234,14 +240,17 @@ def get_frequency_specific_parameters(doc):
 		return {"template": template}
 
 	freq_readings = {}
-	idx = 1
 	for row in template_readings:
 		if cint(drum_no) % cint(row.frequency) == 0 or cint(drum_no) == 1:
-			row.idx = idx
 			freq_readings[row.specification] = row
-			idx += 1
 
-	return {"freq_readings": freq_readings, "template": template}
+	previous_qi_readings = []
+	if previous_row_qi:
+		previous_qi_readings = frappe.get_all("Quality Inspection Reading",
+			fields=["*"], filters = {'parent': previous_row_qi}, order_by="idx")
+
+	return {"freq_readings": freq_readings,
+		"template": template, 'previous_qi_readings': previous_qi_readings}
 
 @frappe.whitelist()
 def get_min_max_values(template, parameter):
@@ -252,7 +261,7 @@ def get_min_max_values(template, parameter):
 			"min": reading.min_value,
 			"max": reading.max_value
 		}
-	
+
 	if parameter not in readings:
 		readings[parameter] = {"min": 0, "max": 0}
 
