@@ -36,7 +36,6 @@ frappe.ui.form.on("Stock Entry", {
 		frm.set_query("quality_inspection", "items", function(doc, cdt, cdn) {
 			return {
 				filters: {
-					docstatus: 1,
 					reference_name: doc.name
 				}
 			}
