@@ -103,12 +103,32 @@ def set_indicators(doc):
 
 def set_quality_inspection(doc,  method=None):
 	for item in doc.items:
-		if item.outpacking_rm and not item.t_warehouse and item.is_finished_item:   # there will be only one drum(raw material) in an out-packing work order scenario
-			qi = frappe.get_all("Quality Inspection", filters={'batch_no': item.batch_no}, order_by = 'creation desc')
-			if qi:
+		if item.outpacking_rm and not item.t_warehouse:   # there will be only one drum(raw material) in an out-packing work order scenario
+			quality_inspection = get_batch_quality_inspection(item.batch_no)
+			if quality_inspection:
+				item.quality_inspection = quality_inspection
 				for fg_item in doc.items:
 					if fg_item.t_warehouse and fg_item.is_finished_item:
-						fg_item.rm_quality_inspection = qi[0].name
+						fg_item.rm_quality_inspection = item.quality_inspection
+						fg_item.quality_inspection = item.quality_inspection
+
+def get_batch_quality_inspection(batch_no):
+	quality_inspection = frappe.get_all("Quality Inspection",
+		filters={"batch_no": batch_no}, order_by = "creation desc")
+
+	if quality_inspection:
+		quality_inspection = quality_inspection[0].name
+
+	if not quality_inspection:
+		get_qi_from_stock_entries = frappe.get_all("Stock Entry Detail",
+			fields = ["quality_inspection"],
+			filters = {"batch_no": batch_no, "docstatus": 1, "quality_inspection": ("is", "set")},
+			order_by = "creation desc")
+
+		if get_qi_from_stock_entries:
+			quality_inspection = get_qi_from_stock_entries[0].quality_inspection
+
+	return quality_inspection
 
 def validate_outpacking_raw_material(doc, method=None):
 	is_outpacking_wo = frappe.db.get_value("Work Order", doc.work_order, "is_outpacking_wo")
