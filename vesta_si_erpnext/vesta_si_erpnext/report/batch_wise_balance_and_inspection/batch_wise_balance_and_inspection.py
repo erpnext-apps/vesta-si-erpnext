@@ -10,7 +10,7 @@ from pypika.terms import JSON
 
 def execute(filters=None):
 	param_columns = get_params()
-	
+
 	if not filters: filters = {}
 	if filters.from_date > filters.to_date:
 		frappe.throw(_("From Date must be before To Date"))
@@ -45,10 +45,10 @@ def get_columns(filters, params):
 	columns = [_("Item") + ":Link/Item:100"] + [_("Item Name") + "::150"] + [_("Warehouse") + ":Link/Warehouse:100"] + \
 		[_("Batch") + ":Link/Batch:100"] + [_("Balance Qty") + ":Float:90"] + [_("UOM") + "::90"] + \
 		[_("Quality Inspection") + ":Link/Quality Inspection:140"] +[_("Description") + "::95"] + [_("Supplier Bag No.") + "::120"]
-	
+
 	for param in params:
-		columns += [_(param['inspection_parameter']) + ":Float:100"] 
-		
+		columns += [_(param['inspection_parameter']) + ":Float:100"]
+
 	return columns
 
 
@@ -65,7 +65,7 @@ def get_conditions(filters, params):
 	for field in ["item_code", "warehouse", "batch_no", "company"]:
 		if filters.get(field):
 			conditions += " and {0} = {1}".format(field, frappe.db.escape(filters.get(field)))
-	
+
 	for param in params:
 		if filters.get(param['col_name']):
 			parameter = '%' + filters.get(param['col_name']) + '%'
@@ -89,7 +89,7 @@ def get_stock_ledger_entries(filters, params):
 	col_conditions = ""
 	for col in params:
 		col_conditions += ", reading." + col['col_name'] + " as " + col['col_name']
-	
+
 	return frappe.db.sql("""
 		select s.item_code, s.batch_no, s.warehouse, s.posting_date, sum(s.actual_qty) as actual_qty,
 			se.quality_inspection as qi_name, se.supplier_bag_no as supplier_bag_no %s
@@ -97,13 +97,13 @@ def get_stock_ledger_entries(filters, params):
 		left join `tabStock Entry Detail` se on s.voucher_no = se.parent and se.batch_no= s.batch_no
 		left join (
 			select parent %s
-			from `tabQuality Inspection Reading` group by parent) as reading	
+			from `tabQuality Inspection Reading` group by parent) as reading
 		on se.quality_inspection = reading.parent
 		where s.is_cancelled = 0 and s.docstatus < 2 and ifnull(s.batch_no, '') != '' %s
 		group by voucher_no, batch_no, s.item_code, warehouse
 		order by s.item_code, warehouse""" %
-		(col_conditions, param_conditions, conditions), as_dict=1)
-	
+		(col_conditions, param_conditions, conditions), as_dict=1, debug=1)
+
 def get_item_warehouse_batch_map(filters, float_precision, params):
 	sle = get_stock_ledger_entries(filters, params)
 	iwb_map = {}
@@ -136,11 +136,13 @@ def get_item_warehouse_batch_map(filters, float_precision, params):
 
 @frappe.whitelist()
 def get_params():
+	import re
 	params =  frappe.db.get_values('Inspection Report Parameter',
 		{'parent': 'Quality Inspection Report Settings'},
 		['inspection_parameter'], order_by = 'idx', as_dict = 1)
 	for col in params:
-		col['col_name'] = col['inspection_parameter'].split()[0].lower()
+		col['col_name'] = re.sub('[^A-Za-z0-9]+', '', col['inspection_parameter'])
+
 	return params
 
 def get_batch_desc(batch_no):
@@ -162,10 +164,10 @@ def create_stock_entry(item_list):
 	#remove duplicates
 	final_list = [dict(t) for t in {tuple(d.items()) for d in item_list_obj}]
 
-	for item_details in final_list:							
+	for item_details in final_list:
 		se_child = stock_entry.append('items')
 		se_child.s_warehouse = item_details["warehouse"]
-	
+
 		for field in ["item_code","uom","qty","quality_inspection",
 			 "item_name", "batch_no"]:
 			if item_details.get(field):
@@ -185,7 +187,7 @@ def create_stock_entry(item_list):
 
 @frappe.whitelist()
 def create_certificate(item_list):
-	
+
 	item_list_obj = json.loads(item_list)
 	#remove duplicates
 	final_list = [dict(t) for t in {tuple(d.items()) for d in item_list_obj}]
@@ -194,10 +196,8 @@ def create_certificate(item_list):
 	analytical_certificate = frappe.new_doc('Analytical Certificate Creation')
 	analytical_certificate.item_code = item_code
 	analytical_certificate.item_name = frappe.get_value("Item",item_code,"item_name")
-	
-	for item_details in final_list:	
-		if item_details["item_code"] != item_code:					
-			frappe.throw("Please select rows of same Item Code, to create a certificate!")
+
+	for item_details in final_list:
 		drum_child = analytical_certificate.append('batches')
 		drum_child.drum = item_details["batch_no"]
 		qi_doc = frappe.get_doc("Quality Inspection",item_details["quality_inspection"])

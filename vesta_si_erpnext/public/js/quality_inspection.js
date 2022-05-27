@@ -1,6 +1,22 @@
 frappe.ui.form.off("Quality Inspection", "item_code");
 
+frappe.ui.form.on('Quality Inspection', {
+	setup(frm) {
+		frm.set_indicator_formatter("specification",
+			function(doc) {
+				if (!doc.reading_1 && !doc.reading_value) {
+					return "red";
+				}
+		});
+	}
+})
+
 frappe.ui.form.on("Quality Inspection", {
+	refresh: function(frm) {
+		frm.set_df_property('readings', 'cannot_delete_rows', true);
+		frm.set_df_property('readings', 'cannot_add_rows', true);
+	},
+
 	setup: function(frm) {
 		frm.set_indicator_formatter('analysis_item_code',
 			function(doc) {
@@ -78,7 +94,6 @@ frappe.ui.form.on("Quality Inspection", {
 		} else {
 			frm.doc.quality_inspection_template = res.message.template;
 
-			debugger
 			if (res.message.previous_qi_readings && res.message.previous_qi_readings.length) {
 				res.message.previous_qi_readings.forEach(row => {
 					if (Object.keys(res.message.freq_readings).includes(row.specification)) {
@@ -86,6 +101,7 @@ frappe.ui.form.on("Quality Inspection", {
 					} else {
 						row.name = '';
 						row.parent = '';
+						row.docstatus = 0;
 						frm.add_child("readings", row);
 					}
 				});
