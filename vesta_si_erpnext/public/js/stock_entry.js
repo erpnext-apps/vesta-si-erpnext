@@ -13,10 +13,11 @@ frappe.ui.form.on("Stock Entry", {
 	},
 
 	setup_quality_inspection: function(frm) {
-		if (!frm.doc.inspection_required) {
-			frappe.msgprint({message: __("Please enable 'Inspection Required'."), title:__("Note")});
-			return;
-		}
+		// removed validation (check ticket ISS-22-23-00807)
+		// if (!frm.doc.inspection_required) {
+		// 	frappe.msgprint({message: __("Please enable 'Inspection Required'."), title:__("Note")});
+		// 	return;
+		// }
 
 		let quality_inspection_field = frm.get_docfield("items", "quality_inspection");
 		quality_inspection_field.get_route_options_for_new_doc = function(row) {
@@ -72,7 +73,7 @@ frappe.ui.form.on("Stock Entry Detail", {
 		if (row.quality_inspection) {
 			frappe.db.get_value("Quality Inspection", row.quality_inspection, "docstatus").then((r) => {
 				if (cint(r.message.docstatus) == 0) {
-					frappe.throw(__("Row #{0}: Please submit Quality Inspection {1}.",
+					frappe.msgprint(__("Row #{0}: Please submit Quality Inspection {1}.",
 						[row.idx, row.quality_inspection.bold()]))
 				} else {
 					frappe.db.get_list("Quality Inspection", {
