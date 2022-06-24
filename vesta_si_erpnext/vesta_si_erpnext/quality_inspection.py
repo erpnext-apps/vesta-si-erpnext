@@ -130,7 +130,7 @@ def inspect_reading(reading, inspection_criteria):
 		return status_based_on_acceptance_values(reading, inspection_criteria)
 
 def status_based_on_acceptance_values(reading, inspection_criteria):
-	if cint(reading.non_numeric):
+	if cint(reading.numeric):
 			return reading.get("reading_value") == inspection_criteria.get("value")
 	else:
 		# numeric readings
@@ -172,7 +172,7 @@ def status_based_on_acceptance_formula(reading, inspection_criteria):
 
 def get_formula_evaluation_data(reading):
 	data = {}
-	if cint(reading.non_numeric):
+	if cint(reading.numeric):
 		data = {"reading_value": reading.get("reading_value")}
 	else:
 		# numeric readings
@@ -188,7 +188,7 @@ def get_template_details(template):
 
 	data =  frappe.get_all('Item Quality Inspection Parameter',
 		fields=["specification", "value", "acceptance_formula",
-			"non_numeric", "formula_based_criteria", "min_value", "max_value"],
+			"numeric", "formula_based_criteria", "min_value", "max_value"],
 		filters={'parenttype': 'Quality Inspection Template', 'parent': template},
 		order_by="idx")
 
