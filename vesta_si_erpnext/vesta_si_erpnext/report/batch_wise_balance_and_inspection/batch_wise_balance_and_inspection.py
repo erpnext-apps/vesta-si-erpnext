@@ -64,7 +64,7 @@ def get_conditions(filters, params):
 
 	for field in ["item_code", "warehouse", "batch_no", "company"]:
 		if filters.get(field):
-			conditions += " and {0} = {1}".format(field, frappe.db.escape(filters.get(field)))
+			conditions += " and s.{0} = {1}".format(field, frappe.db.escape(filters.get(field)))
 
 	for param in params:
 		if filters.get(param['col_name']):
@@ -102,7 +102,7 @@ def get_stock_ledger_entries(filters, params):
 		where s.is_cancelled = 0 and s.docstatus < 2 and ifnull(s.batch_no, '') != '' %s
 		group by voucher_no, batch_no, s.item_code, warehouse
 		order by s.item_code, warehouse""" %
-		(col_conditions, param_conditions, conditions), as_dict=1, debug=1)
+		(col_conditions, param_conditions, conditions), as_dict=1)
 
 def get_item_warehouse_batch_map(filters, float_precision, params):
 	sle = get_stock_ledger_entries(filters, params)
