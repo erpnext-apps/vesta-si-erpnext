@@ -96,7 +96,7 @@ frappe.xcall(
 			});
 		}
 	})
-let item_dict = [];
+let item_dict = {};
 frappe.query_reports["Batch-Wise Balance and Inspection"] = {
 	"filters": filters,
 	get_datatable_options(options) {
@@ -104,14 +104,21 @@ frappe.query_reports["Batch-Wise Balance and Inspection"] = {
 			checkboxColumn: true,
 			events: {
 				onCheckRow: function(data) {
-					item_dict.push({
-						"item_code" : data[2].content,
-						"batch_no" : data[5].content,
-						"warehouse" : data[4].content,
-						"qty": data[6].content,
-						"uom": data[7].content,
-						"quality_inspection": data[8].content,
-					})
+					let key = data[2].content + data[4].content + data[5].content;
+
+					if (key in item_dict) {
+						delete item_dict[key];
+					} else {
+						item_dict[key] = {
+							"item_code" : data[2].content,
+							"batch_no" : data[5].content,
+							"warehouse" : data[4].content,
+							"qty": data[6].content,
+							"uom": data[7].content,
+							"stock_uom": data[7].content,
+							"quality_inspection": data[8].content,
+						}
+					}
 				},
 			}
 		});
