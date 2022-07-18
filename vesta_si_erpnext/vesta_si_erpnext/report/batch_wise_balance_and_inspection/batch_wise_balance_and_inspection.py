@@ -30,10 +30,12 @@ def execute(filters=None):
 					if batch_dict.bal_qty:
 						row = [item, item_map[item]["item_name"], wh, batch,
 							flt(batch_dict.bal_qty, float_precision),
-							item_map[item]["stock_uom"], batch_dict.qi, batch_dict.desc, batch_dict.supplier_bag_no
+							item_map[item]["stock_uom"], batch_dict.qi
 						]
 						for param in param_columns:
 							row.append(batch_dict[param['col_name']])
+
+						row.extend([batch_dict.desc, batch_dict.supplier_bag_no])
 						data.append(row)
 
 	return columns, data
@@ -42,12 +44,17 @@ def execute(filters=None):
 def get_columns(filters, params):
 	"""return columns based on filters"""
 
-	columns = [_("Item") + ":Link/Item:100"] + [_("Item Name") + "::150"] + [_("Warehouse") + ":Link/Warehouse:100"] + \
-		[_("Batch") + ":Link/Batch:100"] + [_("Balance Qty") + ":Float:90"] + [_("UOM") + "::90"] + \
-		[_("Quality Inspection") + ":Link/Quality Inspection:140"] +[_("Description") + "::95"] + [_("Supplier Bag No.") + "::120"]
+	columns = [_("Item") + ":Link/Item:100"] + [_("Item Name") + "::150"] + \
+		[_("Warehouse") + ":Link/Warehouse:100"] + \
+		[_("Batch") + ":Link/Batch:100"] + [_("Balance Qty") + ":Float:90"] + \
+		[_("UOM") + "::90"] + \
+		[_("Quality Inspection") + ":Link/Quality Inspection:140"]
+
 
 	for param in params:
 		columns += [_(param['inspection_parameter']) + ":Float:100"]
+
+	columns += [_("Description") + "::95"] + [_("Supplier Bag No.") + "::120"]
 
 	return columns
 
@@ -160,16 +167,16 @@ def create_stock_entry(item_list):
 	stock_entry = frappe.new_doc('Stock Entry')
 	stock_entry.purpose = 'Material Transfer'
 
-	item_list_obj = json.loads(item_list)
-	#remove duplicates
-	final_list = [dict(t) for t in {tuple(d.items()) for d in item_list_obj}]
+	if isinstance(item_list, str):
+		item_list = json.loads(item_list)
 
-	for item_details in final_list:
+	for key, item_details in item_list.items():
 		se_child = stock_entry.append('items')
 		se_child.s_warehouse = item_details["warehouse"]
+		se_child.conversion_factor = 1
 
 		for field in ["item_code","uom","qty","quality_inspection",
-			 "item_name", "batch_no"]:
+			 "item_name", "batch_no", "stock_uom"]:
 			if item_details.get(field):
 				se_child.set(field, item_details.get(field))
 
@@ -187,19 +194,25 @@ def create_stock_entry(item_list):
 
 @frappe.whitelist()
 def create_certificate(item_list):
+	if isinstance(item_list, str):
+		item_list = json.loads(item_list)
 
-	item_list_obj = json.loads(item_list)
-	#remove duplicates
-	final_list = [dict(t) for t in {tuple(d.items()) for d in item_list_obj}]
-
-	item_code = item_list_obj[0]["item_code"]
+	key = list(item_list.keys())[0]
+	item_code = item_list[key]["item_code"]
 	analytical_certificate = frappe.new_doc('Analytical Certificate Creation')
-	analytical_certificate.item_code = item_code
-	analytical_certificate.item_name = frappe.get_value("Item",item_code,"item_name")
+	item_data = frappe.db.get_value("Item",
+		item_code, ["item_name", "description", "quality_inspection_template"], as_dict=1)
 
-	for item_details in final_list:
+	analytical_certificate.item_code = item_code
+	analytical_certificate.item_name = item_data.item_name
+	analytical_certificate.description = item_data.description
+	analytical_certificate.qi_template = item_data.quality_inspection_template
+
+	for key, item_details in item_list.items():
 		drum_child = analytical_certificate.append('batches')
 		drum_child.drum = item_details["batch_no"]
+		if item_details["batch_no"]:
+			drum_child.weight = frappe.db.get_value("Batch", item_details["batch_no"], "batch_qty")
 		qi_doc = frappe.get_doc("Quality Inspection",item_details["quality_inspection"])
 		qi_readings = qi_doc.get("readings")
 		for qi in qi_readings:

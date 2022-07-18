@@ -12,6 +12,7 @@
   "customer",
   "item_code",
   "item_name",
+  "description",
   "qi_template",
   "column_break_4",
   "date",
@@ -160,12 +161,19 @@
    "label": "Quality Inspection Template",
    "options": "Quality Inspection Template",
    "read_only": 1
+  },
+  {
+   "fetch_from": "item_code.description",
+   "fetch_if_empty": 1,
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "label": "Description"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-01-04 11:33:43.841341",
+ "modified": "2022-07-18 13:32:46.773590",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Analytical Certificate Creation",
@@ -184,5 +192,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }
