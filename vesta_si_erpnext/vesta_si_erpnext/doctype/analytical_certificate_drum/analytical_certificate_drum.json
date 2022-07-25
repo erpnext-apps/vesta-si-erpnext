@@ -15,11 +15,19 @@
   "c_wt",
   "alpha_beta",
   "si_wt",
+  "h2o_wt",
+  "blk_den_gcc",
   "bet",
   "charge",
   "d10",
   "d50",
-  "d90"
+  "d90",
+  "d99",
+  "d100",
+  "635_mesh",
+  "sn_si_wt",
+  "dry_less_200",
+  "overview_analysis"
  ],
  "fields": [
   {
@@ -113,12 +121,52 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "D90 (Microns)"
+  },
+  {
+   "fieldname": "h2o_wt",
+   "fieldtype": "Data",
+   "label": "H2O wt%"
+  },
+  {
+   "fieldname": "blk_den_gcc",
+   "fieldtype": "Data",
+   "label": "Blk Den. (g/cc)"
+  },
+  {
+   "fieldname": "d99",
+   "fieldtype": "Data",
+   "label": "D99 (Microns)"
+  },
+  {
+   "fieldname": "d100",
+   "fieldtype": "Data",
+   "label": "D100 (Microns)"
+  },
+  {
+   "fieldname": "635_mesh",
+   "fieldtype": "Data",
+   "label": "635 mesh"
+  },
+  {
+   "fieldname": "sn_si_wt",
+   "fieldtype": "Data",
+   "label": "SN in Si (wt%)"
+  },
+  {
+   "fieldname": "dry_less_200",
+   "fieldtype": "Data",
+   "label": "Dry sieving  less than 200 \u00b5m"
+  },
+  {
+   "fieldname": "overview_analysis",
+   "fieldtype": "Data",
+   "label": "Overview analysis"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-10-26 11:57:52.586122",
+ "modified": "2022-07-25 07:34:33.255257",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Analytical Certificate Drum",
@@ -126,5 +174,6 @@
  "permissions": [],
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }
