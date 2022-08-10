@@ -65,7 +65,7 @@ frappe.ui.form.on("Analytical Certificate Drum", {
 						let parameters_to_set = [];
 						for (let param of frm.doc.charge_or_drum) {
 							if (param.fetch_from == 'Crushed Charge') {
-								parameters_to_set.push(param.quality_inspection_paramter);
+								parameters_to_set.push(param.quality_inspection_parameter);
 							}
 						}
 						set_qi_parameters(row, readings, parameters_to_set);
