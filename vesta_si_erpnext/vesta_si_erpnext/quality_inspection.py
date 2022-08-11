@@ -130,7 +130,7 @@ def inspect_reading(reading, inspection_criteria):
 		return status_based_on_acceptance_values(reading, inspection_criteria)
 
 def status_based_on_acceptance_values(reading, inspection_criteria):
-	if cint(reading.numeric):
+	if not cint(reading.numeric):
 			return reading.get("reading_value") == inspection_criteria.get("value")
 	else:
 		# numeric readings
