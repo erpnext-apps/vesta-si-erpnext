@@ -40,10 +40,10 @@ def execute(filters=None):
 	tax_template_for_columns = {}
 	data = []
 
-	docs = frappe.db.sql(""" select sii.item_tax_rate, sii.item_tax_template from `tabPurchase Invoice Item` as sii
+	docs = frappe.db.sql(f""" select sii.item_tax_rate, sii.item_tax_template from `tabPurchase Invoice Item` as sii
 	inner join `tabPurchase Invoice` as si on si.name = sii.parent and si.posting_date between %(from_date)s
-	and %(to_date)s {0}
-	""".format(conditions),{"from_date": from_date, "to_date": to_date}, as_dict = 1)
+	and %(to_date)s {conditions}""",
+	{"from_date": from_date, "to_date": to_date}, as_dict = 1)
 
 
 	if not docs:
