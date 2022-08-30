@@ -29,8 +29,8 @@ def execute(filters=None):
 			"width": 120,
 		},
 		{
-			"label": _("Net Total"),
-			"fieldname": "net_total",
+			"label": _("Sum of Net Total"),
+			"fieldname": "gross_total",
 			"fieldtype": "Currency",
 			"options": "currency",
 			"width": 120,
@@ -40,7 +40,7 @@ def execute(filters=None):
 	tax_template_for_columns = {}
 	data = []
 
-	docs = frappe.db.sql(f""" select pii.item_tax_rate, pii.item_tax_template from `tabPurchase Invoice Item` as pii
+	docs = frappe.db.sql(f""" select pii.item_tax_rate, pii.item_tax_template, pii.net_amount from `tabPurchase Invoice Item` as pii
 	inner join `tabPurchase Invoice` as pi on pi.name = pii.parent and pi.posting_date between %(from_date)s
 	and %(to_date)s {conditions}""",
 	{"from_date": from_date, "to_date": to_date}, as_dict = 1)
@@ -57,23 +57,25 @@ def execute(filters=None):
 
 		if doc.item_tax_template in tax_template_for_columns:
 			tax_template_for_columns[doc.item_tax_template]["tax_total"] += tax_total
+			tax_template_for_columns[doc.item_tax_template]["item_net_amount"] += doc.net_amount
 			for key in tax_heads:
 				if key in tax_template_for_columns[doc.item_tax_template]:
 					tax_template_for_columns[doc.item_tax_template][key] += tax_heads[key]
 				else:
 					tax_template_for_columns[doc.item_tax_template][key] = tax_heads[key]
 		else:
-			tax_template_for_columns[doc.item_tax_template] = {"tax_total": tax_total}
+			tax_template_for_columns[doc.item_tax_template] = {"tax_total": tax_total, "item_net_amount": doc.net_amount}
 			tax_template_for_columns[doc.item_tax_template].update(tax_heads)
 
 	column_account_heads = []
 	for key in tax_template_for_columns:
 		row = {
 			"item_tax_template": key,
-			"net_total": tax_template_for_columns[key]["tax_total"]
+			"tax_total": tax_template_for_columns[key]["tax_total"],
+			"gross_total": tax_template_for_columns[key]["item_net_amount"]
 		}
 		for head in tax_template_for_columns[key]:
-			if head == 'tax_total':
+			if head == 'tax_total' or head == 'item_net_amount':
 				continue
 			if not head in column_account_heads:
 				column_account_heads.append(head)
@@ -90,4 +92,13 @@ def execute(filters=None):
 			row[head] = tax_template_for_columns[key][head]
 
 		data.append(row)
+	columns.append(
+		{
+			"label": _("Sum of Tax Total"),
+			"fieldname": "tax_total",
+			"fieldtype": "Currency",
+			"options": "currency",
+			"width": 120,
+		}
+	)
 	return columns, data
