@@ -40,7 +40,7 @@ def execute(filters=None):
 	tax_template_for_columns = {}
 	data = []
 
-	docs = frappe.db.sql(""" select pii.item_tax_rate, pii.item_tax_template, pii.net_amount from `tabPurchase Invoice Item` as pii
+	docs = frappe.db.sql(f""" select pii.item_tax_rate, pii.item_tax_template, pii.net_amount from `tabPurchase Invoice Item` as pii
 	inner join `tabPurchase Invoice` as pi on pi.name = pii.parent and pi.posting_date between %(from_date)s
 	and %(to_date)s {conditions}""",
 	{"from_date": from_date, "to_date": to_date}, as_dict = 1)
