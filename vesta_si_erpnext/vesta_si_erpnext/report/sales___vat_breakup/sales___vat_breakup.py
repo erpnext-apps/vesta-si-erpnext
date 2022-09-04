@@ -40,7 +40,7 @@ def execute(filters=None):
 	tax_template_for_columns = {}
 	data = []
 
-	docs = frappe.db.sql(f""" select sii.item_tax_rate, sii.item_tax_template, sii.net_amount from `tabSales Invoice Item` as sii
+	docs = frappe.db.sql(f""" select sii.item_tax_rate, sii.item_tax_template, sii.base_net_amount from `tabSales Invoice Item` as sii
 	inner join `tabSales Invoice` as si on si.name = sii.parent and si.posting_date between %(from_date)s
 	and %(to_date)s {conditions}""",
 	{"from_date": from_date, "to_date": to_date}, as_dict = 1)
@@ -57,14 +57,14 @@ def execute(filters=None):
 
 		if doc.item_tax_template in tax_template_for_columns:
 			tax_template_for_columns[doc.item_tax_template]["tax_total"] += tax_total
-			tax_template_for_columns[doc.item_tax_template]["item_net_amount"] += doc.net_amount
+			tax_template_for_columns[doc.item_tax_template]["item_net_amount"] += doc.base_net_amount
 			for key in tax_heads:
 				if key in tax_template_for_columns[doc.item_tax_template]:
 					tax_template_for_columns[doc.item_tax_template][key] += tax_heads[key]
 				else:
 					tax_template_for_columns[doc.item_tax_template][key] = tax_heads[key]
 		else:
-			tax_template_for_columns[doc.item_tax_template] = {"tax_total": tax_total, "item_net_amount": doc.net_amount}
+			tax_template_for_columns[doc.item_tax_template] = {"tax_total": tax_total, "item_net_amount": doc.base_net_amount}
 			tax_template_for_columns[doc.item_tax_template].update(tax_heads)
 
 	column_account_heads = []
