@@ -53,19 +53,20 @@ def execute(filters=None):
 		tax_heads = json.loads(doc.item_tax_rate)
 		tax_total = 0
 		for key in tax_heads:
-			tax_total += tax_heads[key]
+			tax_total += (tax_heads[key] * doc.base_net_amount)/100
 
 		if doc.item_tax_template in tax_template_for_columns:
 			tax_template_for_columns[doc.item_tax_template]["tax_total"] += tax_total
 			tax_template_for_columns[doc.item_tax_template]["item_net_amount"] += doc.base_net_amount
 			for key in tax_heads:
 				if key in tax_template_for_columns[doc.item_tax_template]:
-					tax_template_for_columns[doc.item_tax_template][key] += tax_heads[key]
+					tax_template_for_columns[doc.item_tax_template][key] += (tax_heads[key] * doc.base_net_amount)/100
 				else:
-					tax_template_for_columns[doc.item_tax_template][key] = tax_heads[key]
+					tax_template_for_columns[doc.item_tax_template][key] = (tax_heads[key] * doc.base_net_amount)/100
 		else:
 			tax_template_for_columns[doc.item_tax_template] = {"tax_total": tax_total, "item_net_amount": doc.base_net_amount}
-			tax_template_for_columns[doc.item_tax_template].update(tax_heads)
+			for key in tax_heads:
+				tax_template_for_columns[doc.item_tax_template][key] = (tax_heads[key] * doc.base_net_amount)/100
 
 	column_account_heads = []
 	for key in tax_template_for_columns:
@@ -101,4 +102,11 @@ def execute(filters=None):
 			"width": 120,
 		}
 	)
-	return columns, data
+	adjusted_resultset = []
+	for datum in data:
+		for head in column_account_heads:
+			if not head in datum:
+				datum[head] = 0
+		adjusted_resultset.append(datum)
+
+	return columns, adjusted_resultset
