@@ -60,8 +60,7 @@ def update_qc_reference_as_per_frequency(doc):
 			row.quality_inspection = doc.name
 			if row.item_code != doc.item_code: # analysis determines it is a different item
 				row.item_code = doc.item_code
-				row.is_scrap_item = 1
-				row.is_finished_item = 0
+				row.is_finished_item = 1
 				row.bom_no = ""
 
 	# to run validate method and set missing data
