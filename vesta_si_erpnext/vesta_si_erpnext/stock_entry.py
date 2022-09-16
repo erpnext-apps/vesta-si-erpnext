@@ -79,7 +79,11 @@ def set_indicators(doc):
 	last_idx = doc.items[-1].idx
 
 	# get finished item first row
-	start_idx = [row.idx for row in doc.items if row.is_finished_item][0]
+	start_idx = [row.idx for row in doc.items if row.is_finished_item]
+	if not start_idx:
+		frappe.throw(_("Finished Item not found in the Stock Entry"))
+
+	start_idx = start_idx[0]
 	fg_item = doc.items[start_idx - 1].item_code
 
 	template = frappe.db.get_value('Item', fg_item, 'quality_inspection_template')

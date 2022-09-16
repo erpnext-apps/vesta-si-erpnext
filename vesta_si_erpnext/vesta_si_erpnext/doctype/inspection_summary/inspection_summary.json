@@ -27,7 +27,7 @@
   {
    "columns": 4,
    "fieldname": "rejected_parameters",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "in_list_view": 1,
    "label": "Rejected Parameters"
   },
@@ -51,7 +51,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2020-12-28 13:24:30.191459",
+ "modified": "2022-09-16 14:55:11.575994",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Inspection Summary",
@@ -60,5 +60,6 @@
  "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }
