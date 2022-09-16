@@ -4,8 +4,75 @@
 from __future__ import unicode_literals
 import frappe, erpnext
 from frappe import _
+from frappe.utils import cint, comma_or, cstr, flt, format_time, formatdate, getdate, nowdate
 from vesta_si_erpnext.vesta_si_erpnext.quality_inspection import get_template_details_with_frequency
 from erpnext.stock.doctype.batch.batch import make_batch
+from erpnext.stock.doctype.stock_entry.stock_entry import (StockEntry, FinishedGoodError)
+
+
+class CustomStockEntry(StockEntry):
+	def validate_finished_goods(self):
+		production_item, wo_qty, finished_items = None, 0, []
+		scrap_items = []
+
+		wo_details = frappe.db.get_value("Work Order", self.work_order, ["production_item", "qty"])
+		if wo_details:
+			production_item, wo_qty = wo_details
+
+		for d in self.get("items"):
+			if d.is_scrap_item:
+				scrap_items.append(d.item_code)
+
+			if d.is_finished_item:
+				if not self.work_order:
+					# Independent MFG Entry/ Repack Entry, no WO to match against
+					finished_items.append(d.item_code)
+					continue
+
+				if d.item_code != production_item:
+					frappe.throw(
+						_("Finished Item {0} does not match with Work Order {1}").format(
+							d.item_code, self.work_order
+						)
+					)
+				elif flt(d.transfer_qty) > flt(self.fg_completed_qty):
+					frappe.throw(
+						_("Quantity in row {0} ({1}) must be same as manufactured quantity {2}").format(
+							d.idx, d.transfer_qty, self.fg_completed_qty
+						)
+					)
+
+				finished_items.append(d.item_code)
+
+		if not (finished_items and scrap_items):
+			frappe.throw(
+				msg=_("There must be atleast 1 Finished Good in this Stock Entry").format(self.name),
+				title=_("Missing Finished Good"),
+				exc=FinishedGoodError,
+			)
+
+		if self.purpose == "Manufacture":
+			if len(set(finished_items)) > 1:
+				frappe.throw(
+					msg=_("Multiple items cannot be marked as finished item"),
+					title=_("Note"),
+					exc=FinishedGoodError,
+				)
+
+			allowance_percentage = flt(
+				frappe.db.get_single_value(
+					"Manufacturing Settings", "overproduction_percentage_for_work_order"
+				)
+			)
+			allowed_qty = wo_qty + ((allowance_percentage / 100) * wo_qty)
+
+			# No work order could mean independent Manufacture entry, if so skip validation
+			if self.work_order and self.fg_completed_qty > allowed_qty:
+				frappe.throw(
+					_("For quantity {0} should not be greater than work order quantity {1}").format(
+						flt(self.fg_completed_qty), wo_qty
+					)
+				)
 
 def link_supplier_bag_to_batch(doc, method=None):
 	if (doc.purpose in ("Material Receipt", "Manufacture")):
