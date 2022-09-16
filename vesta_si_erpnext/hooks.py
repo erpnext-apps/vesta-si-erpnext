@@ -152,6 +152,8 @@ override_whitelisted_methods = {
 	"erpnext.stock.doctype.putaway_rule.putaway_rule.apply_putaway_rule": "vesta_si_erpnext.vesta_si_erpnext.putaway_rule.apply_putaway_rule"
 }
 
+override_doctype_class = {"Stock Entry": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.CustomStockEntry"}
+
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
