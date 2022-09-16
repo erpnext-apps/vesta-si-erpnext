@@ -81,7 +81,7 @@ def set_indicators(doc):
 	# get finished item first row
 	start_idx = [row.idx for row in doc.items if row.is_finished_item]
 	if not start_idx:
-		frappe.throw(_("Finished Item not found in the Stock Entry"))
+		return
 
 	start_idx = start_idx[0]
 	fg_item = doc.items[start_idx - 1].item_code
