@@ -48,7 +48,7 @@ class CustomStockEntry(StockEntry):
 
 				finished_items.append(d.item_code)
 
-		if not (finished_items and scrap_items):
+		if not finished_items and not scrap_items:
 			frappe.throw(
 				msg=_("There must be atleast 1 Finished Good in this Stock Entry").format(self.name),
 				title=_("Missing Finished Good"),
