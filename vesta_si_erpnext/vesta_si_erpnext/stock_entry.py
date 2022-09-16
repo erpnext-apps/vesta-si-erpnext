@@ -11,6 +11,10 @@ from erpnext.stock.doctype.stock_entry.stock_entry import (StockEntry, FinishedG
 
 
 class CustomStockEntry(StockEntry):
+	#Bypass validation to handle use case where work order Production Item is not same as Stock Entry Analysed Item
+	def validate_work_order(self):
+		pass
+
 	def validate_finished_goods(self):
 		production_item, wo_qty, finished_items = None, 0, []
 		scrap_items = []
