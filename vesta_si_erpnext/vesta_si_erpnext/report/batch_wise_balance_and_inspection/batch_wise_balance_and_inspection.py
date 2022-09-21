@@ -30,7 +30,7 @@ def execute(filters=None):
 					if batch_dict.bal_qty:
 						row = [item, item_map[item]["item_name"], wh, batch,
 							flt(batch_dict.bal_qty, float_precision),
-							item_map[item]["stock_uom"], batch_dict.qi
+							item_map[item]["stock_uom"], batch_dict.workstation, batch_dict.qi
 						]
 						for param in param_columns:
 							row.append(batch_dict[param['col_name']])
@@ -47,7 +47,7 @@ def get_columns(filters, params):
 	columns = [_("Item") + ":Link/Item:100"] + [_("Item Name") + "::150"] + \
 		[_("Warehouse") + ":Link/Warehouse:100"] + \
 		[_("Batch") + ":Link/Batch:100"] + [_("Balance Qty") + ":Float:90"] + \
-		[_("UOM") + "::90"] + \
+		[_("UOM") + "::90"] + [_("Workstation") + "::90"] + \
 		[_("Quality Inspection") + ":Link/Quality Inspection:140"]
 
 
@@ -98,18 +98,24 @@ def get_stock_ledger_entries(filters, params):
 		col_conditions += ", reading." + col['col_name'] + " as " + col['col_name']
 
 	return frappe.db.sql("""
-		select s.item_code, s.batch_no, s.warehouse, s.posting_date, sum(s.actual_qty) as actual_qty,
-			se.quality_inspection as qi_name, se.supplier_bag_no as supplier_bag_no %s
-		from `tabStock Ledger Entry` s
-		left join `tabStock Entry Detail` se on s.voucher_no = se.parent and se.batch_no= s.batch_no
-		left join (
-			select parent %s
-			from `tabQuality Inspection Reading` group by parent) as reading
-		on se.quality_inspection = reading.parent
-		where s.is_cancelled = 0 and s.docstatus < 2 and ifnull(s.batch_no, '') != '' %s
-		group by voucher_no, batch_no, s.item_code, warehouse
-		order by s.item_code, warehouse""" %
-		(col_conditions, param_conditions, conditions), as_dict=1)
+		SELECT
+			s.item_code, s.batch_no, s.warehouse, s.posting_date, sum(s.actual_qty) as actual_qty,
+			se.quality_inspection as qi_name, qi.workstation, se.supplier_bag_no as supplier_bag_no %s
+		FROM
+			`tabStock Ledger Entry` s
+		LEFT JOIN
+			`tabStock Entry Detail` se on s.voucher_no = se.parent and se.batch_no= s.batch_no
+		LEFT JOIN (
+			select parent %s from `tabQuality Inspection Reading` GROUP BY parent
+		) as reading on se.quality_inspection = reading.parent
+		LEFT JOIN
+			`tabQuality Inspection` qi on se.quality_inspection = qi.name
+		WHERE
+			s.is_cancelled = 0 and s.docstatus < 2 and ifnull(s.batch_no, '') != '' %s
+		GROUP BY
+			voucher_no, batch_no, s.item_code, warehouse
+		ORDER BY
+			s.item_code, warehouse""" % (col_conditions, param_conditions, conditions), as_dict=1, debug=1)
 
 def get_item_warehouse_batch_map(filters, float_precision, params):
 	sle = get_stock_ledger_entries(filters, params)
@@ -117,6 +123,7 @@ def get_item_warehouse_batch_map(filters, float_precision, params):
 
 	from_date = getdate(filters["from_date"])
 	to_date = getdate(filters["to_date"])
+
 
 	for d in sle:
 		param_values = {}
@@ -134,6 +141,7 @@ def get_item_warehouse_batch_map(filters, float_precision, params):
 			}))
 		batch_dict = iwb_map[d.item_code][d.warehouse][d.batch_no]
 		batch_dict.qi = d.qi_name
+		batch_dict.workstation = d.workstation
 		batch_dict.supplier_bag_no = d.supplier_bag_no
 		for param in param_values:
 			batch_dict[param] = d[param]
