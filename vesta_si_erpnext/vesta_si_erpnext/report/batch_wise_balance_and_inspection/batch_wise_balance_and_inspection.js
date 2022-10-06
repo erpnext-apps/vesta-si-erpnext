@@ -104,19 +104,24 @@ frappe.query_reports["Batch-Wise Balance and Inspection"] = {
 			checkboxColumn: true,
 			events: {
 				onCheckRow: function(data) {
-					let key = data[2].content + data[4].content + data[5].content;
+					item_dict = {};
+					let indexes = frappe.query_report.datatable.rowmanager.getCheckedRows();
 
-					if (key in item_dict) {
-						delete item_dict[key];
-					} else {
-						item_dict[key] = {
-							"item_code" : data[2].content,
-							"batch_no" : data[5].content,
-							"warehouse" : data[4].content,
-							"qty": data[6].content,
-							"uom": data[7].content,
-							"stock_uom": data[7].content,
-							"quality_inspection": data[8].content,
+					if (indexes && indexes.length) {
+						const items = indexes.map(i => frappe.query_report.data[i]).filter(i => i != undefined);
+						if (items && items.length) {
+							items.forEach(d => {
+								key = d.item + d.warehouse + d.batch
+								item_dict[key] = {
+									"item_code" : d.item,
+									"batch_no" : d.batch,
+									"warehouse" : d.warehouse,
+									"qty": d.balance_qty,
+									"uom": d.uom,
+									"stock_uom": d.uom,
+									"quality_inspection": d.quality_inspection,
+								}
+							});
 						}
 					}
 				},
