@@ -180,7 +180,7 @@ def create_stock_entry(item_list):
 
 	for key, item_details in item_list.items():
 		se_child = stock_entry.append('items')
-		se_child.s_warehouse = item_details["warehouse"]
+		se_child.s_warehouse = item_details.get("warehouse")
 		se_child.conversion_factor = 1
 
 		for field in ["item_code","uom","qty","quality_inspection",
@@ -193,7 +193,7 @@ def create_stock_entry(item_list):
 		if se_child.t_warehouse==None:
 			se_child.t_warehouse = stock_entry.to_warehouse
 
-		se_child.transfer_qty = flt(item_details["qty"], se_child.precision("qty"))
+		se_child.transfer_qty = flt(item_details.get("qty"), se_child.precision("qty"))
 
 	stock_entry.set_stock_entry_type()
 
