@@ -111,15 +111,20 @@ frappe.query_reports["Batch-Wise Balance and Inspection"] = {
 						const items = indexes.map(i => frappe.query_report.data[i]).filter(i => i != undefined);
 						if (items && items.length) {
 							items.forEach(d => {
-								key = d.item + d.warehouse + d.batch
+								item_key = frappe.scrub(__("Item"))
+								warehouse_key = frappe.scrub(__("Warehouse"))
+								balance_qty_key = frappe.scrub(__("Balance Qty"))
+								quality_inspection_key = frappe.scrub(__("Quality Inspection"))
+
+								key = d[item_key] + d[warehouse_key] + d.batch
 								item_dict[key] = {
-									"item_code" : d.item,
+									"item_code" : d[item_key],
 									"batch_no" : d.batch,
-									"warehouse" : d.warehouse,
-									"qty": d.balance_qty,
+									"warehouse" : d[warehouse_key],
+									"qty": d[balance_qty_key],
 									"uom": d.uom,
 									"stock_uom": d.uom,
-									"quality_inspection": d.quality_inspection,
+									"quality_inspection": d[quality_inspection_key],
 								}
 							});
 						}
