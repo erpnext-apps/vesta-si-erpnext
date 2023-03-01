@@ -97,7 +97,7 @@ def get_stock_ledger_entries(filters, params):
 	for col in params:
 		col_conditions += ", reading." + col['col_name'] + " as " + col['col_name']
 
-	return frappe.db.sql("""
+	data = frappe.db.sql("""
 		SELECT
 			s.item_code, s.batch_no, s.warehouse, s.posting_date, sum(s.actual_qty) as actual_qty,
 			se.quality_inspection as qi_name, qi.workstation, se.supplier_bag_no as supplier_bag_no %s
@@ -111,11 +111,14 @@ def get_stock_ledger_entries(filters, params):
 		LEFT JOIN
 			`tabQuality Inspection` qi on se.quality_inspection = qi.name
 		WHERE
-			s.is_cancelled = 0 and s.docstatus < 2 and ifnull(s.batch_no, '') != '' %s
+			s.is_cancelled = 0 and s.docstatus < 2 and ifnull(s.batch_no, '') != ''
+			and s.voucher_no in (select reference_name from `tabBatch` where name = s.batch_no) %s
 		GROUP BY
 			voucher_no, batch_no, s.item_code, warehouse
 		ORDER BY
 			s.item_code, warehouse""" % (col_conditions, param_conditions, conditions), as_dict=1, debug=1)
+
+	return data
 
 def get_item_warehouse_batch_map(filters, float_precision, params):
 	sle = get_stock_ledger_entries(filters, params)
