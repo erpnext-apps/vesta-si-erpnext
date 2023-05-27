@@ -82,10 +82,6 @@ def get_conditions(filters, params):
 		supplier_bag_no = '%' + filters.get('supplier_bag_no') + '%'
 		conditions += " and se.supplier_bag_no like {0}".format(frappe.db.escape(supplier_bag_no), percent = False)
 
-	if filters.get("workstation"):
-		workstation = filters.get("workstation")
-		conditions += f" and qi.workstation = {frappe.db.escape(workstation)}"
-
 	return conditions
 
 
