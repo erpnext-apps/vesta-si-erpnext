@@ -83,13 +83,7 @@ let filters = [
 		"fieldname":"supplier_bag_no",
 		"label": __("Supplier Bag No."),
 		"fieldtype": "Data",
-	},
-	{
-		"fieldname":"workstation",
-		"label": __("Workstation"),
-		"fieldtype": "Link",
-		"options": "Workstation",
-	},
+	}
 ];
 frappe.xcall(
 	'vesta_si_erpnext.vesta_si_erpnext.report.batch_wise_balance_and_inspection.batch_wise_balance_and_inspection.get_params'
