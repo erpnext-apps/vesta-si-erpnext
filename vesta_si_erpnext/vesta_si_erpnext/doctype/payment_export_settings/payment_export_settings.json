@@ -1,0 +1,124 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2023-04-28 04:04:01.927328",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "company_name",
+  "naming_series",
+  "required_execution_date",
+  "debtor_name",
+  "street_name",
+  "post_code",
+  "town_name",
+  "column_break_ujzwv",
+  "country",
+  "iban",
+  "bic",
+  "chrgbr",
+  "cd",
+  "mmbid"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Data",
+   "label": "Naming Series",
+   "options": "PES.####",
+   "read_only": 1
+  },
+  {
+   "fieldname": "required_execution_date",
+   "fieldtype": "Date",
+   "label": "Required Execution Date"
+  },
+  {
+   "fieldname": "debtor_name",
+   "fieldtype": "Data",
+   "label": "Debtor Name"
+  },
+  {
+   "fieldname": "street_name",
+   "fieldtype": "Data",
+   "label": "Street Name"
+  },
+  {
+   "fieldname": "post_code",
+   "fieldtype": "Data",
+   "label": "Post Code"
+  },
+  {
+   "fieldname": "town_name",
+   "fieldtype": "Data",
+   "label": "Town Name"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Data",
+   "label": "Country"
+  },
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company Name"
+  },
+  {
+   "fieldname": "iban",
+   "fieldtype": "Data",
+   "label": "IBAN"
+  },
+  {
+   "fieldname": "bic",
+   "fieldtype": "Data",
+   "label": "BIC"
+  },
+  {
+   "fieldname": "chrgbr",
+   "fieldtype": "Data",
+   "label": "ChrgBr"
+  },
+  {
+   "fieldname": "cd",
+   "fieldtype": "Data",
+   "label": "cd"
+  },
+  {
+   "fieldname": "mmbid",
+   "fieldtype": "Data",
+   "label": "mmbid"
+  },
+  {
+   "fieldname": "column_break_ujzwv",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-04-28 06:32:26.354299",
+ "modified_by": "Administrator",
+ "module": "Vesta Si Erpnext",
+ "name": "Payment Export Settings",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
