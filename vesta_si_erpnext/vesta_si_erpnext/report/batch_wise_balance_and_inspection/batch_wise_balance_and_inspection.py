@@ -30,7 +30,7 @@ def execute(filters=None):
 					if batch_dict.bal_qty:
 						row = [item, item_map[item]["item_name"], wh, batch,
 							flt(batch_dict.bal_qty, float_precision),
-							item_map[item]["stock_uom"], batch_dict.workstation, batch_dict.qi
+							item_map[item]["stock_uom"], batch_dict.qi
 						]
 						for param in param_columns:
 							row.append(batch_dict[param['col_name']])
@@ -47,7 +47,7 @@ def get_columns(filters, params):
 	columns = [_("Item") + ":Link/Item:100"] + [_("Item Name") + "::150"] + \
 		[_("Warehouse") + ":Link/Warehouse:100"] + \
 		[_("Batch") + ":Link/Batch:100"] + [_("Balance Qty") + ":Float:90"] + \
-		[_("UOM") + "::90"] + [_("Workstation") + "::90"] + \
+		[_("UOM") + "::90"] + \
 		[_("Quality Inspection") + ":Link/Quality Inspection:140"]
 
 
@@ -100,7 +100,7 @@ def get_stock_ledger_entries(filters, params):
 	data = frappe.db.sql("""
 		SELECT
 			s.item_code, s.batch_no, s.warehouse, s.posting_date, sum(s.actual_qty) as actual_qty,
-			se.quality_inspection as qi_name, qi.workstation, se.supplier_bag_no as supplier_bag_no %s
+			se.quality_inspection as qi_name, se.supplier_bag_no as supplier_bag_no %s
 		FROM
 			`tabStock Ledger Entry` s
 		LEFT JOIN
@@ -144,7 +144,6 @@ def get_item_warehouse_batch_map(filters, float_precision, params):
 			}))
 		batch_dict = iwb_map[d.item_code][d.warehouse][d.batch_no]
 		batch_dict.qi = d.qi_name
-		batch_dict.workstation = d.workstation
 		batch_dict.supplier_bag_no = d.supplier_bag_no
 		for param in param_values:
 			batch_dict[param] = d[param]
