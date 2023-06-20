@@ -174,7 +174,6 @@ def generate_payment_file(payments):
             payment_content += make_line("            </SchmeNm>")
             payment_content += make_line("            </Othr>")
             payment_content += make_line("          </Id>")
-            payment_content += make_line("        <Nm>{0}</Nm>".format(payment_record.party_name))
             payment_content += make_line("        </CdtrAcct>")
             payment_content += make_line("        <RmtInf>")
             for reference in payment_record.references:
@@ -188,7 +187,7 @@ def generate_payment_file(payments):
                 payment_content += make_line("        <Nb>{0}</Nb>".format(reference.reference_name))
                 payment_content += make_line("        </RfrdDocInf>")
                 payment_content += make_line("        <RfrdDocAmt>")
-                payment_content += make_line("          <RmtdAmt Ccy=\"{0}\">{1:.2f}</RmtdAmt>".format(payment_record.paid_from_account_currency,reference.total_amount))
+                payment_content += make_line("          <RmtdAmt Ccy=\"{0}\">{1:.2f}</RmtdAmt>".format(payment_record.paid_from_account_currency,reference.allocated_amount))
                 payment_content += make_line("        </RfrdDocAmt>")
                 payment_content += make_line("        </Strd>")
             payment_content += make_line("        </RmtInf>")
@@ -268,15 +267,6 @@ def add_creditor_info(payment_record):
     payment_content += make_line("            <Ctry>" + country_code + "</Ctry>")
     payment_content += make_line("            <AdrLine>" + street + "</AdrLine>")
     payment_content += make_line("          </PstlAdr>")
-
-    payment_content += make_line("          <Id>")
-    payment_content += make_line("          <OrgId>")
-    payment_content += make_line("          <Othr>")
-    payment_content += make_line("          <Id>OrgId</Id>")
-    payment_content += make_line("          </Othr>")
-    payment_content += make_line("          </OrgId>")
-    payment_content += make_line("          </Id>")
-
     payment_content += make_line("        </Cdtr>") 
     return payment_content
             
