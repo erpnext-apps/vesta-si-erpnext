@@ -24,7 +24,7 @@ frappe.ui.form.on("Sales Invoice", {
                     d.hide();
                     var se = d.get_values();
                     frappe.call({                                  
-                        method: "vesta_si_erpnext.doc_events.sales_invoice.get_items_from_stock_entry",
+                        method: "vesta_si_erpnext.vesta_si_erpnext.doc_events.sales_invoice.get_items_from_stock_entry",
                         args:{
                             stock_entry : se,
                         },
