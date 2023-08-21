@@ -9,13 +9,6 @@ frappe.ui.form.on("Sales Invoice", {
                             'fieldtype': 'Link',
                             'label': __('Stock Entry'),
                             'options': 'Stock Entry',
-                            "get_query": function () {
-                                return {
-                                    filters: [
-                                        ["Stock Entry", "stock_entry_type", "=", "Manufacture"]
-                                    ]
-                                };
-                            },
                             'reqd': 1
                         }
                     ],

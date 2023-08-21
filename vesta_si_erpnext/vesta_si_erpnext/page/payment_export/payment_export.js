@@ -7,7 +7,14 @@ frappe.pages['payment-export'].on_page_load = function(wrapper) {
 	});
 
 	frappe.payment_export.make(page);
-	frappe.payment_export.run(page);
+	frappe.payment_export.run(page);   
+    page.payment_export_settings_field = page.add_field({
+		fieldname: 'payment_export_settings',
+		label: __('Payment Export Settings'),
+		fieldtype:'Link',
+		options:'Payment Export Settings',
+        default:"PES0001"
+	});
 }
 
 frappe.payment_export = {
@@ -35,7 +42,9 @@ frappe.payment_export = {
                 frappe.call({
                     method: 'vesta_si_erpnext.vesta_si_erpnext.page.payment_export.payment_export.generate_payment_file',
                     args: { 
-                        'payments': payments
+                        'payments': payments,
+                        "payment_export_settings": page.payment_export_settings_field.get_value()
+                       
                     },
                     callback: function(r) {
                         if (r.message) {

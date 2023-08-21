@@ -19,7 +19,7 @@ def get_payments():
     return { 'payments': payments }
 
 @frappe.whitelist()
-def generate_payment_file(payments):
+def generate_payment_file(payments ,payment_export_settings):
     # creates a pain.001 payment file from the selected payments
     try:
         # convert JavaScript parameter into Python array
@@ -80,21 +80,21 @@ def generate_payment_file(payments):
         content += make_line("            <Prtry>MPNS</Prtry>")
         content += make_line("          </SvcLvl>")
         content += make_line("        </PmtTpInf>")
-        required_execution_date = frappe.db.get_value('Payment Export Settings','PES0001','required_execution_date')
+        required_execution_date = frappe.db.get_value('Payment Export Settings',payment_export_settings,'required_execution_date')
         content += make_line("      <ReqdExctnDt>{0}</ReqdExctnDt>".format(required_execution_date))
         content += make_line("      <Dbtr>")
-        company_name = frappe.db.get_value('Payment Export Settings','PES0001','company_name')
+        company_name = frappe.db.get_value('Payment Export Settings',payment_export_settings,'company_name')
         content += make_line("      <Nm>{0}</Nm>".format(company_name))
 
 
         content += make_line("        <PstlAdr>")
-        street_name = frappe.db.get_value('Payment Export Settings','PES0001','street_name')
+        street_name = frappe.db.get_value('Payment Export Settings',payment_export_settings,'street_name')
         content += make_line("          <StrtNm>" + street_name + "</StrtNm>")
-        post_code = frappe.db.get_value('Payment Export Settings','PES0001','post_code')
+        post_code = frappe.db.get_value('Payment Export Settings',payment_export_settings,'post_code')
         content += make_line("          <PstCd>" + post_code + "</PstCd>")
-        town_name = frappe.db.get_value('Payment Export Settings','PES0001','town_name')
+        town_name = frappe.db.get_value('Payment Export Settings',payment_export_settings,'town_name')
         content += make_line("          <TwnNm>" + town_name + "</TwnNm>")
-        country = frappe.db.get_value('Payment Export Settings','PES0001','country')
+        country = frappe.db.get_value('Payment Export Settings',payment_export_settings,'country')
         content += make_line("          <Ctry>" + country + "</Ctry>")
         content += make_line("        </PstlAdr>")
         content += make_line("        <Id>")                      
@@ -110,14 +110,14 @@ def generate_payment_file(payments):
         content += make_line("      </Dbtr>")  
         content += make_line("      <DbtrAcct>")
         content += make_line("        <Id>")  
-        iban = frappe.db.get_value('Payment Export Settings','PES0001','iban')
+        iban = frappe.db.get_value('Payment Export Settings',payment_export_settings,'iban')
         content += make_line("          <IBAN>{0}</IBAN>".format(iban.replace(" ", "") ))        
         content += make_line("        </Id>")
         content += make_line("      </DbtrAcct>")
 
         content += make_line("      <DbtrAgt>")
         content += make_line("        <FinInstnId>")
-        bic = frappe.db.get_value('Payment Export Settings','PES0001','bic')
+        bic = frappe.db.get_value('Payment Export Settings',payment_export_settings,'bic')
         content += make_line("      <BIC>{0}</BIC>".format(bic))
 
         content += make_line("        <PstlAdr>")
@@ -134,23 +134,23 @@ def generate_payment_file(payments):
             # instruction identification 
             payment_content += make_line("          <InstrId>INSTRID-" + payment + "</InstrId>")
             # end-to-end identification (should be used and unique within B-level; payment entry name)
-            payment_content += make_line("          <EndToEndId>" + payment + "</EndToEndId>")
+            payment_content += make_line("          <EndToEndId>" + payment.replace('-',"") + "</EndToEndId>")
             payment_content += make_line("        </PmtId>")
             payment_content += make_line("        <Amt>")
             payment_content += make_line("          <InstdAmt Ccy=\"{0}\">{1:.2f}</InstdAmt>".format(
                 payment_record.paid_from_account_currency,
                 payment_record.paid_amount))
             payment_content += make_line("        </Amt>")
-            chrgbr = frappe.db.get_value('Payment Export Settings','PES0001','chrgbr')
+            chrgbr = frappe.db.get_value('Payment Export Settings',payment_export_settings,'chrgbr')
             payment_content += make_line("      <ChrgBr>{0}</ChrgBr>".format(chrgbr))
             payment_content += make_line("        <CdtrAgt>")
             payment_content += make_line("          <FinInstnId>")
             payment_content += make_line("          <ClrSysMmbId>")
             payment_content += make_line("          <ClrSysId>")
-            cd = frappe.db.get_value('Payment Export Settings','PES0001','cd')
+            cd = frappe.db.get_value('Payment Export Settings',payment_export_settings,'cd')
             payment_content += make_line("            <Cd>{0}</Cd>".format(cd))
             payment_content += make_line("          </ClrSysId>")
-            cmmbidd = frappe.db.get_value('Payment Export Settings','PES0001','mmbid')
+            cmmbidd = frappe.db.get_value('Payment Export Settings',payment_export_settings,'mmbid')
             payment_content += make_line("            <MmbId>{0}</MmbId>".format(cmmbidd))
             payment_content += make_line("          </ClrSysMmbId>")
             payment_content += make_line("          </FinInstnId>")
@@ -184,7 +184,7 @@ def generate_payment_file(payments):
                 payment_content += make_line("        <Cd>CINV</Cd>")
                 payment_content += make_line("        </CdOrPrtry>")
                 payment_content += make_line("        </Tp>")
-                payment_content += make_line("        <Nb>{0}</Nb>".format(reference.reference_name))
+                payment_content += make_line("        <Nb>{0}</Nb>".format(frappe.db.get_value(reference.reference_doctype , reference.reference_name , 'bill_no')))
                 payment_content += make_line("        </RfrdDocInf>")
                 payment_content += make_line("        <RfrdDocAmt>")
                 payment_content += make_line("          <RmtdAmt Ccy=\"{0}\">{1:.2f}</RmtdAmt>".format(payment_record.paid_from_account_currency,reference.allocated_amount))
