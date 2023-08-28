@@ -1,4 +1,3 @@
-
 frappe.pages['payment-export'].on_page_load = function(wrapper) {
 	var page = frappe.ui.make_app_page({
 		parent: wrapper,
@@ -14,6 +13,12 @@ frappe.pages['payment-export'].on_page_load = function(wrapper) {
 		fieldtype:'Link',
 		options:'Payment Export Settings',
         default:"PES0001"
+	});
+    page.posting_date_field = page.add_field({
+		fieldname: 'posting_date',
+		label: __('Posting Date'),
+		fieldtype:'Date',
+        default:"Today"
 	});
 }
 
@@ -43,7 +48,8 @@ frappe.payment_export = {
                     method: 'vesta_si_erpnext.vesta_si_erpnext.page.payment_export.payment_export.generate_payment_file',
                     args: { 
                         'payments': payments,
-                        "payment_export_settings": page.payment_export_settings_field.get_value()
+                        "payment_export_settings": page.payment_export_settings_field.get_value(),
+                        "posting_date": page.posting_date_field.get_value()
                        
                     },
                     callback: function(r) {
