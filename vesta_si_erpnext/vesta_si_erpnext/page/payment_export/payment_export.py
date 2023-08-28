@@ -12,14 +12,14 @@ import html              # used to escape xml content
 @frappe.whitelist()
 def get_payments():
     payments = frappe.get_list('Payment Entry', 
-        filters={'docstatus': 0, 'payment_type': 'Pay'}, 
+        filters={'docstatus': 0, 'payment_type': 'Pay',"party_type":"Supplier"}, 
         fields=['name', 'posting_date', 'paid_amount', 'party', 'paid_from', 'paid_to_account_currency'], 
         order_by='posting_date')
     
     return { 'payments': payments }
 
 @frappe.whitelist()
-def generate_payment_file(payments ,payment_export_settings):
+def generate_payment_file(payments ,payment_export_settings , posting_date):
     # creates a pain.001 payment file from the selected payments
     try:
         # convert JavaScript parameter into Python array
@@ -80,7 +80,7 @@ def generate_payment_file(payments ,payment_export_settings):
         content += make_line("            <Prtry>MPNS</Prtry>")
         content += make_line("          </SvcLvl>")
         content += make_line("        </PmtTpInf>")
-        required_execution_date = frappe.db.get_value('Payment Export Settings',payment_export_settings,'required_execution_date')
+        required_execution_date = posting_date
         content += make_line("      <ReqdExctnDt>{0}</ReqdExctnDt>".format(required_execution_date))
         content += make_line("      <Dbtr>")
         company_name = frappe.db.get_value('Payment Export Settings',payment_export_settings,'company_name')
@@ -168,7 +168,7 @@ def generate_payment_file(payments ,payment_export_settings):
             payment_content += make_line("          <Id>")
             payment_content += make_line("            <Othr>")
             supplier_giro = frappe.db.get_value('Supplier', payment_record.party,'bank_giro_number')
-            payment_content += make_line("              <Id>{0}</Id>".format(supplier_giro))
+            payment_content += make_line("              <Id>{0}</Id>".format(supplier_giro.replace("-" , "")))
             payment_content += make_line("            <SchmeNm>")
             payment_content += make_line("                <Prtry>BGNR</Prtry>")
             payment_content += make_line("            </SchmeNm>")
@@ -184,7 +184,11 @@ def generate_payment_file(payments ,payment_export_settings):
                 payment_content += make_line("        <Cd>CINV</Cd>")
                 payment_content += make_line("        </CdOrPrtry>")
                 payment_content += make_line("        </Tp>")
-                payment_content += make_line("        <Nb>{0}</Nb>".format(frappe.db.get_value(reference.reference_doctype , reference.reference_name , 'bill_no')))
+                if reference.reference_doctype in ["Purchase Invoice" , "Purchase Receipt"]:
+                    bill_no = frappe.db.get_value(reference.reference_doctype , reference.reference_name , 'bill_no')
+                if reference.reference_doctype == "Purchase Order":
+                    bill_no = reference.reference_name
+                payment_content += make_line("        <Nb>{0}</Nb>".format(bill_no))
                 payment_content += make_line("        </RfrdDocInf>")
                 payment_content += make_line("        <RfrdDocAmt>")
                 payment_content += make_line("          <RmtdAmt Ccy=\"{0}\">{1:.2f}</RmtdAmt>".format(payment_record.paid_from_account_currency,reference.allocated_amount))
@@ -220,6 +224,8 @@ def add_creditor_info(payment_record):
     name = payment_record.party
     if payment_record.party_type == "Employee":
         name = frappe.get_value("Employee", payment_record.party, "employee_name")
+    if payment_record.party_type == "Supplier":
+        name = frappe.db.get_value("Supplier",name,"supplier_name")
     payment_content += make_line("          <Nm>" + name  + "</Nm>")
     # address of creditor/supplier (should contain at least country and first address line
     # get supplier address
