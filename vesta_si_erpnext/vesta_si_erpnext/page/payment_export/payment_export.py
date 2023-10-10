@@ -13,7 +13,7 @@ import html              # used to escape xml content
 def get_payments():
     payments = frappe.get_list('Payment Entry', 
         filters={'docstatus': 0, 'payment_type': 'Pay',"party_type":"Supplier"}, 
-        fields=['name', 'posting_date', 'paid_amount', 'party', 'paid_from', 'paid_to_account_currency'], 
+        fields=['name', 'posting_date', 'paid_amount', 'party', 'party_name', 'paid_from', 'paid_to_account_currency'], 
         order_by='posting_date')
     
     return { 'payments': payments }
@@ -168,7 +168,7 @@ def generate_payment_file(payments ,payment_export_settings , posting_date):
             payment_content += make_line("          <Id>")
             payment_content += make_line("            <Othr>")
             supplier_giro = frappe.db.get_value('Supplier', payment_record.party,'bank_giro_number')
-            payment_content += make_line("              <Id>{0}</Id>".format(supplier_giro.replace("-" , "")))
+            payment_content += make_line("              <Id>{0}</Id>".format(supplier_giro.replace("-" , "") if supplier_giro else ""))
             payment_content += make_line("            <SchmeNm>")
             payment_content += make_line("                <Prtry>BGNR</Prtry>")
             payment_content += make_line("            </SchmeNm>")

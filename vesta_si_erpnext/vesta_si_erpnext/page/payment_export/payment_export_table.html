@@ -5,6 +5,7 @@
         <th>{{ __("Posting date") }}</th>
         <th>{{ __("Amount") }}</th>
         <th>{{ __("Party") }}</th>
+        <th>{{ __("Party Name") }}</th>
         <th>{{ __("Account") }}</th>
     </tr>
     {% for payment in payments %}
@@ -13,7 +14,8 @@
         <td><a href="/desk/Form/Payment Entry/{{ payment.name }}">{{ payment.name }}</a></td>
         <td>{{ payment.posting_date }}</td>
         <td>{{ payment.paid_to_account_currency }}&nbsp;{{ payment.paid_amount }}</td>
-        <td>{{ payment.party }}</td>
+        <td><a href="/desk/Form/Supplier/{{ payment.party }}">{{ payment.party }}</a></td>
+        <td>{{ payment.party_name }}</td>
         <td>{{ payment.paid_from }}</td>
     </tr>
     {% endfor %}
