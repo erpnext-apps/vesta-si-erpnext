@@ -4,22 +4,33 @@ frappe.pages['payment-export'].on_page_load = function(wrapper) {
 		title: 'Payment Export',
 		single_column: true
 	});
-
 	frappe.payment_export.make(page);
-	frappe.payment_export.run(page);   
     page.payment_export_settings_field = page.add_field({
-		fieldname: 'payment_export_settings',
+        fieldname: 'payment_export_settings',
 		label: __('Payment Export Settings'),
 		fieldtype:'Link',
 		options:'Payment Export Settings',
         default:"PES0001"
 	});
     page.posting_date_field = page.add_field({
-		fieldname: 'posting_date',
-		label: __('Posting Date'),
+        fieldname: 'posting_date',
+		label: __('Required Execution Date'),
 		fieldtype:'Date',
         default:"Today"
 	});
+    page.payment_type_field = page.add_field({
+        fieldname: 'payment_type',
+		label: __('Payment Type'),
+		fieldtype:'Select',
+        default:"Domestic (Swedish) Payments",
+        options:"Domestic (Swedish) Payments\nSEPA\nCross Border Payments",
+        onchange: () => {
+            console.log('hello')
+            frappe.payment_export.run(page); 
+        }
+	});
+    frappe.payment_export.run(page);   
+    
 }
 
 frappe.payment_export = {
@@ -49,7 +60,8 @@ frappe.payment_export = {
                     args: { 
                         'payments': payments,
                         "payment_export_settings": page.payment_export_settings_field.get_value(),
-                        "posting_date": page.posting_date_field.get_value()
+                        "posting_date": page.posting_date_field.get_value(),
+                        'payment_type':page.payment_type_field.get_value()
                        
                     },
                     callback: function(r) {
@@ -91,7 +103,9 @@ frappe.payment_export = {
 		// populate payment entries
 		frappe.call({
 			method: 'vesta_si_erpnext.vesta_si_erpnext.page.payment_export.payment_export.get_payments',
-			args: { },
+			args: { 
+                'payment_type':page.payment_type_field.get_value()
+             },
 			callback: function(r) {
 				if (r.message) {
 					var parent = page.main.find(".payment-table").empty();
