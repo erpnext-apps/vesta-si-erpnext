@@ -456,7 +456,8 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
     required_execution_date = posting_date
     content += make_line("          <ReqdExctnDt>{0}</ReqdExctnDt>".format(required_execution_date))
     content += make_line("          <Dbtr>")
-    content += make_line("              <Nm>PAYMENT FACTORY OUTLET</Nm>")
+    company_name = frappe.db.get_value('Payment Export Settings',payment_export_settings,'company_name')
+    content += make_line("              <Nm>{0}</Nm>".format(company_name))
     content += make_line("              <Id>")
     content += make_line("                  <OrgId>")
     content += make_line("                      <Othr>")
@@ -499,11 +500,15 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
         content += make_line("              </Amt>")
         content += make_line("              <!-- Note: Creditor Agent should not be used at all for IBAN only on Creditor side -->")
         content += make_line("              <Cdtr>")
-        content += make_line("                  <Nm>European Payments Council</Nm>")
+        if payment_record.party_type == "Employee":
+            name = frappe.get_value("Employee", payment_record.party, "employee_name")
+        if payment_record.party_type == "Supplier":
+            name = frappe.db.get_value("Supplier",name,"supplier_name")
+        content += make_line("                  <Nm>{0}</Nm>".format(name))
         content += make_line("              </Cdtr>")
         content += make_line("              <CdtrAcct>")
         content += make_line("                  <Id>")
-        iban_code = frappe.db.get_value("Supplier" , payment_record.party , 'iban_code')
+        iban_code = frappe.db.get_value("Supplier" , payment_record.party , 'custom_iban_code')
         content += make_line("                      <IBAN>{0}</IBAN>".format(iban_code or ""))
         content += make_line("                  </Id>")
         content += make_line("              </CdtrAcct>")
@@ -514,13 +519,14 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
         content += make_line("                  </Dtls>")
         content += make_line("              </RgltryRptg>")
         content += make_line("              <RmtInf>")
-        content += make_line("                  <Ustrd>Invoice 12345</Ustrd>")
+        sup_invoice_no = frappe.db.get_value("Purchase invoice" , payment_record.party , 'bill_no')
+        content += make_line("                  <Ustrd>{0}</Ustrd>".format(sup_invoice_no))
         content += make_line("              </RmtInf>")
         content += make_line("          </CdtTrfTxInf>")
+        transaction_count += 1
+        control_sum += payment_record.paid_amount
     content += make_line("      </PmtInf>")
     content += make_line("  </CstmrCdtTrfInitn>")
     content += make_line("</Document>")
-    content += make_line("")
-    content += make_line("")
     
     return content
