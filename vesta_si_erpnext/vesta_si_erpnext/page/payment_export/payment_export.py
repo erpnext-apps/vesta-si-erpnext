@@ -503,7 +503,7 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
         if payment_record.party_type == "Employee":
             name = frappe.get_value("Employee", payment_record.party, "employee_name")
         if payment_record.party_type == "Supplier":
-            name = frappe.db.get_value("Supplier",name,"supplier_name")
+            name = frappe.db.get_value("Supplier",payment_record.party,"supplier_name")
         content += make_line("                  <Nm>{0}</Nm>".format(name))
         content += make_line("              </Cdtr>")
         content += make_line("              <CdtrAcct>")
@@ -512,15 +512,9 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
         content += make_line("                      <IBAN>{0}</IBAN>".format(iban_code or ""))
         content += make_line("                  </Id>")
         content += make_line("              </CdtrAcct>")
-        content += make_line("              <RgltryRptg>")
-        content += make_line("                  <DbtCdtRptgInd>DEBT</DbtCdtRptgInd>")
-        content += make_line("                  <Dtls>")   
-        content += make_line("                      <Cd>101</Cd>")
-        content += make_line("                  </Dtls>")
-        content += make_line("              </RgltryRptg>")
         content += make_line("              <RmtInf>")
         sup_invoice_no = frappe.db.get_value("Purchase invoice" , payment_record.party , 'bill_no')
-        content += make_line("                  <Ustrd>{0}</Ustrd>".format(sup_invoice_no))
+        content += make_line("                  <Ustrd>{0}</Ustrd>".format(sup_invoice_no if sup_invoice_no else ""))
         content += make_line("              </RmtInf>")
         content += make_line("          </CdtTrfTxInf>")
         transaction_count += 1
@@ -528,5 +522,7 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
     content += make_line("      </PmtInf>")
     content += make_line("  </CstmrCdtTrfInitn>")
     content += make_line("</Document>")
+    content = content.replace(transaction_count_identifier, "{0}".format(transaction_count))
+    content = content.replace(control_sum_identifier, "{:.2f}".format(control_sum))
     
     return content
