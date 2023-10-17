@@ -10,16 +10,28 @@ import time
 import html              # used to escape xml content
 
 @frappe.whitelist()
-def get_payments():
+def get_payments(payment_type):
     payments = frappe.get_list('Payment Entry', 
         filters={'docstatus': 0, 'payment_type': 'Pay',"party_type":"Supplier"}, 
         fields=['name', 'posting_date', 'paid_amount', 'party', 'party_name', 'paid_from', 'paid_to_account_currency'], 
         order_by='posting_date')
     
-    return { 'payments': payments }
+    _payments = []
+    
+    for row in payments:
+        if payment_type == "Domestic (Swedish) Payments":
+            if frappe.db.get_value("Supplier", row.party , 'custom_plus_giro_number') or frappe.db.get_value("Supplier", row.party , 'bank_giro_number'):
+                _payments.append(row)
+        if payment_type == "SEPA":
+            if frappe.db.get_value("Supplier", row.party , 'custom_bank_bic') and frappe.db.get_value("Supplier", row.party , 'custom_iban_code'):
+                _payments.append(row)
+    return { 'payments': _payments }
 
 @frappe.whitelist()
-def generate_payment_file(payments ,payment_export_settings , posting_date):
+def generate_payment_file(payments ,payment_export_settings , posting_date , payment_type):
+    if payment_type == "SEPA":
+        content = genrate_file_for_sepa(payments ,payment_export_settings , posting_date , payment_type)
+        return { 'content': content, 'skipped': 0 }
     # creates a pain.001 payment file from the selected payments
     try:
         # convert JavaScript parameter into Python array
@@ -397,3 +409,120 @@ def get_primary_address(target_name, target_type="Customer"):
         return frappe.db.sql(sql_query, as_dict=True)[0]
     except:
         return None
+
+def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , payment_type):
+    payments = eval(payments)
+    # remove empty items in case there should be any (bigfix for issue #2)
+    payments = list(filter(None, payments))
+    content = make_line("<?xml version='1.0' encoding='UTF-8'?>")
+    content += make_line("<!-- SEB ISO 20022 V03 MIG, 6.1 SEPA CT IBAN ONLY -->")
+    content += make_line("<Document xmlns='urn:iso:std:iso:20022:tech:xsd:pain.001.001.03' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>")
+    content += make_line("  <CstmrCdtTrfInitn>")
+    content += make_line("      <GrpHdr>")
+    content += make_line("          <MsgId>{0}</MsgId>".format(time.strftime("%Y%m%d%H%M%S")))
+    content += make_line("          <CreDtTm>{0}</CreDtTm>".format(time.strftime("%Y-%m-%dT%H:%M:%S")))
+    transaction_count = 0
+    transaction_count_identifier = "<!-- $COUNT -->"
+    content += make_line("          <NbOfTxs>{0}</NbOfTxs>".format(transaction_count_identifier))
+    control_sum = 0.0
+    control_sum_identifier = "<!-- $CONTROL_SUM -->"
+    content += make_line("          <CtrlSum>{0}</CtrlSum>".format(control_sum_identifier))
+    content += make_line("          <InitgPty>")
+    content += make_line("              <Nm>{0}</Nm>".format(get_company_name(payments[0])))
+    content += make_line("              <Id>")
+    content += make_line("                  <OrgId>")
+    content += make_line("                      <Othr>")
+    content += make_line("                          <Id>556036867100</Id>")
+    content += make_line("                          <SchmeNm>")
+    content += make_line("                              <Cd>BANK</Cd>")
+    content += make_line("                          </SchmeNm>")
+    content += make_line("                      </Othr>")
+    content += make_line("                  </OrgId>")
+    content += make_line("              </Id>")
+    content += make_line("          </InitgPty>")
+    content += make_line("      </GrpHdr>")
+    content += make_line("      <PmtInf>")
+    content += make_line("          <PmtInfId>{0}</PmtInfId>".format(payments[0]))
+    content += make_line("          <PmtMtd>TRF</PmtMtd>")
+    content += make_line("          <BtchBookg>false</BtchBookg>")
+    content += make_line("          <NbOfTxs>{0}</NbOfTxs>".format(transaction_count_identifier))
+    
+    content += make_line("          <CtrlSum>{0}</CtrlSum>".format(control_sum_identifier))
+    content += make_line("          <PmtTpInf>")
+    content += make_line("              <SvcLvl>")
+    content += make_line("                  <Cd>SEPA</Cd>")
+    content += make_line("              </SvcLvl>")
+    content += make_line("          </PmtTpInf>")
+    required_execution_date = posting_date
+    content += make_line("          <ReqdExctnDt>{0}</ReqdExctnDt>".format(required_execution_date))
+    content += make_line("          <Dbtr>")
+    company_name = frappe.db.get_value('Payment Export Settings',payment_export_settings,'company_name')
+    content += make_line("              <Nm>{0}</Nm>".format(company_name))
+    content += make_line("              <Id>")
+    content += make_line("                  <OrgId>")
+    content += make_line("                      <Othr>")
+    content += make_line("                          <Id>55667755110004</Id>")
+    content += make_line("                          <SchmeNm>")
+    content += make_line("                              <Cd>BANK</Cd>")
+    content += make_line("                          </SchmeNm>")
+    content += make_line("                      </Othr>")
+    content += make_line("                  </OrgId>")
+    content += make_line("              </Id>")
+    content += make_line("              <CtryOfRes>SE</CtryOfRes>")
+    content += make_line("          </Dbtr>")
+    content += make_line("          <DbtrAcct>")
+    content += make_line("              <Id>")
+    iban = frappe.db.get_value('Payment Export Settings',payment_export_settings,'iban')
+    content += make_line("                  <IBAN>{0}</IBAN>".format(iban))
+    content += make_line("              </Id>")
+    content += make_line("              <Ccy>EUR</Ccy>")
+    content += make_line("          </DbtrAcct>")
+    content += make_line("          <DbtrAgt>")
+    content += make_line("          <!-- Note: For IBAN only on Debtor side use Othr/Id: NOTPROVIDED - see below -->")
+    content += make_line("              <FinInstnId>")
+    content += make_line("                  <Othr>")
+    content += make_line("                      <Id>NOTPROVIDED</Id>")
+    content += make_line("                  </Othr>")
+    content += make_line("              </FinInstnId>")
+    content += make_line("          </DbtrAgt>")
+    content += make_line("          <ChrgBr>SLEV</ChrgBr>")
+    for payment in payments:
+        payment_record = frappe.get_doc('Payment Entry', payment)
+        content += make_line("          <CdtTrfTxInf>")
+        content += make_line("              <PmtId>")
+        content += make_line("                  <InstrId>{}</InstrId>".format(payment))
+        content += make_line("                  <EndToEndId>{}</EndToEndId>".format(payment.replace('-',"")))
+        content += make_line("              </PmtId>")
+        content += make_line("              <Amt>")
+        content += make_line("                  <InstdAmt Ccy=\"{0}\">{1:.2f}</InstdAmt>".format(
+                payment_record.paid_from_account_currency,
+                payment_record.paid_amount))
+        content += make_line("              </Amt>")
+        content += make_line("              <!-- Note: Creditor Agent should not be used at all for IBAN only on Creditor side -->")
+        content += make_line("              <Cdtr>")
+        if payment_record.party_type == "Employee":
+            name = frappe.get_value("Employee", payment_record.party, "employee_name")
+        if payment_record.party_type == "Supplier":
+            name = frappe.db.get_value("Supplier",payment_record.party,"supplier_name")
+        content += make_line("                  <Nm>{0}</Nm>".format(name))
+        content += make_line("              </Cdtr>")
+        content += make_line("              <CdtrAcct>")
+        content += make_line("                  <Id>")
+        iban_code = frappe.db.get_value("Supplier" , payment_record.party , 'custom_iban_code')
+        content += make_line("                      <IBAN>{0}</IBAN>".format(iban_code or ""))
+        content += make_line("                  </Id>")
+        content += make_line("              </CdtrAcct>")
+        content += make_line("              <RmtInf>")
+        sup_invoice_no = frappe.db.get_value("Purchase invoice" , payment_record.party , 'bill_no')
+        content += make_line("                  <Ustrd>{0}</Ustrd>".format(sup_invoice_no if sup_invoice_no else ""))
+        content += make_line("              </RmtInf>")
+        content += make_line("          </CdtTrfTxInf>")
+        transaction_count += 1
+        control_sum += payment_record.paid_amount
+    content += make_line("      </PmtInf>")
+    content += make_line("  </CstmrCdtTrfInitn>")
+    content += make_line("</Document>")
+    content = content.replace(transaction_count_identifier, "{0}".format(transaction_count))
+    content = content.replace(control_sum_identifier, "{:.2f}".format(control_sum))
+    
+    return content
