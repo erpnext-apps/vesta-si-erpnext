@@ -20,7 +20,7 @@ def get_payments(payment_type):
     
     for row in payments:
         if payment_type == "Domestic (Swedish) Payments":
-            if frappe.db.get_value("Supplier", row.party , 'custom_plus_giro_number') or frappe.db.get_value("Supplier", row.party , 'bank_giro_number'):
+            if frappe.db.get_value("Supplier", row.party , 'plus_giro_number') or frappe.db.get_value("Supplier", row.party , 'bank_giro_number'):
                 _payments.append(row)
         if payment_type == "SEPA":
             if frappe.db.get_value("Supplier", row.party , 'custom_bank_bic') and frappe.db.get_value("Supplier", row.party , 'custom_iban_code'):
