@@ -23,7 +23,7 @@ def get_payments(payment_type):
             if frappe.db.get_value("Supplier", row.party , 'plus_giro_number') or frappe.db.get_value("Supplier", row.party , 'bank_giro_number'):
                 _payments.append(row)
         if payment_type == "SEPA":
-            if frappe.db.get_value("Supplier", row.party , 'custom_bank_bic') and frappe.db.get_value("Supplier", row.party , 'custom_iban_code'):
+            if frappe.db.get_value("Supplier", row.party , 'bank_bic') and frappe.db.get_value("Supplier", row.party , 'iban_code'):
                 _payments.append(row)
     return { 'payments': _payments }
 
@@ -508,7 +508,7 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
         content += make_line("              </Cdtr>")
         content += make_line("              <CdtrAcct>")
         content += make_line("                  <Id>")
-        iban_code = frappe.db.get_value("Supplier" , payment_record.party , 'custom_iban_code')
+        iban_code = frappe.db.get_value("Supplier" , payment_record.party , 'iban_code')
         content += make_line("                      <IBAN>{0}</IBAN>".format(iban_code or ""))
         content += make_line("                  </Id>")
         content += make_line("              </CdtrAcct>")
