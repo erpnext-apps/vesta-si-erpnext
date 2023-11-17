@@ -112,7 +112,7 @@ def get_stock_ledger_entries(filters, params):
 			`tabQuality Inspection` qi on se.quality_inspection = qi.name
 		WHERE
 			s.is_cancelled = 0 and s.docstatus < 2 and ifnull(s.batch_no, '') != ''
-			and s.voucher_no in (select reference_name from `tabBatch` where name = s.batch_no) %s
+			%s
 		GROUP BY
 			voucher_no, batch_no, s.item_code, warehouse
 		ORDER BY
