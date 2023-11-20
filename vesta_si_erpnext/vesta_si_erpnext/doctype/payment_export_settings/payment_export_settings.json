@@ -17,7 +17,8 @@
   "town_name",
   "column_break_ujzwv",
   "country",
-  "iban",
+  "iban_for_domestic_payment",
+  "iban_for_sepa_payment",
   "bic",
   "chrgbr",
   "cd",
@@ -94,6 +95,16 @@
   {
    "fieldname": "column_break_ujzwv",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "iban_for_sepa_payment",
+   "fieldtype": "Data",
+   "label": "IBAN for SEPA Payment"
+  },
+  {
+   "fieldname": "iban_for_domestic_payment",
+   "fieldtype": "Data",
+   "label": "IBAN for Domestic (Swedish) Payments"
   }
  ],
  "index_web_pages_for_search": 1,
