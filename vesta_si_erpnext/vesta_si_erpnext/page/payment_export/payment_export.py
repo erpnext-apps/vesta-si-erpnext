@@ -5,20 +5,42 @@
 from __future__ import unicode_literals
 import frappe
 from frappe import throw, _
+from collections import defaultdict
 import time
 #from erpnextswiss.erpnextswiss.common_functions import get_building_number, get_street_name, get_pincode, get_city
 import html              # used to escape xml content
 
 @frappe.whitelist()
 def get_payments(payment_type):
-    payments = frappe.get_list('Payment Entry', 
-        filters={'docstatus': 0, 'payment_type': 'Pay',"party_type":"Supplier"}, 
-        fields=['name', 'posting_date', 'paid_amount', 'party', 'party_name', 'paid_from', 'paid_to_account_currency'], 
-        order_by='posting_date')
+    payments = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype , 
+                                per.reference_name
+                            From `tabPayment Entry` as pe 
+                            Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
+                            Where pe.docstatus = 0 and pe.payment_type = "Pay" and pe.party_type = "Supplier"
+                            order by posting_date
+                            """,as_dict = 1)
+
+    merged_data = defaultdict(list)
+    for row in payments:
+        key = row['name']
+        merged_data[key].append(row['reference_name'])
     
+    sorted_data = {}
+    for key, values in merged_data.items():
+        sorted_data.update({key:values}) 
+    
+    sort_list = []
+    data = []
+    for row in payments:
+        if sorted_data.get(row.name):
+            row.update({"reference_name":sorted_data.get(row.name)})
+        if row.name not in sort_list:
+            sort_list.append(row.name)
+            data.append(row)
+            
     _payments = []
     
-    for row in payments:
+    for row in data:
         if payment_type == "Domestic (Swedish) Payments":
             if frappe.db.get_value("Supplier", row.party , 'plus_giro_number') or frappe.db.get_value("Supplier", row.party , 'bank_giro_number'):
                 _payments.append(row)
