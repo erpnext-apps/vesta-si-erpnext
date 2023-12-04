@@ -146,3 +146,21 @@ function findSelected() {
     }
     return checked;
 }
+function getfindSelected() {
+    
+    var inputs = document.getElementsByTagName("input"); 
+    
+    var checkboxes = []; 
+    var checked = []; 
+    var a = 0
+    for (var i = 0; i < inputs.length; i++) {
+      if (inputs[i].type == "checkbox") {
+        a++;
+        checkboxes.push(inputs[i]);
+        if (inputs[i].checked) {
+          checked.push(inputs[i]);
+        }
+      }
+    }
+    document.getElementById("update_selected").innerText = `${checked.length}/${a} Selected` 
+}
