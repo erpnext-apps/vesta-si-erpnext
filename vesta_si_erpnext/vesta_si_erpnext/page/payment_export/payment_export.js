@@ -25,10 +25,12 @@ frappe.pages['payment-export'].on_page_load = function(wrapper) {
         default:"Domestic (Swedish) Payments",
         options:"Domestic (Swedish) Payments\nSEPA\nCross Border Payments",
         onchange: () => {
-            frappe.payment_export.run(page); 
+            frappe.payment_export.run(page);
+	    getfindSelected()
         }
 	});
-    frappe.payment_export.run(page);   
+    frappe.payment_export.run(page);
+    getfindSelected()
     
 }
 
