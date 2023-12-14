@@ -16,7 +16,7 @@ def get_payments(payment_type):
                                 per.reference_name
                             From `tabPayment Entry` as pe 
                             Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
-                            Where pe.docstatus = 0 and pe.payment_type = "Pay" and pe.party_type = "Supplier" and pe.custom_xml_file_generated = 0
+                            Where pe.docstatus = 0 and pe.payment_type = "Pay" and pe.party_type = "Supplier"
                             order by posting_date
                             """,as_dict = 1)
 
@@ -161,7 +161,6 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         content += make_line("      </DbtrAgt>")
 
         for payment in payments:
-            frappe.db.set_value("Payment Entry" , payment , 'custom_xml_file_generated' , 1)
             payment_record = frappe.get_doc('Payment Entry', payment)
             payment_content = ""
             payment_content += make_line("      <CdtTrfTxInf>")
