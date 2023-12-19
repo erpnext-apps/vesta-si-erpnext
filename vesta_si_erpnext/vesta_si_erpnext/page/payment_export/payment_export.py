@@ -211,10 +211,12 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
             supplier_plus_giro = frappe.db.get_value('Supplier', payment_record.party,'plus_giro_number')
             payment_content += make_line("              <Id>{0}</Id>".format(supplier_giro.replace("-" , "") if supplier_bank_giro else supplier_plus_giro ))
             if supplier_bank_giro:
+                payment_content += make_line("              <Id>{0}</Id>".format(supplier_bank_giro.replace("-" , "") if supplier_bank_giro else '' ))
                 payment_content += make_line("            <SchmeNm>")
                 payment_content += make_line("                <Prtry>BGNR</Prtry>")
                 payment_content += make_line("            </SchmeNm>")
             if supplier_plus_giro:
+                payment_content += make_line("              <Id>{0}</Id>".format(supplier_plus_giro.replace("-" , "") if supplier_bank_giro else '' ))
                 payment_content += make_line("            <SchmeNm>")
                 payment_content += make_line("                <cd>BBAN</cd>")
                 payment_content += make_line("            </SchmeNm>")
