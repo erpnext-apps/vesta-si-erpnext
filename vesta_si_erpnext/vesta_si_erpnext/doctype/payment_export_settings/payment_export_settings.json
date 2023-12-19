@@ -22,7 +22,9 @@
   "bic",
   "chrgbr",
   "cd",
-  "mmbid"
+  "mmbid_for_bank_giro_number",
+  "mmbid_for_plus_giro_number",
+  "iban"
  ],
  "fields": [
   {
@@ -88,11 +90,6 @@
    "label": "cd"
   },
   {
-   "fieldname": "mmbid",
-   "fieldtype": "Data",
-   "label": "mmbid"
-  },
-  {
    "fieldname": "column_break_ujzwv",
    "fieldtype": "Column Break"
   },
@@ -105,11 +102,21 @@
    "fieldname": "iban_for_domestic_payment",
    "fieldtype": "Data",
    "label": "IBAN for Domestic (Swedish) Payments"
+  },
+  {
+   "fieldname": "mmbid_for_bank_giro_number",
+   "fieldtype": "Data",
+   "label": "mmbid for bank giro number"
+  },
+  {
+   "fieldname": "mmbid_for_plus_giro_number",
+   "fieldtype": "Data",
+   "label": "mmbid for plus giro number"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-28 06:32:26.354299",
+ "modified": "2023-12-19 08:55:49.212962",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Payment Export Settings",
