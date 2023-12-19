@@ -209,7 +209,6 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
             payment_content += make_line("            <Othr>")
             supplier_bank_giro = frappe.db.get_value('Supplier', payment_record.party,'bank_giro_number')
             supplier_plus_giro = frappe.db.get_value('Supplier', payment_record.party,'plus_giro_number')
-            payment_content += make_line("              <Id>{0}</Id>".format(supplier_giro.replace("-" , "") if supplier_bank_giro else supplier_plus_giro ))
             if supplier_bank_giro:
                 payment_content += make_line("              <Id>{0}</Id>".format(supplier_bank_giro.replace("-" , "") if supplier_bank_giro else '' ))
                 payment_content += make_line("            <SchmeNm>")
