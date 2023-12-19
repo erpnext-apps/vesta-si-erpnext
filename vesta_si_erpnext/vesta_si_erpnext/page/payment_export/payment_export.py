@@ -215,7 +215,7 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
                 payment_content += make_line("                <Prtry>BGNR</Prtry>")
                 payment_content += make_line("            </SchmeNm>")
             if supplier_plus_giro:
-                payment_content += make_line("              <Id>{0}</Id>".format(supplier_plus_giro.replace("-" , "") if supplier_bank_giro else '' ))
+                payment_content += make_line("              <Id>{0}</Id>".format(supplier_plus_giro.replace("-" , "") if supplier_plus_giro else '' ))
                 payment_content += make_line("            <SchmeNm>")
                 payment_content += make_line("                <cd>BBAN</cd>")
                 payment_content += make_line("            </SchmeNm>")
