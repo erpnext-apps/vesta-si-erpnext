@@ -163,7 +163,7 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         for payment in payments:
             frappe.db.set_value("Payment Entry" , payment , "custom_xml_file_generated" , 1)
             payment_record = frappe.get_doc('Payment Entry', payment)
-            frappe.db.set_value("Purchase Invoice" , payment_record.references[0].reference_name , 'workflow_state' , 'Payment Ordered' , update_modified = True)
+            frappe.db.set_value("Purchase Invoice" , payment_record.references[0].reference_name , 'workflow_state' , 'Payment Ordered' , update_modified = False)
             payment_content = ""
             payment_content += make_line("      <CdtTrfTxInf>")
             payment_content += make_line("        <PmtId>")
@@ -525,7 +525,7 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
     for payment in payments:
         frappe.db.set_value("Payment Entry" , payment , "custom_xml_file_generated" , 1)
         payment_record = frappe.get_doc('Payment Entry', payment)
-        frappe.db.set_value("Purchase Invoice" , payment_record.references[0].reference_name , 'workflow_state' , 'Payment Ordered' , update_modified = True)
+        frappe.db.set_value("Purchase Invoice" , payment_record.references[0].reference_name , 'workflow_state' , 'Payment Ordered' , update_modified = False)
         content += make_line("          <CdtTrfTxInf>")
         content += make_line("              <PmtId>")
         content += make_line("                  <InstrId>{}</InstrId>".format(payment))
@@ -551,7 +551,7 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
         content += make_line("                  </Id>")
         content += make_line("              </CdtrAcct>")
         content += make_line("              <RmtInf>")
-        sup_invoice_no = frappe.db.get_value("Purchase Invoice" , payment_record.references[0].reference_name , 'bill_no' , update_modified = False)
+        sup_invoice_no = frappe.db.get_value("Purchase Invoice" , payment_record.references[0].reference_name , 'bill_no')
         content += make_line("                  <Ustrd>{0}</Ustrd>".format(sup_invoice_no if sup_invoice_no else ""))
         content += make_line("              </RmtInf>")
         content += make_line("          </CdtTrfTxInf>")
