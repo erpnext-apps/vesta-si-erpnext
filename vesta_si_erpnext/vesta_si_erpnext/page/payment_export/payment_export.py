@@ -163,7 +163,9 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         for payment in payments:
             frappe.db.set_value("Payment Entry" , payment , "custom_xml_file_generated" , 1)
             payment_record = frappe.get_doc('Payment Entry', payment)
-            frappe.db.set_value("Purchase Invoice" , payment_record.references[0].reference_name , 'workflow_state' , 'Payment Ordered' , update_modified = False)
+            workflow_state = frappe.db.get_value("Payment Export Setting",payment_export_settings , 'workflow_state')
+            if workflow_state:
+                frappe.db.set_value("Purchase Invoice" , payment_record.references[0].reference_name , 'workflow_state' , workflow_state , update_modified = False)
             payment_content = ""
             payment_content += make_line("      <CdtTrfTxInf>")
             payment_content += make_line("        <PmtId>")
@@ -525,7 +527,9 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
     for payment in payments:
         frappe.db.set_value("Payment Entry" , payment , "custom_xml_file_generated" , 1)
         payment_record = frappe.get_doc('Payment Entry', payment)
-        frappe.db.set_value("Purchase Invoice" , payment_record.references[0].reference_name , 'workflow_state' , 'Payment Ordered' , update_modified = False)
+        workflow_state = frappe.db.get_value("Payment Export Setting",payment_export_settings , 'workflow_state')
+        if workflow_state:
+            frappe.db.set_value("Purchase Invoice" , payment_record.references[0].reference_name , 'workflow_state' , workflow_state , update_modified = False)
         content += make_line("          <CdtTrfTxInf>")
         content += make_line("              <PmtId>")
         content += make_line("                  <InstrId>{}</InstrId>".format(payment))

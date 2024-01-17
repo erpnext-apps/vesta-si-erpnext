@@ -15,6 +15,7 @@
   "street_name",
   "post_code",
   "town_name",
+  "workflow_state",
   "column_break_ujzwv",
   "country",
   "iban_for_domestic_payment",
@@ -112,11 +113,18 @@
    "fieldname": "mmbid_for_plus_giro_number",
    "fieldtype": "Data",
    "label": "mmbid for plus giro number"
+  },
+  {
+   "description": "Select workflow state to update in purchase invoice at the time of XML file creation",
+   "fieldname": "workflow_state",
+   "fieldtype": "Link",
+   "label": "Workflow State",
+   "options": "Workflow State"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-19 08:55:49.212962",
+ "modified": "2024-01-17 11:45:58.178331",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Payment Export Settings",
