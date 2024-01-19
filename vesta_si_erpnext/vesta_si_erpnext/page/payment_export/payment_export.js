@@ -30,7 +30,6 @@ frappe.pages['payment-export'].on_page_load = function(wrapper) {
         }
 	});
     frappe.payment_export.run(page);
-    getfindSelected()
     
 }
 
@@ -164,5 +163,23 @@ function getfindSelected() {
         }
       }
     }
-    document.getElementById("update_selected").innerText = `${checked.length}/${a} Selected` 
+    if(a){
+        document.getElementById("update_selected").innerText = `${checked.length}/${a} Selected` 
+    }
+}
+function selectunselect(){
+    
+    var inputCheck = document.querySelector('.selectall');
+
+    // Get all checkboxes with class "indexer"
+    var indexerCheckboxes = document.querySelectorAll('.inputcheck');
+
+    // Add change event listener to "inputcheck" checkbox
+    inputCheck.addEventListener('change', function() {
+        // Set the state of "indexer" checkboxes based on "inputcheck"
+        indexerCheckboxes.forEach(function(indexerCheckbox) {
+            indexerCheckbox.checked = inputCheck.checked;
+        });
+    });
+    getfindSelected()
 }
