@@ -138,7 +138,7 @@ function findSelected() {
     var checkboxes = []; 
     var checked = []; 
     for (var i = 0; i < inputs.length; i++) {
-      if (inputs[i].type == "checkbox") {
+      if (inputs[i].type == "checkbox" && inputs[i].classList.contains("inputcheck")) {
         checkboxes.push(inputs[i]);
         if (inputs[i].checked) {
           checked.push(inputs[i]);
