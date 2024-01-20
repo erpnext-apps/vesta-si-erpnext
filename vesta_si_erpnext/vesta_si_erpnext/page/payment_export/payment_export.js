@@ -30,7 +30,7 @@ frappe.pages['payment-export'].on_page_load = function(wrapper) {
         }
 	});
     frappe.payment_export.run(page);
-    
+    getfindSelected()
 }
 
 frappe.payment_export = {
@@ -150,36 +150,33 @@ function findSelected() {
 function getfindSelected() {
     
     var inputs = document.getElementsByTagName("input"); 
-    
-    var checkboxes = []; 
     var checked = []; 
     var a = 0
     for (var i = 0; i < inputs.length; i++) {
-      if (inputs[i].type == "checkbox") {
-        a++;
-        checkboxes.push(inputs[i]);
-        if (inputs[i].checked) {
-          checked.push(inputs[i]);
+
+        if (inputs[i].classList.contains("inputcheck")) {
+            checked.push(inputs[i])
+          var isChecked = inputs[i].checked;
+
+          if (isChecked) {
+            a++;
+          }
         }
       }
+    if(checked.length || a){
+        document.getElementById("update_selected").innerText = `${a}/${checked.length} Selected` 
     }
-    if(a){
-        document.getElementById("update_selected").innerText = `${checked.length}/${a} Selected` 
-    }
+    
 }
 function selectunselect(){
     
     var inputCheck = document.querySelector('.selectall');
-
-    // Get all checkboxes with class "indexer"
     var indexerCheckboxes = document.querySelectorAll('.inputcheck');
 
-    // Add change event listener to "inputcheck" checkbox
-    inputCheck.addEventListener('change', function() {
-        // Set the state of "indexer" checkboxes based on "inputcheck"
-        indexerCheckboxes.forEach(function(indexerCheckbox) {
-            indexerCheckbox.checked = inputCheck.checked;
-        });
+    
+    indexerCheckboxes.forEach(function(indexerCheckbox) {
+        indexerCheckbox.checked = inputCheck.checked;
     });
+    
     getfindSelected()
 }
