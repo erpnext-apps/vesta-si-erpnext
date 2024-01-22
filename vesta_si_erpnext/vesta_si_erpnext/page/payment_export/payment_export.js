@@ -31,7 +31,6 @@ frappe.pages['payment-export'].on_page_load = function(wrapper) {
 	});
     frappe.payment_export.run(page);
     getfindSelected()
-    
 }
 
 frappe.payment_export = {
@@ -72,7 +71,7 @@ frappe.payment_export = {
                             if (r.message.skipped.length > 0) {
                                 $('<p>' + __("Some payments were skipped due to errors (check the payment file for details): ") + '</p>').appendTo(parent);
                                 for (var i = 0; i < r.message.skipped.length; i++) {
-									$('<p><a href="/desk#Form/Payment Entry/'
+									$('<p><a href="/desk/Form/Payment Entry/'
 									  + r.message.skipped[i] + '">' 
 									  + r.message.skipped[i] + '</a></p>').appendTo(parent);
 								}
@@ -139,7 +138,7 @@ function findSelected() {
     var checkboxes = []; 
     var checked = []; 
     for (var i = 0; i < inputs.length; i++) {
-      if (inputs[i].type == "checkbox") {
+      if (inputs[i].type == "checkbox" && inputs[i].classList.contains("inputcheck")) {
         checkboxes.push(inputs[i]);
         if (inputs[i].checked) {
           checked.push(inputs[i]);
@@ -151,18 +150,33 @@ function findSelected() {
 function getfindSelected() {
     
     var inputs = document.getElementsByTagName("input"); 
-    
-    var checkboxes = []; 
     var checked = []; 
     var a = 0
     for (var i = 0; i < inputs.length; i++) {
-      if (inputs[i].type == "checkbox") {
-        a++;
-        checkboxes.push(inputs[i]);
-        if (inputs[i].checked) {
-          checked.push(inputs[i]);
+
+        if (inputs[i].classList.contains("inputcheck")) {
+            checked.push(inputs[i])
+          var isChecked = inputs[i].checked;
+
+          if (isChecked) {
+            a++;
+          }
         }
       }
+    if(checked.length || a){
+        document.getElementById("update_selected").innerText = `${a}/${checked.length} Selected` 
     }
-    document.getElementById("update_selected").innerText = `${checked.length}/${a} Selected` 
+    
+}
+function selectunselect(){
+    
+    var inputCheck = document.querySelector('.selectall');
+    var indexerCheckboxes = document.querySelectorAll('.inputcheck');
+
+    
+    indexerCheckboxes.forEach(function(indexerCheckbox) {
+        indexerCheckbox.checked = inputCheck.checked;
+    });
+    
+    getfindSelected()
 }
