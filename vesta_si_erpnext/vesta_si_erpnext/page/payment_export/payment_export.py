@@ -163,9 +163,11 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         for payment in payments:
             frappe.db.set_value("Payment Entry" , payment , "custom_xml_file_generated" , 1)
             payment_record = frappe.get_doc('Payment Entry', payment)
-            workflow_state = frappe.db.get_value("Payment Export Setting",payment_export_settings , 'workflow_state')
+            workflow_state = frappe.db.get_value("Payment Export Settings",payment_export_settings , 'workflow_state')
             if workflow_state:
-                frappe.db.set_value("Purchase Invoice" , payment_record.references[0].reference_name , 'workflow_state' , workflow_state , update_modified = False)
+                for d in payment_record.references:
+                    PI_doc = frappe.get_doc('Purchase Invoice' , d.reference_name)
+                    PI_doc.db_set("workflow_state" , workflow_state)
             payment_content = ""
             payment_content += make_line("      <CdtTrfTxInf>")
             payment_content += make_line("        <PmtId>")
