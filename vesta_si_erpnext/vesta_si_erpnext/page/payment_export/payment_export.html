@@ -2,6 +2,9 @@
   .table td{
     padding:0.6rem
   }
+  .se_container{
+    display: flex;
+  }
 </style>
 
 <div style="margin: 5px; margin-top: 0px; border-top: 1px solid white; ">
@@ -9,7 +12,14 @@
   <p class="text-muted">{%= __("Exports the selected payment entries for execution by file transfer to a bank") %}</p>
 
   <h4>{{ __("Payment entries") }}</h4>
-  <p id="update_selected"></p>
+  <div class="se_container" style="width:100%;">
+    <div class="box" style="width:25%">
+      <p id="update_selected"></p>
+    </div>
+    <div class="box">
+      <p id = "total_selected_amount"></p>
+    </div>
+  </div>
   <div class="payment-table">
   
   </div>

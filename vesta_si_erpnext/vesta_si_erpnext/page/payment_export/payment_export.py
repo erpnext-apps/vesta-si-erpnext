@@ -39,15 +39,17 @@ def get_payments(payment_type):
             data.append(row)
             
     _payments = []
-    
+    list_of_amount = []
     for row in data:
         if payment_type == "Domestic (Swedish) Payments":
             if frappe.db.get_value("Supplier", row.party , 'plus_giro_number') or frappe.db.get_value("Supplier", row.party , 'bank_giro_number'):
                 _payments.append(row)
+                list_of_amount.append(row.paid_amount)
         if payment_type == "SEPA":
             if frappe.db.get_value("Supplier", row.party , 'bank_bic') and frappe.db.get_value("Supplier", row.party , 'iban_code'):
                 _payments.append(row)
-    return { 'payments': _payments }
+                list_of_amount.append(row.paid_amount)
+    return { 'payments': _payments , "total_paid_amount" : sum(list_of_amount)}
 
 @frappe.whitelist()
 def generate_payment_file(payments ,payment_export_settings , posting_date , payment_type):
