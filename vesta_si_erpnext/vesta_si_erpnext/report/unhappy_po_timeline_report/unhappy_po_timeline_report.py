@@ -92,14 +92,14 @@ def get_columns(filters):
 			"width": 150,
 		},
 		{
-			"label": _("Approve time"),
+			"label": _("Approved date"),
 			"fieldname": "versioncreation",
 			"fieldtype": "Datetime",
 			"options": "currency",
 			"width": 180,
 		},
 		{
-			"label": _("Days"),
+			"label": _("Number of day for approval"),
 			"fieldname": "days",
 			"fieldtype": "Data",
 			"width": 100,
