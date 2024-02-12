@@ -280,6 +280,11 @@ def add_creditor_info(payment_record):
         name = frappe.get_value("Employee", payment_record.party, "employee_name")
     if payment_record.party_type == "Supplier":
         name = frappe.db.get_value("Supplier",name,"supplier_name")
+        if '&' in name:
+            new_name = name.replace('& ','')
+            if new_name == name:
+                new_name = name.replace('&',' ')
+            name = new_name
     payment_content += make_line("          <Nm>" + name  + "</Nm>")
     # address of creditor/supplier (should contain at least country and first address line
     # get supplier address
@@ -550,6 +555,11 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
             name = frappe.get_value("Employee", payment_record.party, "employee_name")
         if payment_record.party_type == "Supplier":
             name = frappe.db.get_value("Supplier",payment_record.party,"supplier_name")
+            if '&' in name:
+                new_name = name.replace('& ','')
+                if new_name == name:
+                    new_name = name.replace('&',' ')
+                name = new_name
         content += make_line("                  <Nm>{0}</Nm>".format(name))
         content += make_line("              </Cdtr>")
         content += make_line("              <CdtrAcct>")
