@@ -87,6 +87,6 @@ class CustomPurchaseInvoice(PurchaseInvoice):
 				self.status = "Draft"
 
 		if update:
-			if self.status == 'Paid':
+			if self.status == 'Paid' and self.doctype == "Purchase Invoice":
 				self.db_set('workflow_state', self.status)
 			self.db_set("status", self.status, update_modified=update_modified)
