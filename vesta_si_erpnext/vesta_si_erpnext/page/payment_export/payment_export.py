@@ -280,6 +280,11 @@ def add_creditor_info(payment_record):
         name = frappe.get_value("Employee", payment_record.party, "employee_name")
     if payment_record.party_type == "Supplier":
         name = frappe.db.get_value("Supplier",name,"supplier_name")
+        if '&' in name:
+            new_name = name.replace('& ','')
+            if new_name == name:
+                new_name = name.replace('&',' ')
+            name = new_name
     payment_content += make_line("          <Nm>" + name  + "</Nm>")
     # address of creditor/supplier (should contain at least country and first address line
     # get supplier address
@@ -531,9 +536,11 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
     for payment in payments:
         frappe.db.set_value("Payment Entry" , payment , "custom_xml_file_generated" , 1)
         payment_record = frappe.get_doc('Payment Entry', payment)
-        workflow_state = frappe.db.get_value("Payment Export Setting",payment_export_settings , 'workflow_state')
-        if workflow_state:
-            frappe.db.set_value("Purchase Invoice" , payment_record.references[0].reference_name , 'workflow_state' , workflow_state , update_modified = False)
+        workflow_state = frappe.db.get_value("Payment Export Settings",payment_export_settings , 'workflow_state')
+            if workflow_state:
+                for d in payment_record.references:
+                    PI_doc = frappe.get_doc('Purchase Invoice' , d.reference_name)
+                    PI_doc.db_set("workflow_state" , workflow_state)
         content += make_line("          <CdtTrfTxInf>")
         content += make_line("              <PmtId>")
         content += make_line("                  <InstrId>{}</InstrId>".format(payment))
@@ -550,6 +557,11 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
             name = frappe.get_value("Employee", payment_record.party, "employee_name")
         if payment_record.party_type == "Supplier":
             name = frappe.db.get_value("Supplier",payment_record.party,"supplier_name")
+            if '&' in name:
+                new_name = name.replace('& ','')
+                if new_name == name:
+                    new_name = name.replace('&',' ')
+                name = new_name
         content += make_line("                  <Nm>{0}</Nm>".format(name))
         content += make_line("              </Cdtr>")
         content += make_line("              <CdtrAcct>")
