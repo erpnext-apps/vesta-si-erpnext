@@ -537,10 +537,10 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
         frappe.db.set_value("Payment Entry" , payment , "custom_xml_file_generated" , 1)
         payment_record = frappe.get_doc('Payment Entry', payment)
         workflow_state = frappe.db.get_value("Payment Export Settings",payment_export_settings , 'workflow_state')
-            if workflow_state:
-                for d in payment_record.references:
-                    PI_doc = frappe.get_doc('Purchase Invoice' , d.reference_name)
-                    PI_doc.db_set("workflow_state" , workflow_state)
+        if workflow_state:
+            for d in payment_record.references:
+                PI_doc = frappe.get_doc('Purchase Invoice' , d.reference_name)
+                PI_doc.db_set("workflow_state" , workflow_state)
         content += make_line("          <CdtTrfTxInf>")
         content += make_line("              <PmtId>")
         content += make_line("                  <InstrId>{}</InstrId>".format(payment))
