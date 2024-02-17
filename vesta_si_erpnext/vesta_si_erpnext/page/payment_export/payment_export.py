@@ -217,12 +217,12 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
             supplier_bank_giro = frappe.db.get_value('Supplier', payment_record.party,'bank_giro_number')
             supplier_plus_giro = frappe.db.get_value('Supplier', payment_record.party,'plus_giro_number')
             if supplier_bank_giro:
-                payment_content += make_line("              <Id>{0}</Id>".format(supplier_bank_giro.replace("-" , "") if supplier_bank_giro else '' ))
+                payment_content += make_line("              <Id>{0}</Id>".format(supplier_bank_giro.replace("-" , "").strip() if supplier_bank_giro else '' ))
                 payment_content += make_line("            <SchmeNm>")
                 payment_content += make_line("                <Prtry>BGNR</Prtry>")
                 payment_content += make_line("            </SchmeNm>")
             elif supplier_plus_giro:
-                payment_content += make_line("              <Id>{0}</Id>".format(supplier_plus_giro.replace("-" , "") if supplier_plus_giro else '' ))
+                payment_content += make_line("              <Id>{0}</Id>".format(supplier_plus_giro.replace("-" , "").strip() if supplier_plus_giro else '' ))
                 payment_content += make_line("            <SchmeNm>")
                 payment_content += make_line("                <cd>BBAN</cd>")
                 payment_content += make_line("            </SchmeNm>")
@@ -567,7 +567,7 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
         content += make_line("              <CdtrAcct>")
         content += make_line("                  <Id>")
         iban_code = frappe.db.get_value("Supplier" , payment_record.party , 'iban_code')
-        content += make_line("                      <IBAN>{0}</IBAN>".format(iban_code or ""))
+        content += make_line("                      <IBAN>{0}</IBAN>".format(iban_code.strip() or ""))
         content += make_line("                  </Id>")
         content += make_line("              </CdtrAcct>")
         content += make_line("              <RmtInf>")
