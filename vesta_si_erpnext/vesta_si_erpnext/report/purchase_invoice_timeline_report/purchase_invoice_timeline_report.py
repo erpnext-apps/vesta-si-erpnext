@@ -131,7 +131,7 @@ def get_version_data(filters):
 			row.update({'days_to_approve_by_first_chief': (row.get('first_chief_accountant_approval_date') - row.get('first_submission_date')).days}) 
 
 
-	return list(version.values())
+	return data
 
 
 def get_columns(filters):
