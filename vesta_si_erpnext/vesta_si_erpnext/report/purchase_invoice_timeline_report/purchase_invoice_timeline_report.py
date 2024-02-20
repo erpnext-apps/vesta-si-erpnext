@@ -23,7 +23,7 @@ def get_version_data(filters):
 		conditions += f" and po.posting_date <= '{filters.get('to_date')}'"
 
 	data = frappe.db.sql(f""" 
-		Select v.data, po.name as purchase_invoice, po.creation, po.posting_date, v.owner, v.creation as versioncreation
+		Select v.data, po.name as purchase_invoice, po.creation, po.posting_date, v.owner, v.creation as versioncreation, v.docname
 		from `tabPurchase Invoice` as po 
 		left join `tabVersion` as v on po.name = v.docname
 		where data like '%workflow_state%' and ref_doctype = 'Purchase Invoice' {conditions}
@@ -41,6 +41,27 @@ def get_version_data(filters):
 		for r in d.get('changed'):
 			if not r[0] == 'workflow_state':
 				continue
+			if r[0] == 'workflow_state' and r[-1] == "Submitted to Chief Accountant":
+				if not version.get(row.purchase_invoice):
+					version[row.purchase_invoice] = {
+						'purchase_invoice': row.purchase_invoice,
+						'creation' : row.creation,
+						'posting_date' : row.posting_date,
+						'submition_state' : r[-1],
+						'name_of_chief' : frappe.db.get_value('User' , row.owner , 'full_name'),
+						'first_submission_date' : row.versioncreation,
+						'days_to_submit' : (row.versioncreation - row.creation).days
+					}
+				else:
+					version[row.purchase_invoice].update({
+						'purchase_invoice': row.purchase_invoice,
+						'creation' : row.creation,
+						'posting_date' : row.posting_date,
+						'submition_state' : r[-1],
+						'name_of_chief' : frappe.db.get_value('User' , row.owner , 'full_name'),
+						'first_submission_date' : row.versioncreation,
+						'days_to_submit' : (row.versioncreation - row.creation).days
+					})
 			if r[0] == 'workflow_state' and r[-1]  == "Approved by Chief Accountant":
 				if not version.get(row.purchase_invoice):
 					version[row.purchase_invoice] = {
@@ -100,8 +121,17 @@ def get_version_data(filters):
 						"approved_date":row.versioncreation,
 						"days_to_approved": (row.versioncreation - row.creation).days
 					})
-	
-	return list(version.values())
+	data = list(version.values())
+	for row in data:
+		if row.get('days_to_approved'):
+			row.update({'days_to_approved': (row.get('approved_date') - row.get('chief_accountant_approval_date')).days})
+		if row.get('days_to_approve_by_chief'):
+			row.update({'days_to_approve_by_chief': (row.get('chief_accountant_approval_date') - row.get('first_chief_accountant_approval_date')).days})
+		if row.get('days_to_approve_by_first_chief'):
+			row.update({'days_to_approve_by_first_chief': (row.get('first_chief_accountant_approval_date') - row.get('first_submission_date')).days}) 
+
+
+	return data
 
 
 def get_columns(filters):
@@ -125,6 +155,31 @@ def get_columns(filters):
 			"fieldtype": "Date",
 			"width": 150,
 		},
+		{
+			"label": _("First Submission State"),
+			"fieldname": "submition_state",
+			"fieldtype": "Data",
+			"width": 150,
+		},
+		{
+			"label": _("Chief Accountant"),
+			"fieldname": "name_of_chief",
+			"fieldtype": "Data",
+			"width": 150,
+		},
+		{
+			"label": _("Submission date"),
+			"fieldname": "first_submission_date",
+			"fieldtype": "Datetime",
+			"width": 180,
+		},
+		{
+			"label": _("Days to Submit"),
+			"fieldname": "days_to_submit",
+			"fieldtype": "Data",
+			"width": 100,
+		},
+		
 
 		{
 			"label": _("First Approval State"),
@@ -142,11 +197,10 @@ def get_columns(filters):
 			"label": _("First Approved date"),
 			"fieldname": "first_chief_accountant_approval_date",
 			"fieldtype": "Datetime",
-			"options": "currency",
 			"width": 180,
 		},
 		{
-			"label": _("Days to First Step"),
+			"label": _("Days to First Approval"),
 			"fieldname": "days_to_approve_by_first_chief",
 			"fieldtype": "Data",
 			"width": 100,
@@ -169,11 +223,10 @@ def get_columns(filters):
 			"label": _("Approved date"),
 			"fieldname": "chief_accountant_approval_date",
 			"fieldtype": "Datetime",
-			"options": "currency",
 			"width": 180,
 		},
 		{
-			"label": _("Days to Secont Step"),
+			"label": _("Days to Second Approval"),
 			"fieldname": "days_to_approve_by_chief",
 			"fieldtype": "Data",
 			"width": 100,
@@ -197,7 +250,7 @@ def get_columns(filters):
 			"width": 100,
 		},
 		{
-			"label": _("Number of day to approve"),
+			"label": _("Days To Final Approval"),
 			"fieldname": "days_to_approved",
 			"fieldtype": "Data",
 			"width": 100,
