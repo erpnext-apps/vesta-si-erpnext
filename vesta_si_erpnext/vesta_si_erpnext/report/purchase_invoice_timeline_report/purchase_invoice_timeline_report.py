@@ -53,7 +53,7 @@ def get_version_data(filters):
 						'creation_date':row.creation,
 						'posting_date':row.posting_date,
 						f'{state_counter[idx]}_state':r[-1],
-						f'{state_counter[idx]}_approver':row.owner,
+						f'{state_counter[idx]}_approver':frappe.db.get_value("User", row.owner, "full_name"),
 						f'{state_counter[idx]}_approval_on':row.versioncreation,
 						f'days_to_{state_counter[idx]}_approve':(row.versioncreation - row.creation).days
 					}				
@@ -61,7 +61,7 @@ def get_version_data(filters):
 					idx += 1
 					version[row.docname].update({
 						f'{state_counter[idx]}_state':r[-1],
-						f'{state_counter[idx]}_approver':row.owner,
+						f'{state_counter[idx]}_approver':frappe.db.get_value("User", row.owner, "full_name"),
 						f'{state_counter[idx]}_approval_on':row.versioncreation,
 						f'days_to_{state_counter[idx]}_approve':(row.versioncreation - version[row.docname].get(f'{state_counter[idx-1]}_approval_on')).days
 					})
@@ -111,7 +111,7 @@ def get_columns(state_list, state_counter):
 				"width": 150,
 			},
 			{
-				"label": _(f"days_to_{state_counter[idx]}_approve"),
+				"label": _(f"Days to {state_counter[idx]} Approve"),
 				"fieldname": f"days_to_{state_counter[idx]}_approve",
 				"fieldtype": "Data",
 				"width": 150,
