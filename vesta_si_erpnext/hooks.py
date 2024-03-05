@@ -120,6 +120,9 @@ doc_events = {
 	},
 	"Purchase Order":{
 		"validate":"vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_order.validate"
+	},
+	"Payment Entry": {
+		"validate": "vesta_si_erpnext.vesta_si_erpnext.doc_events.payment_entry.validate"
 	}
 }
 

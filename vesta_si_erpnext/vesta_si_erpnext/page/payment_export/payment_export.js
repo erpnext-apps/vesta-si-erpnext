@@ -22,8 +22,8 @@ frappe.pages['payment-export'].on_page_load = function(wrapper) {
         fieldname: 'payment_type',
         label: __('Payment Type'),
         fieldtype:'Select',
-        default:"Domestic (Swedish) Payments",
-        options:"Domestic (Swedish) Payments\nSEPA\nCross Border Payments",
+        default:"Domestic (Swedish) Payments (SEK)",
+        options:"Domestic (Swedish) Payments (SEK)\nSEPA (EUR)\nCross Border Payments (USD)",
         onchange: () => {
             frappe.payment_export.run(page);
         getfindSelected()
