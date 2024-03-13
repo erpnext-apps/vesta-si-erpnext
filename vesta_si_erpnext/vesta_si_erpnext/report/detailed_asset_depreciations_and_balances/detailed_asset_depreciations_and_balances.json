@@ -1,0 +1,33 @@
+{
+ "add_total_row": 1,
+ "columns": [],
+ "creation": "2024-03-13 10:43:32.339215",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Vesta_si",
+ "modified": "2024-03-13 11:18:32.100155",
+ "modified_by": "Administrator",
+ "module": "Vesta Si Erpnext",
+ "name": "Detailed Asset Depreciations and Balances",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Asset",
+ "report_name": "Detailed Asset Depreciations and Balances",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Quality Manager"
+  },
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Finance (Limited Access)"
+  }
+ ]
+}
