@@ -53,7 +53,7 @@ def get_payments(payment_type):
 
 @frappe.whitelist()
 def generate_payment_file(payments ,payment_export_settings , posting_date , payment_type):
-    if payment_type == "SEPA":
+    if payment_type == "SEPA (EUR)":
         content = genrate_file_for_sepa(payments ,payment_export_settings , posting_date , payment_type)
         return { 'content': content, 'skipped': 0 }
     # creates a pain.001 payment file from the selected payments
