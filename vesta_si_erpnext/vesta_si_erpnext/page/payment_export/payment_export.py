@@ -9,6 +9,7 @@ from collections import defaultdict
 import time
 #from erpnextswiss.erpnextswiss.common_functions import get_building_number, get_street_name, get_pincode, get_city
 import html              # used to escape xml content
+from frappe.utils import flt, get_link_to_form, getdate, nowdate
 
 @frappe.whitelist()
 def get_payments(payment_type):
@@ -41,6 +42,10 @@ def get_payments(payment_type):
     _payments = []
     list_of_amount = []
     for row in data:
+        payment = frappe.get_doc('Payment Entry', row.name)
+        creditor_info = add_creditor_info(payment)
+        if not creditor_info:
+            continue
         if payment_type == "Domestic (Swedish) Payments (SEK)":
             if frappe.db.get_value("Supplier", row.party , 'plus_giro_number') or frappe.db.get_value("Supplier", row.party , 'bank_giro_number'):
                 _payments.append(row)
@@ -584,3 +589,44 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
     content = content.replace(control_sum_identifier, "{:.2f}".format(control_sum))
     
     return content
+@frappe.whitelist()
+def validate_master_data(payment_type):
+    payments = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype , 
+                                per.reference_name
+                            From `tabPayment Entry` as pe 
+                            Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
+                            Where pe.docstatus = 0 and pe.payment_type = "Pay" and pe.party_type = "Supplier" and pe.custom_xml_file_generated = 0
+                            order by posting_date
+                            """,as_dict = 1)
+
+    merged_data = defaultdict(list)
+    for row in payments:
+        key = row['name']
+        merged_data[key].append(row['reference_name'])
+    
+    sorted_data = {}
+    for key, values in merged_data.items():
+        sorted_data.update({key:values}) 
+    
+    sort_list = []
+    data = []
+    for row in payments:
+        if sorted_data.get(row.name):
+            row.update({"reference_name":sorted_data.get(row.name)})
+        if row.name not in sort_list:
+            sort_list.append(row.name)
+            data.append(row)
+            
+    _payments = []
+    list_of_amount = []
+    error_docs = []
+    message = f'Address is missing in below suppliers<br>'
+    for row in data:
+        payment = frappe.get_doc('Payment Entry', row.name)
+        creditor_info = add_creditor_info(payment)
+        if not creditor_info:
+            message += f"<p>{ get_link_to_form('Supplier',payment.party) }</p>"
+            error_docs.append(row)
+    if error_docs:
+        frappe.throw(message)        
+    

@@ -98,6 +98,14 @@ frappe.payment_export = {
             // refresh
             location.reload(); 
         });
+        this.page.main.find(".btn-validate").on('click', function() {
+            frappe.call({
+                method:"vesta_si_erpnext.vesta_si_erpnext.page.payment_export.payment_export.validate_master_data",
+                args:{
+                    'payment_type':page.payment_type_field.get_value()
+                }
+            })
+        });
     },
     run: function(page) {  
         // populate payment entries
