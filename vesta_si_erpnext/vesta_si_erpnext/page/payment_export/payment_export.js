@@ -79,9 +79,8 @@ frappe.payment_export = {
                             else {
                                 $('<p>' + __("No errors") + '</p>').appendTo(parent);
                             }
-
                             // prepare the xml file for download
-                            download("payments.xml", r.message.content);
+                            download(`payments${r.message.time}.xml`, r.message.content);
                             
                             // remove create file button to prevent double payments
                             page.main.find(".btn-create-file").addClass("hide");
