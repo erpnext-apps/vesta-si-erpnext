@@ -52,8 +52,7 @@ def get_payments(payment_type):
             if frappe.db.get_value("Supplier", row.party , 'plus_giro_number') or frappe.db.get_value("Supplier", row.party , 'bank_giro_number'):
                 _payments.append(row)
                 list_of_amount.append(row.paid_amount)
-        if payment_type == "SEPA (EUR)":
-            if frappe.db.get_value("Supplier", row.party , 'bank_bic') and frappe.db.get_value("Supplier", row.party , 'iban_code'):
+        if payment_type == "SEPA (EUR)" and frappe.db.get_value('Supplier', row.party, 'custom_payment_type') == 'SEPA (EUR)':
                 _payments.append(row)
                 list_of_amount.append(row.paid_amount)
     
@@ -62,11 +61,13 @@ def get_payments(payment_type):
 @frappe.whitelist()
 def generate_payment_file(payments ,payment_export_settings , posting_date , payment_type):
     if payment_type == "SEPA (EUR)":
-        content = genrate_file_for_sepa(payments ,payment_export_settings , posting_date , payment_type)
+        content, transaction_count_identifier, control_sum = genrate_file_for_sepa(payments ,payment_export_settings , posting_date , payment_type)
         current_time = now()
         original_date = datetime.strptime(str(current_time), '%Y-%m-%d %H:%M:%S.%f')
         formatted_date = original_date.strftime('%Y-%m-%d %H-%M-%S')
         formatted_date = formatted_date.replace(' ','-')
+        gen_payment_export_log(content, transaction_count_identifier, control_sum, 'EUR')
+        
         return { 'content': content, 'skipped': 0 , 'time':formatted_date}
     # creates a pain.001 payment file from the selected payments
     try:
@@ -273,7 +274,7 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         # insert control numbers
         content = content.replace(transaction_count_identifier, "{0}".format(transaction_count))
         content = content.replace(control_sum_identifier, "{:.2f}".format(control_sum))
-        
+        gen_payment_export_log(content, transaction_count_identifier, control_sum, 'SEK')
         return { 'content': content, 'skipped': skipped }
     except IndexError:
         frappe.msgprint( _("Please select at least one payment."), _("Information") )
@@ -595,7 +596,7 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
     content = content.replace(transaction_count_identifier, "{0}".format(transaction_count))
     content = content.replace(control_sum_identifier, "{:.2f}".format(control_sum))
     
-    return content
+    return content, transaction_count_identifier, control_sum
 
 @frappe.whitelist()
 def validate_master_data(payment_type):
@@ -637,4 +638,15 @@ def validate_master_data(payment_type):
             error_docs.append(row)
     if error_docs:
         frappe.throw(message)        
-    
+
+
+def gen_payment_export_log(content, total_no_of_payments, total_paid_amount ,currency = None):
+    doc = frappe.new_doc('Payment export Logs')
+    doc.file_creation_time = now()
+    doc.user =  frappe.session.user
+    doc.currency = currency 
+    doc.total_paid_amount = total_paid_amount
+    doc.total_no_of_payments = total_no_of_payments
+    doc.content = content
+    doc.flags.ignore_permissions = 1
+    doc.save() 
