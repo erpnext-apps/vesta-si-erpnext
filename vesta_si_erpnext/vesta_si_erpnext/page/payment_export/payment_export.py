@@ -9,7 +9,9 @@ from collections import defaultdict
 import time
 #from erpnextswiss.erpnextswiss.common_functions import get_building_number, get_street_name, get_pincode, get_city
 import html              # used to escape xml content
-from frappe.utils import flt, get_link_to_form, getdate, nowdate
+from frappe.utils import flt, get_link_to_form, getdate, nowdate, now
+from datetime import datetime
+
 
 @frappe.whitelist()
 def get_payments(payment_type):
@@ -54,13 +56,18 @@ def get_payments(payment_type):
             if frappe.db.get_value("Supplier", row.party , 'bank_bic') and frappe.db.get_value("Supplier", row.party , 'iban_code'):
                 _payments.append(row)
                 list_of_amount.append(row.paid_amount)
-    return { 'payments': _payments , "total_paid_amount" : sum(list_of_amount)}
+    
+    return { 'payments': _payments, "total_paid_amount" : sum(list_of_amount)}
 
 @frappe.whitelist()
 def generate_payment_file(payments ,payment_export_settings , posting_date , payment_type):
     if payment_type == "SEPA (EUR)":
         content = genrate_file_for_sepa(payments ,payment_export_settings , posting_date , payment_type)
-        return { 'content': content, 'skipped': 0 }
+        current_time = now()
+        original_date = datetime.strptime(str(current_time), '%Y-%m-%d %H:%M:%S.%f')
+        formatted_date = original_date.strftime('%Y-%m-%d %H-%M-%S')
+        formatted_date = formatted_date.replace(' ','-')
+        return { 'content': content, 'skipped': 0 , 'time':formatted_date}
     # creates a pain.001 payment file from the selected payments
     try:
         # convert JavaScript parameter into Python array
@@ -589,6 +596,7 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
     content = content.replace(control_sum_identifier, "{:.2f}".format(control_sum))
     
     return content
+
 @frappe.whitelist()
 def validate_master_data(payment_type):
     payments = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype , 
