@@ -61,12 +61,12 @@ def get_payments(payment_type):
 @frappe.whitelist()
 def generate_payment_file(payments ,payment_export_settings , posting_date , payment_type):
     if payment_type == "SEPA (EUR)":
-        content, transaction_count_identifier, control_sum = genrate_file_for_sepa(payments ,payment_export_settings , posting_date , payment_type)
+        content, transaction_count, control_sum = genrate_file_for_sepa(payments ,payment_export_settings , posting_date , payment_type)
         current_time = now()
         original_date = datetime.strptime(str(current_time), '%Y-%m-%d %H:%M:%S.%f')
         formatted_date = original_date.strftime('%Y-%m-%d %H-%M-%S')
         formatted_date = formatted_date.replace(' ','-')
-        gen_payment_export_log(content, transaction_count_identifier, control_sum, 'EUR')
+        gen_payment_export_log(content, transaction_count, control_sum, 'EUR')
         
         return { 'content': content, 'skipped': 0 , 'time':formatted_date}
     # creates a pain.001 payment file from the selected payments
