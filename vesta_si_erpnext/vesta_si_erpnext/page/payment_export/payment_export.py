@@ -274,7 +274,7 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         # insert control numbers
         content = content.replace(transaction_count_identifier, "{0}".format(transaction_count))
         content = content.replace(control_sum_identifier, "{:.2f}".format(control_sum))
-        gen_payment_export_log(content, transaction_count_identifier, control_sum, 'SEK')
+        gen_payment_export_log(content, transaction_count, control_sum, 'SEK')
         return { 'content': content, 'skipped': skipped }
     except IndexError:
         frappe.msgprint( _("Please select at least one payment."), _("Information") )
@@ -596,7 +596,7 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
     content = content.replace(transaction_count_identifier, "{0}".format(transaction_count))
     content = content.replace(control_sum_identifier, "{:.2f}".format(control_sum))
     
-    return content, transaction_count_identifier, control_sum
+    return content, transaction_count, control_sum
 
 @frappe.whitelist()
 def validate_master_data(payment_type):
@@ -641,7 +641,7 @@ def validate_master_data(payment_type):
 
 
 def gen_payment_export_log(content, total_no_of_payments, total_paid_amount ,currency = None):
-    doc = frappe.new_doc('Payment export Logs')
+    doc = frappe.new_doc('Payment export Log')
     doc.file_creation_time = now()
     doc.user =  frappe.session.user
     doc.currency = currency 
