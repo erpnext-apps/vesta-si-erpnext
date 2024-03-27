@@ -61,7 +61,7 @@
  "modified": "2024-03-26 10:02:06.798381",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
- "name": "Payment export Logs",
+ "name": "Payment export Log",
  "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
