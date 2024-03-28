@@ -181,8 +181,9 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
             workflow_state = frappe.db.get_value("Payment Export Settings",payment_export_settings , 'workflow_state')
             if workflow_state:
                 for d in payment_record.references:
-                    PI_doc = frappe.get_doc('Purchase Invoice' , d.reference_name)
-                    PI_doc.db_set("workflow_state" , workflow_state)
+                    if d.reference_doctype == 'Purchase Invoice':
+                        PI_doc = frappe.get_doc('Purchase Invoice' , d.reference_name)
+                        PI_doc.db_set("workflow_state" , workflow_state)
             payment_content = ""
             payment_content += make_line("      <CdtTrfTxInf>")
             payment_content += make_line("        <PmtId>")
