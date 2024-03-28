@@ -641,7 +641,7 @@ def validate_master_data(payment_type):
 
 
 def gen_payment_export_log(content, total_no_of_payments, total_paid_amount ,currency = None):
-    doc = frappe.new_doc('Payment export Log')
+    doc = frappe.new_doc('Payment Export Log')
     doc.file_creation_time = now()
     doc.user =  frappe.session.user
     doc.currency = currency 
