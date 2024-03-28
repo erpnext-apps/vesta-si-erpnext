@@ -585,7 +585,9 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
         content += make_line("                  </Id>")
         content += make_line("              </CdtrAcct>")
         content += make_line("              <RmtInf>")
-        sup_invoice_no = frappe.db.get_value("Purchase Invoice" , payment_record.references[0].reference_name , 'bill_no')
+        sup_invoice_no = ''
+        if payment_record.references[0].reference_doctype == "Purchase Invoice":
+            sup_invoice_no = frappe.db.get_value("Purchase Invoice" , payment_record.references[0].reference_name , 'bill_no')
         content += make_line("                  <Ustrd>{0}</Ustrd>".format(sup_invoice_no if sup_invoice_no else ""))
         content += make_line("              </RmtInf>")
         content += make_line("          </CdtTrfTxInf>")
