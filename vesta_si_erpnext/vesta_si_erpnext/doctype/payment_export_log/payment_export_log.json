@@ -13,6 +13,7 @@
   "currency",
   "total_paid_amount",
   "total_no_of_payments",
+  "logs",
   "content"
  ],
  "fields": [
@@ -54,11 +55,17 @@
    "fieldtype": "Link",
    "label": "Currency",
    "options": "Currency"
+  },
+  {
+   "fieldname": "logs",
+   "fieldtype": "Table",
+   "label": "Logs",
+   "options": "Payment Transaction Log"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-26 10:02:06.798381",
+ "modified": "2024-04-02 17:18:43.246708",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Payment Export Log",

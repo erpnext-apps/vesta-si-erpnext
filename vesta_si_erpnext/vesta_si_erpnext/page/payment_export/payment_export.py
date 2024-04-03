@@ -66,7 +66,9 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         original_date = datetime.strptime(str(current_time), '%Y-%m-%d %H:%M:%S.%f')
         formatted_date = original_date.strftime('%Y-%m-%d %H-%M-%S')
         formatted_date = formatted_date.replace(' ','-')
-        gen_payment_export_log(content, transaction_count, control_sum, 'EUR')
+        payments = eval(payments)
+        payments = list(filter(None, payments))
+        gen_payment_export_log(content, transaction_count, control_sum, payments, 'EUR')
         
         return { 'content': content, 'skipped': 0 , 'time':formatted_date}
     # creates a pain.001 payment file from the selected payments
@@ -275,7 +277,7 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         # insert control numbers
         content = content.replace(transaction_count_identifier, "{0}".format(transaction_count))
         content = content.replace(control_sum_identifier, "{:.2f}".format(control_sum))
-        gen_payment_export_log(content, transaction_count, control_sum, 'SEK')
+        gen_payment_export_log(content, transaction_count, control_sum, payments, 'SEK')
         return { 'content': content, 'skipped': skipped }
     except IndexError:
         frappe.msgprint( _("Please select at least one payment."), _("Information") )
@@ -643,7 +645,7 @@ def validate_master_data(payment_type):
         frappe.throw(message)        
 
 
-def gen_payment_export_log(content, total_no_of_payments, total_paid_amount ,currency = None):
+def gen_payment_export_log(content, total_no_of_payments, total_paid_amount, payments, currency = None):
     doc = frappe.new_doc('Payment Export Log')
     doc.file_creation_time = now()
     doc.user =  frappe.session.user
@@ -652,4 +654,12 @@ def gen_payment_export_log(content, total_no_of_payments, total_paid_amount ,cur
     doc.total_no_of_payments = total_no_of_payments
     doc.content = content
     doc.flags.ignore_permissions = 1
+    for row in payments:
+        pay_doc = frappe.get_doc('Payment Entry', row)
+        doc.append('logs',{
+            'payment_entry' : row,
+            'supplier' : pay_doc.party,
+            'paid_amount' : pay_doc.paid_amount
+        })
+
     doc.save() 
