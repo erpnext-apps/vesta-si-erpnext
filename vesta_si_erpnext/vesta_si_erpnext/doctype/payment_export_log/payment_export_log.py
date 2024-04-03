@@ -16,5 +16,6 @@ def submit_all_payment_entry(self : dict):
 	for row in log.logs:
 		payment_doc = frappe.get_doc('Payment Entry', row.get('payment_entry'))
 		payment_doc.submit()
-
+		frappe.db.set_value("Payment Transaction Log", row.get('name'), 'status', payment_doc.status)
+	frappe.db.set_value('Payment Export Log', doc.get('name'), 'status', 'Submitted')
 	frappe.msgprint('Payment Entry Succesfully Submited')

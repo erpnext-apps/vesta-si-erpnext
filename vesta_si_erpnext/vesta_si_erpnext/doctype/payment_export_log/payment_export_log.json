@@ -14,7 +14,8 @@
   "total_paid_amount",
   "total_no_of_payments",
   "logs",
-  "content"
+  "content",
+  "status"
  ],
  "fields": [
   {
@@ -60,12 +61,22 @@
    "fieldname": "logs",
    "fieldtype": "Table",
    "label": "Logs",
-   "options": "Payment Transaction Log"
+   "options": "Payment Transaction Log",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Draft\nSubmitted",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-02 17:18:43.246708",
+ "modified": "2024-04-03 09:56:11.074662",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Payment Export Log",
