@@ -19,11 +19,6 @@ def on_submit(self, method):
         ''', as_dict =1)
     
     pel_doc = frappe.get_doc('Payment Export Log', data[0].parent)
-    flag = True
     for row in pel_doc.logs:
         if row.payment_entry == self.name:
             frappe.db.set_value(row.doctype , row.name, 'status', 'Submitted')
-        if row.status != "Submitted":
-            flag = False
-    if flag:
-        frappe.db.set_value('Payment Export Log', data[0].parent , 'status', 'Submitted')
