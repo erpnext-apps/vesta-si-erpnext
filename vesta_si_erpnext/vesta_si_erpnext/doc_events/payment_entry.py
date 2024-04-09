@@ -17,7 +17,7 @@ def on_submit(self, method):
             Select parent From `tabPayment Transaction Log` 
             Where payment_entry = "{self.name}"
         ''', as_dict =1)
-    if data:
+    if len(data):
         pel_doc = frappe.get_doc('Payment Export Log', data[0].parent)
         for row in pel_doc.logs:
             if row.payment_entry == self.name:
