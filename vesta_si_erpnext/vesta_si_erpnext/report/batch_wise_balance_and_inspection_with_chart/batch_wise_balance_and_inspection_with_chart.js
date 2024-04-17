@@ -60,6 +60,7 @@ frappe.query_reports["Batch-Wise Balance and Inspection with Chart"] = {
 			"label": __("QI Parameter"),
 			"fieldtype": "Link",
 			"options": "Quality Inspection Parameter",
+			"reqd": 1
 		}
 	]
 };
