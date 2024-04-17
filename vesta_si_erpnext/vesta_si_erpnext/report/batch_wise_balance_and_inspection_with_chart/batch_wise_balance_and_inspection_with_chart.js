@@ -17,7 +17,7 @@ frappe.query_reports["Batch-Wise Balance and Inspection with Chart"] = {
 			"label": __("From Date"),
 			"fieldtype": "Date",
 			"width": "80",
-			"default": frappe.sys_defaults.year_start_date,
+			"default": frappe.datetime.add_months(frappe.datetime.get_today(), -1),
 			"reqd": 1
 		},
 		{
