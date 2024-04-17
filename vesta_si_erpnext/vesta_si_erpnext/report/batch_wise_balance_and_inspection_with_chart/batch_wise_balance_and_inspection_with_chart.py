@@ -6,10 +6,12 @@ import frappe
 from frappe import _
 from frappe.utils import cint, flt, getdate
 from pypika.terms import JSON
+import statistics
+
 
 
 def execute(filters=None):
-	param_columns = get_params()
+	param_columns = get_params(filters)
 
 	if not filters: filters = {}
 	if filters.from_date > filters.to_date:
@@ -21,38 +23,50 @@ def execute(filters=None):
 	item_map = get_item_details(filters)
 	iwb_map = get_item_warehouse_batch_map(filters, float_precision, param_columns)
 	data = []
+	total = 0
+	std_dev = []
+	batch_list = []
 	for item in sorted(iwb_map):
 		if not filters.get("item") or filters.get("item") == item:
 			for wh in sorted(iwb_map[item]):
 				for batch in sorted(iwb_map[item][wh]):
 					batch_dict = iwb_map[item][wh][batch]
-					row = [item, item_map[item]["item_name"], wh, batch,
-						flt(batch_dict.bal_qty, float_precision),
-						item_map[item]["stock_uom"], batch_dict.qi
-					]
-					for param in param_columns:
-						row.append(batch_dict[param['col_name']])
-
-					row.extend([batch_dict.desc, batch_dict.supplier_bag_no])
-					data.append(row)
+					if batch_dict.qi:
+						row = [item, item_map[item]["item_name"], wh, batch,
+							flt(batch_dict.bal_qty, float_precision),
+							item_map[item]["stock_uom"], batch_dict.qi
+						]
+						for param in param_columns:
+							row.append(flt(batch_dict[param['col_name']]))
+							std_dev.append(flt(batch_dict[param['col_name']]))
+						data.append(row)
 	
-	return columns, data
+	avarage = sum(std_dev) / flt(len(data))
+	stdev = statistics.stdev(std_dev)
+	UCL = flt(avarage) + flt(stdev)
+	LCL = flt(avarage) - flt(stdev)
+	for row in data:
+		batch_list.append(row[3])
+		row.extend([avarage, stdev, UCL, LCL])
+
+	chart = get_chart_data(filters, columns, data, batch_list, avarage, stdev, UCL, LCL, std_dev)
+
+	return columns, data , None, chart
 
 
 def get_columns(filters, params):
 	"""return columns based on filters"""
 
 	columns = [_("Item") + ":Link/Item:100"] + [_("Item Name") + "::150"] + \
-		[_("Warehouse") + ":Link/Warehouse:100"] + \
-		[_("Batch") + ":Link/Batch:100"] + [_("Balance Qty") + ":Float:90"] + \
-		[_("UOM") + "::90"] + \
-		[_("Quality Inspection") + ":Link/Quality Inspection:140"]
+			[_("Warehouse") + ":Link/Warehouse:100"] + \
+			[_("Batch") + ":Link/Batch:100"] + [_("Balance Qty") + ":Float:90"] + \
+			[_("UOM") + "::90"] + \
+			[_("Quality Inspection") + ":Link/Quality Inspection:140"]
 
 	for param in params:
-		columns += [_(param['inspection_parameter']) + ":Float:100"]
-
-	columns += [_("Description") + "::95"] + [_("Supplier Bag No.") + "::120"]
-
+		columns += [_('QI Parameter') + ":Float:150"]
+	columns += [_("Avarage") + ":Float:100"] + [_("Standard Deviation") + ":Float:100"] + \
+				[_("UCL") + ":Float:100"] + [_("LCL") + ":Float:100"]
 	return columns
 
 
@@ -75,10 +89,7 @@ def get_conditions(filters, params):
 			parameter = '%' + filters.get(param['col_name']) + '%'
 			conditions += " and reading." + param['col_name'] + " like {0}".format(frappe.db.escape(parameter, percent = False))
 
-	if filters.get("supplier_bag_no"):
-		supplier_bag_no = '%' + filters.get('supplier_bag_no') + '%'
-		conditions += " and se.supplier_bag_no like {0}".format(frappe.db.escape(supplier_bag_no), percent = False)
-
+	
 	return conditions
 
 
@@ -93,12 +104,14 @@ def get_stock_ledger_entries(filters, params):
 	col_conditions = ""
 	for col in params:
 		col_conditions += ", reading." + col['col_name'] + " as " + col['col_name']
-	conditions += f" and s.posting_date >= {filters.get('from_date')}"
-	conditions += f" and s.posting_date <= {filters.get('to_date')}"
+
+	conditions += f" and qi.report_date >= '{filters.get('from_date')}'"
+	conditions += f" and qi.report_date <= '{filters.get('to_date')}'"
+	
 	data = frappe.db.sql(f"""
 	 	SELECT
 	 		s.item_code, s.batch_no, s.warehouse, s.posting_date, sum(s.actual_qty) as actual_qty,
-	 		se.quality_inspection as qi_name, se.supplier_bag_no as supplier_bag_no {col_conditions}
+	 		se.quality_inspection as qi_name {col_conditions}
 	 	FROM
 	 		(
 			SELECT
@@ -143,9 +156,7 @@ def get_item_warehouse_batch_map(filters, float_precision, params):
 				"in_qty": 0.0,
 				"out_qty": 0.0,
 				"bal_qty": 0.0,
-				"qi": "",
-				"desc": get_batch_desc(d.batch_no),
-				"supplier_bag_no": ""
+				"qi": ""
 			}))
 		batch_dict = iwb_map[d.item_code][d.warehouse][d.batch_no]
 		batch_dict.qi = d.qi_name
@@ -153,17 +164,15 @@ def get_item_warehouse_batch_map(filters, float_precision, params):
 		for param in param_values:
 			batch_dict[param] = d[param]
 		batch_dict.bal_qty = flt(batch_dict.bal_qty, float_precision) + flt(d.actual_qty, float_precision)
-
 	return iwb_map
 
 @frappe.whitelist()
-def get_params():
+def get_params(filters):
 	import re
-	params =  frappe.db.get_values('Inspection Report Parameter',
-		{'parent': 'Quality Inspection Report Settings'},
-		['inspection_parameter'], order_by = 'idx', as_dict = 1)
+	params =  [{'inspection_parameter': filters.get('qi_parameter')}]
+
 	for col in params:
-		col['col_name'] = re.sub('[^A-Za-z0-9]+', '', col['inspection_parameter'])
+		col['col_name'] = re.sub('[^A-Za-z0-9]+', '', str(col.get('inspection_parameter')))
 
 	return params
 
@@ -177,60 +186,38 @@ def get_item_details(filters):
 
 	return item_map
 
-@frappe.whitelist()
-def create_stock_entry(item_list):
-	stock_entry = frappe.new_doc('Stock Entry')
-	stock_entry.purpose = 'Material Transfer'
 
-	if isinstance(item_list, str):
-		item_list = json.loads(item_list)
-
-	for key, item_details in item_list.items():
-		se_child = stock_entry.append('items')
-		se_child.s_warehouse = item_details.get("warehouse")
-		se_child.conversion_factor = 1
-
-		for field in ["item_code","uom","qty","quality_inspection",
-			 "item_name", "batch_no", "stock_uom"]:
-			if item_details.get(field):
-				se_child.set(field, item_details.get(field))
-
-		if se_child.s_warehouse==None:
-			se_child.s_warehouse = stock_entry.from_warehouse
-		if se_child.t_warehouse==None:
-			se_child.t_warehouse = stock_entry.to_warehouse
-
-		se_child.transfer_qty = flt(item_details.get("qty"), se_child.precision("qty"))
-
-	stock_entry.set_stock_entry_type()
-
-	return stock_entry.as_dict()
-
-
-@frappe.whitelist()
-def create_certificate(item_list):
-	if isinstance(item_list, str):
-		item_list = json.loads(item_list)
-
-	key = list(item_list.keys())[0]
-	item_code = item_list[key]["item_code"]
-	analytical_certificate = frappe.new_doc('Analytical Certificate Creation')
-	item_data = frappe.db.get_value("Item",
-		item_code, ["item_name", "description", "quality_inspection_template"], as_dict=1)
-
-	analytical_certificate.item_code = item_code
-	analytical_certificate.item_name = item_data.item_name
-	analytical_certificate.description = item_data.description
-	analytical_certificate.qi_template = item_data.quality_inspection_template
-
-	for key, item_details in item_list.items():
-		drum_child = analytical_certificate.append('batches')
-		drum_child.drum = item_details["batch_no"]
-		if item_details["batch_no"]:
-			drum_child.weight = frappe.db.get_value("Batch", item_details["batch_no"], "batch_qty")
-		qi_doc = frappe.get_doc("Quality Inspection",item_details["quality_inspection"])
-		qi_readings = qi_doc.get("readings")
-		for qi in qi_readings:
-			mapped_column = frappe.get_value("Quality Inspection Parameter",qi.specification,"certificate_column_name")
-			drum_child.set(mapped_column,qi.reading_1)
-	return analytical_certificate.as_dict()
+def get_chart_data(filters, columns, data, batch_list, avarage, stdev, UCL, LCL, std_dev):
+	avarage_list = [avarage for row in range(len(data))]
+	UCL = [UCL for row in range(len(data))]
+	LCL = [LCL for row in range(len(data))]
+	
+	return {
+			
+			"data": {
+					'labels': batch_list,
+					'datasets': [
+						{
+							'name': 'Avarage',
+							'values': avarage_list,
+							'chartType': 'line'
+						},
+						{
+							'name': "UCL",
+							'values': UCL,
+							'chartType': 'line'
+						},
+						{
+							'name': "LCL",
+							'values': LCL,
+							'chartType': 'line'
+						},
+						{
+							'name': "QI Parameter",
+							'values': std_dev,
+							'chartType': 'line'
+						},
+					]
+				},
+				"type": "line",
+			}
