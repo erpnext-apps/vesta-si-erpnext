@@ -62,5 +62,28 @@ frappe.query_reports["Batch-Wise Balance and Inspection with Chart"] = {
 			"options": "Quality Inspection Parameter",
 			"reqd": 1
 		}
-	]
+	],
+	formatter: function (value, row, column, data, default_formatter) {
+		value = default_formatter(value, row, column, data);
+		if (data['ucl'] > data['qi_parameter'] > data['lcl']){
+			if (column.fieldname == "batch"){
+				value = value.replace('<a ', '<a style="color: green;" ')
+				console.log(value)
+			}
+		}
+		if (data['qi_parameter'] > data['ucl']){
+			if (column.fieldname == "batch"){
+				value = value.replace('<a ', '<a style="color: red;" ')
+				console.log(value)
+			}
+		}
+		if (data['qi_parameter'] < data['lcl']){
+			if (column.fieldname == "batch"){
+				value = value.replace('<a ', '<a style="color: red;" ')
+				console.log(value)
+			}
+		}
+		
+		return value
+	}
 };
