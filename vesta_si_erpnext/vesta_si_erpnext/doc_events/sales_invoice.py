@@ -20,9 +20,11 @@ def get_items_from_stock_entry(stock_entry ):
 def check_account_frozzen_date(self, method):
     if self.voucher_type == "Purchase Invoice":
         pi_frozen_date = frappe.db.get_value('Company', self.company, "custom_accounts_payable_purchase_invoice_frozen_till_date")
-        if self.posting_date <= getdate(pi_frozen_date):
-            frappe.throw(f"Accounting period till <b>{pi_frozen_date}</b> is closed. Select a date after <b>{pi_frozen_date}</b> in 'Posting Date' field.")
+        if pi_frozen_date:
+            if self.posting_date <= getdate(pi_frozen_date):
+                frappe.throw(f"Accounting period till <b>{pi_frozen_date}</b> is closed. Select a date after <b>{pi_frozen_date}</b> in 'Posting Date' field.")
     if self.voucher_type == "Sales Invoice":
         si_frozen_date = frappe.db.get_value('Company', self.company, "custom_accounts_receivable_sales_invoice_frozen_till_date")
-        if self.posting_date <= getdate(si_frozen_date):
-            frappe.throw(f"Accounting period till <b>{pi_frozen_date}</b> is closed. Select a date after <b>{pi_frozen_date}</b> in 'Posting Date' field.")
+        if si_frozen_date:
+            if self.posting_date <= getdate(si_frozen_date):
+                frappe.throw(f"Accounting period till <b>{pi_frozen_date}</b> is closed. Select a date after <b>{pi_frozen_date}</b> in 'Posting Date' field.")
