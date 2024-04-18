@@ -27,4 +27,4 @@ def check_account_frozzen_date(self, method):
         si_frozen_date = frappe.db.get_value('Company', self.company, "custom_accounts_receivable_sales_invoice_frozen_till_date")
         if si_frozen_date:
             if self.posting_date <= getdate(si_frozen_date):
-                frappe.throw(f"Accounting period till <b>{pi_frozen_date}</b> is closed. Select a date after <b>{pi_frozen_date}</b> in 'Posting Date' field.")
+                frappe.throw(f"Accounting period till <b>{si_frozen_date}</b> is closed. Select a date after <b>{si_frozen_date}</b> in 'Posting Date' field.")
