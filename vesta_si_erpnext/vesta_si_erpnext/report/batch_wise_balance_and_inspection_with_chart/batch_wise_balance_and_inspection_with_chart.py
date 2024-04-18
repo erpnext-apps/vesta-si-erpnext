@@ -200,24 +200,29 @@ def get_chart_data(filters, columns, data, batch_list, avarage, stdev, UCL, LCL,
 						{
 							'name': 'Avarage',
 							'values': avarage_list,
-							'chartType': 'line'
+							'chartType': 'line',
+							"color": "#FFFF00"
 						},
 						{
 							'name': "UCL",
 							'values': UCL,
-							'chartType': 'line'
+							'chartType': 'line',
+							"color": "#008000"
 						},
 						{
 							'name': "LCL",
 							'values': LCL,
-							'chartType': 'line'
+							'chartType': 'line',
+							"color": "#FF0000"
 						},
 						{
 							'name': "QI Parameter",
 							'values': std_dev,
-							'chartType': 'line'
+							'chartType': 'line',
+							"color": "blue"
 						},
 					]
 				},
 				"type": "line",
+				"colors": ["#FFFF00", "#008000", "#FF0000", "blue"],
 			}
