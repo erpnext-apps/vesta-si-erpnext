@@ -21,8 +21,8 @@ def check_account_frozzen_date(self, method):
     if self.voucher_type == "Purchase Invoice":
         pi_frozen_date = frappe.db.get_value('Company', self.company, "custom_accounts_payable_purchase_invoice_frozen_till_date")
         if self.posting_date <= getdate(pi_frozen_date):
-            frappe.throw(f"Transaction are not allowed before frozen date <b>{pi_frozen_date}</b>")
+            frappe.throw(f"Accounting period till <b>{pi_frozen_date}</b> is closed. Select a date after <b>{pi_frozen_date}</b> in 'Posting Date' field.")
     if self.voucher_type == "Sales Invoice":
         si_frozen_date = frappe.db.get_value('Company', self.company, "custom_accounts_receivable_sales_invoice_frozen_till_date")
         if self.posting_date <= getdate(si_frozen_date):
-            frappe.throw(f"Transaction are not allowed before frozen date <b>{si_frozen_date}</b>")
+            frappe.throw(f"Accounting period till <b>{pi_frozen_date}</b> is closed. Select a date after <b>{pi_frozen_date}</b> in 'Posting Date' field.")
