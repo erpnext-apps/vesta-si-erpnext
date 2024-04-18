@@ -127,6 +127,9 @@ doc_events = {
 	},
 	"Purchase Invoice": {
 		"on_update_after_submit": "vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_invoice.set_due_date_after_submit"
+	},
+	"GL Entry":{
+		'validate': "vesta_si_erpnext.vesta_si_erpnext.doc_events.sales_invoice.check_account_frozzen_date",
 	}
 }
 
