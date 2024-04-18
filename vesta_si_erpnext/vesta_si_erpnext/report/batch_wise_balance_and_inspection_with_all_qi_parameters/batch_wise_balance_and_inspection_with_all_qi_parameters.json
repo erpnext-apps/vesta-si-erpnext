@@ -1,0 +1,39 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2024-04-12 07:52:46.363042",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Vesta Si (without footer image with address)",
+ "modified": "2024-04-12 07:52:46.363042",
+ "modified_by": "Administrator",
+ "module": "Vesta Si Erpnext",
+ "name": "Batch-Wise Balance and Inspection with all QI Parameters",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Stock Entry",
+ "report_name": "Batch-Wise Balance and Inspection with all QI Parameters",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Manufacturing Manager"
+  },
+  {
+   "role": "Stock Manager"
+  },
+  {
+   "role": "Stock User"
+  },
+  {
+   "role": "Manufacturing User"
+  },
+  {
+   "role": "Accounts User"
+  }
+ ]
+}
