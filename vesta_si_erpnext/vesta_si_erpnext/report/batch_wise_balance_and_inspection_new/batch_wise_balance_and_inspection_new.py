@@ -93,8 +93,8 @@ def get_stock_ledger_entries(filters, params):
 	col_conditions = ""
 	for col in params:
 		col_conditions += ", reading." + col['col_name'] + " as " + col['col_name']
-	conditions += f" and s.posting_date >= {filters.get('from_date')}"
-	conditions += f" and s.posting_date <= {filters.get('to_date')}"
+	conditions += f" and s.posting_date >= '{filters.get('from_date')}'"
+	conditions += f" and s.posting_date <= '{filters.get('to_date')}'"
 	data = frappe.db.sql(f"""
 	 	SELECT
 	 		s.item_code, s.batch_no, s.warehouse, s.posting_date, sum(s.actual_qty) as actual_qty,
