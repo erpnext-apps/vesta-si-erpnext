@@ -53,8 +53,14 @@ def get_payments(payment_type):
                 _payments.append(row)
                 list_of_amount.append(row.paid_amount)
         if payment_type == "SEPA (EUR)" and frappe.db.get_value('Supplier', row.party, 'custom_payment_type') == 'SEPA (EUR)':
-                _payments.append(row)
-                list_of_amount.append(row.paid_amount)
+                flag = False
+                for d in row.reference_name:
+                    currency = frappe.db.get_value(row.reference_doctype, d, 'currency')
+                    if currency == "EUR":
+                        flag = True
+                if flag:
+                    _payments.append(row)
+                    list_of_amount.append(row.paid_amount)
     
     return { 'payments': _payments, "total_paid_amount" : sum(list_of_amount)}
 
