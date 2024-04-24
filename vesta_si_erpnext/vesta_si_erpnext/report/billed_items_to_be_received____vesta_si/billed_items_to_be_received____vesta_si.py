@@ -19,7 +19,7 @@ def get_data(report_filters):
 	fields = get_report_fields()
 
 	purchase_receipt = frappe.db.sql(f"""
-		Select pr.name , pri.item_code, pri.rate, pri.amount, pri.purchase_invoice
+		Select pr.name , pri.item_code, pri.base_net_amount as amount, pri.base_net_rate as rate, pri.purchase_invoice
 		From `tabPurchase Receipt` as pr
 		Left Join `tabPurchase Receipt Item` as pri on pri.parent = pr.name
 		Where pr.company = '{report_filters.get('company')}' and pr.docstatus = 1 """,as_dict = 1)
@@ -35,15 +35,19 @@ def get_data(report_filters):
 			doc = frappe.get_doc('Purchase Receipt', row.purchase_receipt)
 			for d in doc.items:
 				if d.item_code == row.item_code:
-					row.update({'pr_rate':d.rate})
-				row.update({'pr_amount':d.amount})
+					row.update({'pr_rate':d.base_net_rate})
+					row.update({'pr_amount':d.base_net_amount})
+			continue
 		if pr_map.get(row.name) and not row.purchase_receipt:
 			if pr_map.get(row.name).get('item_code') == row.item_code:
 				row.update({'purchase_receipt':pr_map.get(row.name).get('name')})
 				row.update({'pr_rate':pr_map.get(row.name).get('rate')})
 				row.update({'pr_amount':pr_map.get(row.name).get('amount')})
+		
+	for row in purchase_invoice:
 		if row.pr_amount:
-			row.update({'difference_amount' : row.amount - flt(row.pr_amount)})
+			row.update({'difference_amount' : row.base_net_amount - flt(row.pr_amount)})
+		
 		
 		
 	return purchase_invoice
@@ -57,6 +61,7 @@ def get_report_filters(report_filters):
 		["Purchase Invoice", "docstatus", "=", 1],
 		["Purchase Invoice", "per_received", "<", 100],
 		["Purchase Invoice", "update_stock", "=", 0],
+		["Purchase Invoice Item", "expense_account", "=", "222501 - Goods & services received/Invoice received - non SKF - 9150"]
 	]
 
 	if report_filters.get("purchase_invoice"):
@@ -72,7 +77,7 @@ def get_report_fields():
 	for p_field in ["name", "supplier", "company", "posting_date", "currency"]:
 		fields.append("`tabPurchase Invoice`.`{}`".format(p_field))
 
-	for c_field in ["item_code", "item_name", "uom", "qty", "received_qty", "rate", "amount", 'purchase_receipt']:
+	for c_field in ["item_code", "item_name", "uom", "qty", "received_qty", "base_net_rate", "base_net_amount", 'purchase_receipt']:
 		fields.append("`tabPurchase Invoice Item`.`{}`".format(c_field))
 
 	return fields
@@ -113,9 +118,9 @@ def get_columns():
 		{"label": _("UOM"), "fieldname": "uom", "fieldtype": "Link", "options": "UOM", "width": 100},
 		{"label": _("Invoiced Qty"), "fieldname": "qty", "fieldtype": "Float", "width": 100},
 		{"label": _("Received Qty"), "fieldname": "received_qty", "fieldtype": "Float", "width": 100},
-		{"label": _("Rate"), "fieldname": "rate", "fieldtype": "Currency", "width": 100},
+		{"label": _("Rate"), "fieldname": "base_net_rate", "fieldtype": "Currency", "width": 100},
 		{"label": _("PR Rate"), "fieldname": "pr_rate", "fieldtype": "Currency", "width": 100},
-		{"label": _("Amount"), "fieldname": "amount", "fieldtype": "Currency", "width": 100},
+		{"label": _("Amount"), "fieldname": "base_net_amount", "fieldtype": "Currency", "width": 100},
 		{"label": _("PR Amount"), "fieldname": "pr_amount", "fieldtype": "Currency", "width": 100},
 		{"label": _("Different Amount"), "fieldname": "difference_amount", "fieldtype": "Currency", "width": 100},
 
