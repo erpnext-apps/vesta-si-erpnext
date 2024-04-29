@@ -1,0 +1,27 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2024-04-29 07:25:32.333131",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Vesta Si (without footer image with address)",
+ "modified": "2024-04-29 07:25:32.333131",
+ "modified_by": "Administrator",
+ "module": "Vesta Si Erpnext",
+ "name": "Inspection Control Chart Based On Permissible Limits",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Quality Inspection",
+ "report_name": "Inspection Control Chart Based On Permissible Limits",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Quality Manager"
+  }
+ ]
+}
