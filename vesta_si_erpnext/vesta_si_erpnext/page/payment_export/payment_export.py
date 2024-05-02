@@ -16,12 +16,12 @@ from datetime import datetime
 @frappe.whitelist()
 def get_payments(payment_type):
     payments = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype , 
-                                per.reference_name
-                            From `tabPayment Entry` as pe 
-                            Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
-                            Where pe.docstatus = 0 and pe.payment_type = "Pay" and pe.party_type = "Supplier" and pe.custom_xml_file_generated = 0
-                            order by posting_date
-                            """,as_dict = 1)
+                                per.reference_name, pe.received_amount
+                                From `tabPayment Entry` as pe 
+                                Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
+                                Where pe.docstatus = 0 and pe.payment_type = "Pay" and pe.party_type = "Supplier" and pe.custom_xml_file_generated = 0
+                                order by posting_date
+                                """,as_dict = 1)
 
     merged_data = defaultdict(list)
     for row in payments:
@@ -61,6 +61,10 @@ def get_payments(payment_type):
                 if flag:
                     _payments.append(row)
                     list_of_amount.append(row.paid_amount)
+        if payment_type == "Cross Border Payments (USD)" and frappe.db.get_value('Supplier', row.party, 'custom_payment_type') == 'Cross Border Payments (USD)':
+                row.update({"paid_amount":row.received_amount})
+                _payments.append(row)
+                list_of_amount.append(row.received_amount)
     
     return { 'payments': _payments, "total_paid_amount" : sum(list_of_amount)}
 
@@ -77,6 +81,16 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         gen_payment_export_log(content, transaction_count, control_sum, payments, 'EUR')
         
         return { 'content': content, 'skipped': 0 , 'time':formatted_date}
+
+    if payment_type == "Cross Border Payments (USD)":
+        from vesta_si_erpnext.vesta_si_erpnext.page.payment_export.cross_border_payment import get_cross_border_xml_file
+        content, transaction_count, control_sum = get_cross_border_xml_file(payments ,payment_export_settings , posting_date , payment_type)
+        current_time = now()
+        original_date = datetime.strptime(str(current_time), '%Y-%m-%d %H:%M:%S.%f')
+        formatted_date = original_date.strftime('%Y-%m-%d %H-%M-%S')
+        formatted_date = formatted_date.replace(' ','-')
+        return { 'content': content, 'skipped': 0 , 'time':formatted_date}
+
     # creates a pain.001 payment file from the selected payments
     try:
         # convert JavaScript parameter into Python array
