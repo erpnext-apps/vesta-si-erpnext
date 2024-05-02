@@ -55,14 +55,14 @@ def get_columns(filters):
 			"width":150
 		},
 		{
-			"fieldname":"reading_1",
-			"label": _("Reading"),
+			"fieldname":"max_value",
+			"label": _("Maximum Value"),
 			"fieldtype": "Float",
 			"width":150
 		},
 		{
-			"fieldname":"max_value",
-			"label": _("Maximum Value"),
+			"fieldname":"reading_1",
+			"label": _("Reading"),
 			"fieldtype": "Float",
 			"width":150
 		},

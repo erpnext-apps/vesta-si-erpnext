@@ -51,12 +51,15 @@ frappe.query_reports["Inspection Control Chart Based On Permissible Limits"] = {
 	],
 	formatter: function (value, row, column, data, default_formatter) {
 		value = default_formatter(value, row, column, data);
-		if (!(data['max_value'] >= data['reading_1'] >= data['min_value'])){
-			console.log(column)
+		if (data.max_value < data.reading_1){
 			value = value.replace('<a ', '<a style="color: red;" ')
 			value = "<span style='color:red'>" + value + "</span>";
 		}
-		
+		if(data.min_value > data.reading_1){
+			value = value.replace('<a ', '<a style="color: red;" ')
+			value = "<span style='color:red'>" + value + "</span>";
+		}
+			
 		return value
 	}
 };
