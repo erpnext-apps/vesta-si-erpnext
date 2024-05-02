@@ -8,8 +8,8 @@ def validate(self, method):
 
         if len(list(set(currency_list))) > 1:
             frappe.throw("Purchase Invoices have different currencies. All selected purchase invoices must have the same currency.")
-        elif self.paid_from_account_currency != list(set(currency_list))[0]:
-            frappe.throw(f"Account Paid From should be in <b>{list(set(currency_list))[0]}<b>")
+        # elif self.paid_from_account_currency != list(set(currency_list))[0]:
+        #     frappe.throw(f"Account Paid From should be in <b>{list(set(currency_list))[0]}<b>")
 
 
 def on_submit(self, method):
