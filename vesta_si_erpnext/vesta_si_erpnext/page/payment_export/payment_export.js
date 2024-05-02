@@ -168,8 +168,8 @@ function getfindSelected() {
 
           if (isChecked) {
             var checkid = inputs[i].id.replace('chk','')
-            frappe.model.get_value('Payment Entry' , checkid , 'paid_amount' , (r) => {
-                total_selected = r.paid_amount + total_selected
+            frappe.model.get_value('Payment Entry' , checkid , 'total_allocated_amount' , (r) => {
+                total_selected = r.total_allocated_amount + total_selected
                 if(i == inputs.length){
                     var selected_entry = document.getElementById('total_selected_amount')
                     selected_entry.innerHTML = `<b>Total Amount of Selected Entries</b>: ${total_selected}`
