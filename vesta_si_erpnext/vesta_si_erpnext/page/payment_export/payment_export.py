@@ -15,7 +15,7 @@ from datetime import datetime
 
 @frappe.whitelist()
 def get_payments(payment_type):
-    payments = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype , pe.total_allocated_amount, 
+    payments = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype
                                 per.reference_name, pe.received_amount
                                 From `tabPayment Entry` as pe 
                                 Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
@@ -220,7 +220,7 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
             payment_content += make_line("        <Amt>")
             payment_content += make_line("          <InstdAmt Ccy=\"{0}\">{1:.2f}</InstdAmt>".format(
                 payment_record.paid_from_account_currency,
-                payment_record.total_allocated_amount))
+                payment_record.paid_amount))
             payment_content += make_line("        </Amt>")
             chrgbr = frappe.db.get_value('Payment Export Settings',payment_export_settings,'chrgbr')
             payment_content += make_line("      <ChrgBr>{0}</ChrgBr>".format(chrgbr))

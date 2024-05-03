@@ -196,7 +196,7 @@ def get_cross_border_xml_file(payments ,payment_export_settings , posting_date ,
         content += make_line("              </RmtInf>")
         content += make_line("          </CdtTrfTxInf>")
         transaction_count += 1
-        control_sum += payment_record.total_allocated_amount
+        control_sum += payment_record.paid_amount
     content += make_line("      </PmtInf>")
     content += make_line("  </CstmrCdtTrfInitn>")
     content += make_line("</Document>")

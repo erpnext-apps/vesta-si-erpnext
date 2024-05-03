@@ -13,7 +13,7 @@
 		<td><input class="inputcheck" type="checkbox" id="chk{{ payment.name }}" name="{{ payment.name }}" onclick=getfindSelected()></td>
 		<td><a href="/desk/Form/Payment Entry/{{ payment.name }}">{{ payment.name }}</a></td>
 		<td>{{ payment.posting_date }}</td>
-		<td>{{ payment.paid_to_account_currency }}&nbsp;{{ payment.total_allocated_amount }}</td>
+		<td>{{ payment.paid_to_account_currency }}&nbsp;{{ payment.paid_amount }}</td>
 		<td><a href="/desk/Form/Supplier/{{ payment.party }}">{{ payment.party_name }}</a></td>
 		{% if payment.reference_name|length > 1 %}
 		<td>{% for row in payment.reference_name %}<a href="/desk/Form/Purchase Invoice/{{ row }}">{{ row }}</a>, {% endfor%}</td>
