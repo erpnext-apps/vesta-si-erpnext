@@ -13,27 +13,46 @@ def execute(filters=None):
 def get_data(filters):
 	cond = ''
 	if filters.get('company'):
-		cond += f" and company = '{filters.get('company')}'"
+		cond += f" and si.company = '{filters.get('company')}'"
 	if filters.get('from_date'):
-		cond += f" and posting_date >= '{filters.get('from_date')}'"
+		cond += f" and si.posting_date >= '{filters.get('from_date')}'"
 	if filters.get('from_date'):
-		cond += f" and posting_date <= '{filters.get('to_date')}'"
+		cond += f" and si.posting_date <= '{filters.get('to_date')}'"
+	if filters.get('status'):
+		cond += f" and si.status = '{filters.get('status')}'"
+	if filters.get('item_code'):
+		cond += f" and sii.item_code = '{filters.get('item_code')}'"
+
 	data = frappe.db.sql(f"""
-					Select name, 
-					posting_date, 
-					workflow_state, 
-					material_shipped_on, 
-					base_net_total, 
-					base_grand_total,
-					total_qty,
-					customer
-					From `tabSales Invoice` 
-					Where docstatus = 1 {cond}
+					Select si.name, 
+					si.posting_date, 
+					si.workflow_state, 
+					si.material_shipped_on, 
+					si.base_net_total,
+					si.workflow_state, 
+					si.base_grand_total,
+					sii.qty,
+					sii.net_amount,
+					sii.base_net_amount,
+					sii.item_code,
+					sii.item_name,
+					si.customer_name,
+					si.currency
+					From `tabSales Invoice` as si 
+					Left join `tabSales Invoice Item` as sii ON sii.parent = si.name
+					Where si.docstatus != 2 {cond}
 	""",as_dict = 1)
 	return data
 
 def get_columns(filters):
 	columns = [
+		{
+			"fieldname":'workflow_state',
+			"label":"Workflow State",
+			"fieldtype":'Data',
+			"options":"Workflow State",
+			"width":150
+		},
 		{
 			"fieldname":'name',
 			"label":"Sales Invoice",
@@ -42,7 +61,20 @@ def get_columns(filters):
 			"width":150
 		},
 		{
-			"fieldname":'customer',
+			"fieldname":"item_code",
+			"fieldtype":'Link',
+			"label":"Item Code",
+			"options":"Item",
+			"width":150
+		},
+		{
+			"fieldname":"item_name",
+			"fieldtype":'Data',
+			"label":"Item Name",
+			"width":150,
+		},
+		{
+			"fieldname":'customer_name',
 			"label":"Customer",
 			"fieldtype":'Link',
 			"options":"Customer",
@@ -61,22 +93,30 @@ def get_columns(filters):
 			"width":150
 		},
 		{
-			"fieldname":'base_net_total',
-			"label":"Net Total",
+			"fieldname":'base_net_amount',
+			"label":"Net Amount(SEK)",
 			"fieldtype":'Currency',
 			"width":150
 		},
 		{
-			"fieldname":'base_grand_total',
-			"label":"Grand Total",
+			"fieldname":'net_amount',
+			"label":"Net Amount",
 			"fieldtype":'Currency',
+			"options":"currency",
 			"width":150
 		},
 		{
-			"fieldname":'total_qty',
-			"label":"Total Quantity",
+			"fieldname":'qty',
+			"label":"Quantity",
 			"fieldtype":'Float',
 			"width":150
 		},
+		{
+			"fieldname":'currency',
+			"label":"Currency",
+			"fieldtype":'Link',
+			"options":"Currency",
+			"width":150
+		}
 	]
 	return columns
