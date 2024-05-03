@@ -15,7 +15,7 @@ from datetime import datetime
 
 @frappe.whitelist()
 def get_payments(payment_type):
-    payments = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype
+    payments = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype,
                                 per.reference_name, pe.received_amount
                                 From `tabPayment Entry` as pe 
                                 Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
