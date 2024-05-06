@@ -28,5 +28,12 @@ frappe.query_reports["Monthly Sales Invoice Detail"] = {
 			"default": frappe.datetime.get_today(),
 			"reqd": 1
 		},
+		{
+			"fieldname":"item_code",
+			"fieldtype":'Link',
+			"label":"Item Code",
+			"options":"Item",
+			"width":150
+		}
 	]
 };
