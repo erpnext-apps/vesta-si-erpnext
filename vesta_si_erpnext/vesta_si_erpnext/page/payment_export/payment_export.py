@@ -688,3 +688,4 @@ def gen_payment_export_log(content, total_no_of_payments, total_paid_amount, pay
         })
 
     doc.save() 
+    frappe.msgprint(f"Payment Export Log <b>{get_link_to_form("Payment Export Log", doc.name)}</b>")
