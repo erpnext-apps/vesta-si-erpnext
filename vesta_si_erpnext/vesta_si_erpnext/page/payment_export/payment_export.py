@@ -7,21 +7,23 @@ import frappe
 from frappe import throw, _
 from collections import defaultdict
 import time
+import json
 #from erpnextswiss.erpnextswiss.common_functions import get_building_number, get_street_name, get_pincode, get_city
 import html              # used to escape xml content
-from frappe.utils import flt, get_link_to_form, getdate, nowdate, now
+from frappe.utils import flt, get_link_to_form, getdate, nowdate, now, get_url
 from datetime import datetime
-
+from openpyxl import Workbook
+import pandas as pd
 
 @frappe.whitelist()
 def get_payments(payment_type):
-    payments = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype,
+    payments = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype ,
                                 per.reference_name, pe.received_amount
-                                From `tabPayment Entry` as pe 
-                                Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
-                                Where pe.docstatus = 0 and pe.payment_type = "Pay" and pe.party_type = "Supplier" and pe.custom_xml_file_generated = 0
-                                order by posting_date
-                                """,as_dict = 1)
+                            From `tabPayment Entry` as pe 
+                            Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
+                            Where pe.docstatus = 0 and pe.payment_type = "Pay" and pe.party_type = "Supplier" and pe.custom_xml_file_generated = 0
+                            order by posting_date
+                            """,as_dict = 1)
 
     merged_data = defaultdict(list)
     for row in payments:
@@ -78,7 +80,7 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         formatted_date = formatted_date.replace(' ','-')
         payments = eval(payments)
         payments = list(filter(None, payments))
-        gen_payment_export_log(content, transaction_count, control_sum, payments)
+        gen_payment_export_log(content, transaction_count, control_sum, payments, 'EUR')
         
         return { 'content': content, 'skipped': 0 , 'time':formatted_date}
 
@@ -678,6 +680,7 @@ def gen_payment_export_log(content, total_no_of_payments, total_paid_amount, pay
     doc.total_no_of_payments = total_no_of_payments
     doc.content = content
     doc.flags.ignore_permissions = 1
+
     for row in payments:
         pay_doc = frappe.get_doc('Payment Entry', row)
         doc.append('logs',{
@@ -688,3 +691,28 @@ def gen_payment_export_log(content, total_no_of_payments, total_paid_amount, pay
         })
 
     doc.save() 
+    json_data = []
+    for row in doc.logs:
+        data_ = {}
+        data_["Payment Entry"] = row.get('payment_entry')
+        data_["Posting date"] = frappe.db.get_value("Payment Entry", row.get('payment_entry'), "posting_date")
+        data_["Supplier"] = row.get('supplier')
+        data_["Supplier Name"] = frappe.db.get_value("Supplier", row.get('supplier'), 'supplier_name')
+        data_["Paid Amount"] = row.get('paid_amount')
+        json_data.append(data_)
+    # Json to DataFrame
+    df = pd.DataFrame(json_data)
+    # DataFrame to Excel
+    excel_file_path = str(frappe.utils.get_bench_path())+"/sites/"+str(frappe.utils.get_site_base_path()[2:])+"/private/files/{0}.xlsx".format(doc.name)
+
+    
+    df.to_excel(excel_file_path, index=False) 
+    frappe.db.commit()
+    frappe.msgprint(f"Payment Export Log <b>{get_link_to_form('Payment Export Log', doc.name)}</b>")
+    file_doc = frappe.new_doc("File")
+    file_doc.is_private = 0
+    file_doc.file_url = "/private/files/{0}.xlsx".format(doc.name)
+    file_doc.attached_to_doctype = "Payment Export Log"
+    file_doc.attached_to_name = doc.name
+    file_doc.file_name = "{0}.xlsx".format(doc.name)
+    file_doc.save()
