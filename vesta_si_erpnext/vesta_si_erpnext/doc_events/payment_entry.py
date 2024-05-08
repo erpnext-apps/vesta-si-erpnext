@@ -11,7 +11,6 @@ def validate(self, method):
         elif self.paid_from_account_currency != list(set(currency_list))[0]:
             frappe.throw(f"Account Paid From should be in <b>{list(set(currency_list))[0]}<b>")
 
-
 def on_submit(self, method):
     data =  frappe.db.sql(f'''
             Select parent From `tabPayment Transaction Log` 

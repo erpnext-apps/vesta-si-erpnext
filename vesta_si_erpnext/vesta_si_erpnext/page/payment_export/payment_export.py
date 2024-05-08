@@ -685,6 +685,7 @@ def gen_payment_export_log(content, total_no_of_payments, total_paid_amount, pay
         doc.append('logs',{
             'payment_entry' : row,
             'supplier' : pay_doc.party,
+            'supplier_name':pay_doc.party_name,
             'paid_amount' : pay_doc.paid_amount,
             'status' : pay_doc.status
         })
