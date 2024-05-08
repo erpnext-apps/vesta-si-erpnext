@@ -19,11 +19,11 @@ import pandas as pd
 def get_payments(payment_type):
     payments = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype ,
                                 per.reference_name, pe.received_amount
-                            From `tabPayment Entry` as pe 
-                            Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
-                            Where pe.docstatus = 0 and pe.payment_type = "Pay" and pe.party_type = "Supplier" and pe.custom_xml_file_generated = 0
-                            order by posting_date
-                            """,as_dict = 1)
+                                From `tabPayment Entry` as pe 
+                                Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
+                                Where pe.docstatus = 0 and pe.payment_type = "Pay" and pe.party_type = "Supplier" and pe.custom_xml_file_generated = 0
+                                order by posting_date
+                                """,as_dict = 1)
 
     merged_data = defaultdict(list)
     for row in payments:
@@ -680,7 +680,6 @@ def gen_payment_export_log(content, total_no_of_payments, total_paid_amount, pay
     doc.total_no_of_payments = total_no_of_payments
     doc.content = content
     doc.flags.ignore_permissions = 1
-
     for row in payments:
         pay_doc = frappe.get_doc('Payment Entry', row)
         doc.append('logs',{
