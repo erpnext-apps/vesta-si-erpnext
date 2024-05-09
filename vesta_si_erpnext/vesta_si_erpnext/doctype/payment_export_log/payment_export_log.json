@@ -63,8 +63,7 @@
    "fieldname": "logs",
    "fieldtype": "Table",
    "label": "Logs",
-   "options": "Payment Transaction Log",
-   "read_only": 1
+   "options": "Payment Transaction Log"
   },
   {
    "fieldname": "status",
@@ -84,7 +83,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-04 18:20:40.386142",
+ "modified": "2024-05-08 15:01:59.456829",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Payment Export Log",
