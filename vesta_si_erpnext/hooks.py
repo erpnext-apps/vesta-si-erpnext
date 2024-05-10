@@ -63,7 +63,7 @@ doctype_js = {
 # Installation
 # ------------
 
-# before_install = "vesta_si_erpnext.install.before_install"
+before_install = "vesta_si_erpnext.api.install_pandas"
 # after_install = "vesta_si_erpnext.install.after_install"
 
 # Desk Notifications
