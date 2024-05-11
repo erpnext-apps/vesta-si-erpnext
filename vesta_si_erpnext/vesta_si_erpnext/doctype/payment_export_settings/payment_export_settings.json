@@ -25,7 +25,8 @@
   "cd",
   "mmbid_for_bank_giro_number",
   "mmbid_for_plus_giro_number",
-  "iban"
+  "iban",
+  "generate_excel_file"
  ],
  "fields": [
   {
@@ -120,11 +121,17 @@
    "fieldtype": "Link",
    "label": "Workflow State",
    "options": "Workflow State"
+  },
+  {
+   "default": "0",
+   "fieldname": "generate_excel_file",
+   "fieldtype": "Check",
+   "label": "Generate Excel File"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-17 11:45:58.178331",
+ "modified": "2024-05-11 06:59:06.900334",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Payment Export Settings",
