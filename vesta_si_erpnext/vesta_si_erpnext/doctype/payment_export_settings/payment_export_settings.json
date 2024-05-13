@@ -26,7 +26,8 @@
   "mmbid_for_bank_giro_number",
   "mmbid_for_plus_giro_number",
   "iban",
-  "generate_excel_file"
+  "generate_excel_file",
+  "include_payment_in_xml_after_submit"
  ],
  "fields": [
   {
@@ -127,7 +128,13 @@
    "fieldname": "generate_excel_file",
    "fieldtype": "Check",
    "label": "Generate Excel File"
-  }
+  },
+  {
+    "default": "0",
+    "fieldname": "include_payment_in_xml_after_submit",
+    "fieldtype": "Check",
+    "label": "Include Payment in XML After Submit"
+   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],

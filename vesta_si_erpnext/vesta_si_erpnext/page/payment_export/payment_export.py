@@ -15,7 +15,7 @@ from datetime import datetime
 from openpyxl import Workbook
 
 @frappe.whitelist()
-def get_payments(payment_type):
+def get_payments(payment_type, payment_export_settings):
     payments = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype ,
                                 per.reference_name, pe.received_amount
                                 From `tabPayment Entry` as pe 
@@ -23,7 +23,18 @@ def get_payments(payment_type):
                                 Where pe.docstatus = 0 and pe.payment_type = "Pay" and pe.party_type = "Supplier" and pe.custom_xml_file_generated = 0
                                 order by posting_date
                                 """,as_dict = 1)
-
+    submitted_entry = None
+    allow_after_submit = frappe.db.get_value("Payment Export Settings", payment_export_settings, "include_payment_in_xml_after_submit")
+    if allow_after_submit:
+        submitted_entry = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype ,
+                                    per.reference_name, pe.received_amount
+                                    From `tabPayment Entry` as pe 
+                                    Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
+                                    Where pe.docstatus = 1 and pe.payment_type = "Pay" and pe.party_type = "Supplier" and pe.custom_xml_file_generated = 0 and pe.custom_include_in_xml_file = 1
+                                    order by posting_date
+                                    """,as_dict = 1)
+    if submitted_entry:
+        payments = payments + submitted_entry
     merged_data = defaultdict(list)
     for row in payments:
         key = row['name']
@@ -203,6 +214,7 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
 
         for payment in payments:
             frappe.db.set_value("Payment Entry" , payment , "custom_xml_file_generated" , 1)
+            frappe.db.set_value("Payment Entry" , payment , "custom_include_in_xml_file" , 0)
             payment_record = frappe.get_doc('Payment Entry', payment)
             workflow_state = frappe.db.get_value("Payment Export Settings",payment_export_settings , 'workflow_state')
             if workflow_state:
@@ -575,6 +587,7 @@ def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , pa
     content += make_line("          <ChrgBr>SLEV</ChrgBr>")
     for payment in payments:
         frappe.db.set_value("Payment Entry" , payment , "custom_xml_file_generated" , 1)
+        frappe.db.set_value("Payment Entry" , payment , "custom_include_in_xml_file" , 0)
         payment_record = frappe.get_doc('Payment Entry', payment)
         workflow_state = frappe.db.get_value("Payment Export Settings",payment_export_settings , 'workflow_state')
         if workflow_state:
