@@ -111,7 +111,8 @@ frappe.payment_export = {
         frappe.call({
             method: 'vesta_si_erpnext.vesta_si_erpnext.page.payment_export.payment_export.get_payments',
             args: { 
-                'payment_type':page.payment_type_field.get_value()
+                'payment_type':page.payment_type_field.get_value(),
+                "payment_export_settings": page.payment_export_settings_field.get_value()
              },
             callback: function(r) {
                 if (r.message) {
