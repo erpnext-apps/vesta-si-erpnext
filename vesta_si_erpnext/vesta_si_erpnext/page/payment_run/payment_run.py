@@ -60,7 +60,7 @@ def get_purchase_invoice(due_date=None, payable_account=None, currency=None):
                 pi.name, 
                 pi.bill_no, 
                 pi.grand_total, 
-                pi.outstanding_amount, 
+                pi.outstanding_amount as panding_amount, 
                 pi.supplier_name, 
                 pi.workflow_state, 
                 pi.supplier,

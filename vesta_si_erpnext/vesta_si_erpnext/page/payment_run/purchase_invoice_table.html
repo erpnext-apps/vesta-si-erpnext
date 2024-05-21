@@ -15,8 +15,8 @@
             <td class="ontop onbottom"><a href="/desk/Form/Purchase Invoice/{{ row.name }}">{{ row.name }}</a></td>
             <td class="ontop onbottom" width="20%"><a href="/desk/Form/Supplier/{{ row.supplier }}">{{ row.supplier_name }}</a></td>
             <td class="ontop onbottom">{{ row.bill_no }}</td>
-            <td class="ontop onbottom" >{{ row.grand_total }}</td>
-            <td class="ontop onbottom" >{{ row.outstanding_amount }}</td>
+            <td class="ontop onbottom" >{{ currency }} {{ row.grand_total }}</td>
+            <td class="ontop onbottom" >{{ currency }} {{ row.panding_amount }}</td>
             <td class="ontop onbottom" >{{ row.workflow_state }}</td>
         </tr>
         {% endfor %}
