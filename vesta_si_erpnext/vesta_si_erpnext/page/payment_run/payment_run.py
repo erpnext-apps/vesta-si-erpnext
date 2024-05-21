@@ -5,16 +5,16 @@
 import json
 from functools import reduce
 from erpnext.accounts.doctype.payment_entry.payment_entry import (
-    set_party_type, 
-    apply_early_payment_discount,
-    update_accounting_dimensions,
-    set_party_account_currency, 
-    set_party_account,
-    get_bank_cash_account,
-    set_payment_type,
-    set_paid_amount_and_received_amount,
-    set_grand_total_and_outstanding_amount
-    )
+	set_party_type, 
+	apply_early_payment_discount,
+	update_accounting_dimensions,
+	set_party_account_currency, 
+	set_party_account,
+	get_bank_cash_account,
+	set_payment_type,
+	set_paid_amount_and_received_amount,
+	set_grand_total_and_outstanding_amount
+	)
 import frappe
 from frappe import ValidationError, _, qb, scrub, throw
 from frappe.utils import cint, comma_or, flt, getdate, nowdate
@@ -52,54 +52,59 @@ from erpnext.setup.utils import get_exchange_rate
 
 @frappe.whitelist()
 def get_purchase_invoice(due_date=None, payable_account=None, currency=None):
-    settings = frappe.get_doc("Payment Run Setting")
-    excluded_state = tuple( row.workflow_state for row in settings.excluded_state )
-    if due_date:    
-        data = frappe.db.sql(f"""
-                Select 
-                pi.name, 
-                pi.bill_no, 
-                pi.grand_total, 
-                pi.outstanding_amount as panding_amount, 
-                pi.supplier_name, 
-                pi.workflow_state, 
-                pi.supplier,
-                per.parent as payment_entry,
-                per.total_amount,
-                per.outstanding_amount
-                From `tabPurchase Invoice` as pi
-                left join `tabPayment Entry Reference` as per ON per.reference_name = pi.name and per.reference_doctype = "Purchase Invoice"
-                Where pi.docstatus = 1 and pi.outstanding_amount > 0 and pi.due_date <= '{due_date}' and pi.currency = '{currency}'
-                and pi.workflow_state not in {excluded_state}
-        """,as_dict=1)
-        invoices = []
-        for row in data:
-            if not row.get('payment_entry'):
-                invoices.append(row)
-            if row.get('payment_entry'):
-                if not (row.total_amount - row.outstanding_amount == 0) :
-                    invoices.append(row)
-        
-        return {"invoices" : invoices, 'currency':currency}
+	settings = frappe.get_doc("Payment Run Setting")
+	excluded_state = tuple( row.workflow_state for row in settings.excluded_state )
+	if due_date:    
+		data = frappe.db.sql(f"""
+				Select 
+				pi.name, 
+				pi.bill_no, 
+				pi.grand_total, 
+				pi.outstanding_amount as panding_amount, 
+				pi.supplier_name, 
+				pi.workflow_state, 
+				pi.supplier,
+				per.parent as payment_entry,
+				per.total_amount,
+				per.outstanding_amount
+				From `tabPurchase Invoice` as pi
+				left join `tabPayment Entry Reference` as per ON per.reference_name = pi.name and per.reference_doctype = "Purchase Invoice"
+				Where pi.docstatus = 1 and pi.outstanding_amount > 0 and pi.due_date <= '{due_date}' and pi.currency = '{currency}'
+				and pi.workflow_state not in {excluded_state}
+		""",as_dict=1)
+		invoices = []
+		for row in data:
+			if not row.get('payment_entry'):
+				invoices.append(row)
+			if row.get('payment_entry'):
+				if not (row.total_amount - row.outstanding_amount == 0) :
+					invoices.append(row)
+		
+		return {"invoices" : invoices, 'currency':currency}
 
 @frappe.whitelist()
 def get_invoices(invoices, currency):
-    invoices = eval(invoices)
-    invoices = list(filter(None, invoices))
-    settings = frappe.get_doc("Payment Run Setting")
-    for row in settings.payment_account:
-        if row.currency == currency:
-            account_paid_from = row.account_paid_from
-            break
-    Error = []
-    for row in invoices:
-        doc = get_payment_entry('Purchase Invoice', row, account_paid_from = account_paid_from)
-        try:
-            doc.save()
-        except:
-            Error.append(row)
-    return Error
+	invoices = eval(invoices)
+	invoices = list(filter(None, invoices))
+	settings = frappe.get_doc("Payment Run Setting")
+	for row in settings.payment_account:
+		if row.currency == currency:
+			account_paid_from = row.account_paid_from
+			break
+	Error = []
+	frappe.enqueue(create_payment_entry_in_background, invoices=invoices,account_paid_from=account_paid_from, queue="long")
 
+def create_payment_entry_in_background(invoices=[] , account_paid_from=None):
+	Error = []
+	for row in invoices:
+		doc = get_payment_entry('Purchase Invoice', row, account_paid_from = account_paid_from)
+		try:
+			if doc.name == "ACC-PINV-2024-00571":
+				frappe.throw("hello")
+			doc.save()
+		except Exception as e:
+			Error.append(row)
+			frappe.log_error(e)
 
 
 def get_payment_entry(
@@ -111,7 +116,7 @@ def get_payment_entry(
 	party_type=None,
 	payment_type=None,
 	reference_date=None,
-    account_paid_from = None
+	account_paid_from = None
 ):
 	doc = frappe.get_doc(dt, dn)
 	over_billing_allowance = frappe.db.get_single_value("Accounts Settings", "over_billing_allowance")

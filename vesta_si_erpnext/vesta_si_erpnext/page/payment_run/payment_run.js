@@ -70,6 +70,7 @@ frappe.payment_run = {
 						}else{
 							frappe.msgprint(r.message)
 						}
+						frappe.payment_run.run(page);
 					}
 				})
 
