@@ -28,26 +28,7 @@ from erpnext.accounts.doctype.bank_account.bank_account import (
 	get_bank_account_details,
 	get_party_bank_account,
 )
-from erpnext.accounts.doctype.invoice_discounting.invoice_discounting import (
-	get_party_account_based_on_invoice_discounting,
-)
-from erpnext.accounts.doctype.journal_entry.journal_entry import get_default_bank_cash_account
-from erpnext.accounts.doctype.tax_withholding_category.tax_withholding_category import (
-	get_party_tax_withholding_details,
-)
-from erpnext.accounts.general_ledger import make_gl_entries, process_gl_map
 from erpnext.accounts.party import get_party_account
-from erpnext.accounts.utils import (
-	cancel_exchange_gain_loss_journal,
-	get_account_currency,
-	get_balance_on,
-	get_outstanding_invoices,
-)
-from erpnext.controllers.accounts_controller import (
-	AccountsController,
-	get_supplier_block_status,
-	validate_taxes_and_charges,
-)
 from erpnext.setup.utils import get_exchange_rate
 
 @frappe.whitelist()
@@ -99,8 +80,6 @@ def create_payment_entry_in_background(invoices=[] , account_paid_from=None):
 	for row in invoices:
 		doc = get_payment_entry('Purchase Invoice', row, account_paid_from = account_paid_from)
 		try:
-			if doc.name == "ACC-PINV-2024-00571":
-				frappe.throw("hello")
 			doc.save()
 		except Exception as e:
 			Error.append(row)
