@@ -21,12 +21,12 @@ frappe.pages['payment-run'].on_page_load = function(wrapper) {
 			frappe.payment_run.run(page);
 		}
 	})
-	page.payable_account = page.add_field({
-		fieldname: 'payable_account',
-        label: __('Payable Account'),
-        fieldtype:'Link',
-		options:'Account',
-	})
+	// page.payable_account = page.add_field({
+	// 	fieldname: 'payable_account',
+    //     label: __('Payable Account'),
+    //     fieldtype:'Link',
+	// 	options:'Account',
+	// })
 	page.currency = page.add_field({
 		fieldname: 'currency',
         label: __('Currency'),
@@ -50,13 +50,37 @@ frappe.payment_run = {
         me.body = $('<div></div>').appendTo(me.page.main);
         let data = '';
         $(frappe.render_template('payment_run', data)).appendTo(me.body);
+		$(".create-payment").on('click', function() {
+			let checked = findSelected()
+			console.log(checked)
+			if (checked.length > 0) {
+                var invoices = [];
+                for (var i = 0; i < checked.length; i++) {
+                    invoices.push(checked[i].name);
+                }
+				frappe.call({
+					method:"vesta_si_erpnext.vesta_si_erpnext.page.payment_run.payment_run.get_invoices",
+					args:{
+						invoices : invoices,
+						currency : page.currency.get_value()
+					},
+					callback:r=>{
+						if(!r.message){
+							frappe.msgprint("Payments Runs Successfull")
+						}else{
+							frappe.msgprint(r.message)
+						}
+					}
+				})
+
+			}
+		})
 	},
 	run: (page) => {
 		frappe.call({
 			method:"vesta_si_erpnext.vesta_si_erpnext.page.payment_run.payment_run.get_purchase_invoice",
 			args:{
 				due_date: page.due_date.get_value(),
-				payable_account :page.payable_account.get_value(),
 				currency:page.currency.get_value()
 			},
 			callback:(r)=>{
@@ -86,7 +110,20 @@ function selectunselect() {
 	});
 	getfindSelected()
 }
-
+function findSelected(){
+	var inputs = document.getElementsByTagName("input"); 
+    var checkboxes = []; 
+    var checked = []; 
+    for (var i = 0; i < inputs.length; i++) {
+      if (inputs[i].type == "checkbox" && inputs[i].classList.contains("inputcheck")) {
+        checkboxes.push(inputs[i]);
+        if (inputs[i].checked) {
+          checked.push(inputs[i]);
+        }
+      }
+    }
+    return checked;
+}
 function getfindSelected() {
 	// Get all checkboxes in the table with the class 'inputcheck'
 	var checkboxes = document.querySelectorAll('.inputcheck');
@@ -105,4 +142,5 @@ function getfindSelected() {
 	console.log('Selected count:', selectedCount);
 	// Alternatively, you could display this count in the UI
 	document.getElementById('selectedCountDisplay').innerText = `${selectedCount} / ${total_row}`;
+
 }
