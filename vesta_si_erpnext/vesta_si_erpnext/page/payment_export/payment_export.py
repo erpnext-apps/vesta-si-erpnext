@@ -16,7 +16,7 @@ from openpyxl import Workbook
 
 @frappe.whitelist()
 def get_payments(payment_type, payment_export_settings):
-    payments = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype ,
+    payments = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype,
                                 per.reference_name, pe.received_amount
                                 From `tabPayment Entry` as pe 
                                 Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
@@ -26,7 +26,7 @@ def get_payments(payment_type, payment_export_settings):
     submitted_entry = None
     allow_after_submit = frappe.db.get_value("Payment Export Settings", payment_export_settings, "include_payment_in_xml_after_submit")
     if allow_after_submit:
-        submitted_entry = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype ,
+        submitted_entry = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype,
                                     per.reference_name, pe.received_amount
                                     From `tabPayment Entry` as pe 
                                     Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
@@ -77,6 +77,14 @@ def get_payments(payment_type, payment_export_settings):
                 row.update({"paid_amount":row.received_amount})
                 _payments.append(row)
                 list_of_amount.append(row.received_amount)
+        if payment_type == "Cross Border Payments (EUR)" and frappe.db.get_value('Supplier', row.party, 'custom_payment_type') == 'Cross Border Payments (EUR)':
+                row.update({"paid_amount":row.received_amount})
+                _payments.append(row)
+                list_of_amount.append(row.received_amount)
+        if payment_type == "Cross Border Payments (OTHER)" and frappe.db.get_value('Supplier', row.party, 'custom_payment_type') == 'Cross Border Payments (OTHER)':
+                row.update({"paid_amount":row.received_amount})
+                _payments.append(row)
+                list_of_amount.append(row.received_amount)
     
     return { 'payments': _payments, "total_paid_amount" : sum(list_of_amount)}
 
@@ -94,7 +102,7 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         
         return { 'content': content, 'skipped': 0 , 'time':formatted_date}
 
-    if payment_type == "Cross Border Payments (USD)":
+    if payment_type in ["Cross Border Payments (USD)" , "Cross Border Payments (EUR)", "Cross Border Payments (OTHER)"]:
         from vesta_si_erpnext.vesta_si_erpnext.page.payment_export.cross_border_payment import get_cross_border_xml_file
         content, transaction_count, control_sum = get_cross_border_xml_file(payments ,payment_export_settings , posting_date , payment_type)
         current_time = now()
@@ -105,6 +113,7 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         payments = list(filter(None, payments))
         # gen_payment_export_log(content, transaction_count, control_sum, payments, 'EUR')
         return { 'content': content, 'skipped': 0 , 'time':formatted_date}
+    
 
     # creates a pain.001 payment file from the selected payments
     try:

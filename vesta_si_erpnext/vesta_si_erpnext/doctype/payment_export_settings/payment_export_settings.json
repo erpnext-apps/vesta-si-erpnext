@@ -20,6 +20,7 @@
   "country",
   "iban_for_domestic_payment",
   "iban_for_sepa_payment",
+  "iban_for_cross_border_payment",
   "bic",
   "chrgbr",
   "cd",
@@ -130,15 +131,20 @@
    "label": "Generate Excel File"
   },
   {
-    "default": "0",
-    "fieldname": "include_payment_in_xml_after_submit",
-    "fieldtype": "Check",
-    "label": "Include Payment in XML After Submit"
-   }
+   "default": "0",
+   "fieldname": "include_payment_in_xml_after_submit",
+   "fieldtype": "Check",
+   "label": "Include Payment in XML After Submit"
+  },
+  {
+   "fieldname": "iban_for_cross_border_payment",
+   "fieldtype": "Data",
+   "label": "Iban For Cross Border Payment"
+  }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-11 06:59:06.900334",
+ "modified": "2024-05-27 10:29:36.658929",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Payment Export Settings",
