@@ -31,7 +31,7 @@ def get_columns(filters):
 		},
 		{
 		'fieldname': 'invoice_date',
-		'label': _('Invoice Date'),
+		'label': _('Posting Date'),
 		'fieldtype': 'Date',
 		'width': 100
 		},
@@ -49,7 +49,7 @@ def get_columns(filters):
 		'fieldname': 'day_diff',
 		'label': _('Day Diff'),
 		'fieldtype': 'Data',
-		'width': 100
+		'width': 150
 		},
 		{
 		'fieldname': 'supplier_name',
@@ -118,7 +118,7 @@ def get_data(filters):
 	FROM `tabPurchase Invoice` as pi
 	LEFT JOIN `tabPayment Entry Reference` as per ON pi.name = per.reference_name 
 	left join `tabPayment Entry` as pe ON per.parent = pe.name
-	WHERE pi.docstatus=1 {cond} ORDER BY pi.posting_date 
+	WHERE pi.docstatus=1 and pi.status = 'Paid' {cond} ORDER BY pi.posting_date 
 	
 	'''
 
@@ -132,6 +132,7 @@ def get_data(filters):
 		result_map[row.payment_entry] = row
 
 	version_data = get_version_data()
+	total_days = 0
 	data = []
 	for row in version_data:
 		if result_map.get(row.get('payment_entry')):
@@ -140,7 +141,11 @@ def get_data(filters):
 			payment_date = datetime.strptime(str(result_map.get(row.get('payment_entry')).get('due_date')), date_format)
 			result_map.get(row.get('payment_entry')).update({'day_diff': (creation - payment_date).days, 'payment_date':row.get('creation')})
 			data.append(result_map.get(row.get('payment_entry')))
+			total_days += (creation - payment_date).days
 	
+	total_tow = len(data)
+	data.insert(0,{"day_diff" : "<b>Average : {0}</b>".format(round(total_days/total_tow, 2))})
+
 
 	return data
 
