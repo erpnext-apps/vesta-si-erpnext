@@ -1,0 +1,42 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2024-05-28 08:33:44.363341",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Vesta Si (without footer image with address)",
+ "modified": "2024-05-28 08:33:44.363341",
+ "modified_by": "Administrator",
+ "module": "Vesta Si Erpnext",
+ "name": "Overdue Invoice Summary",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Purchase Invoice",
+ "report_name": "Overdue Invoice Summary",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Purchase User"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Auditor"
+  },
+  {
+   "role": "Finance (Limited Access)"
+  },
+  {
+   "role": "System Manager"
+  }
+ ]
+}
