@@ -1,5 +1,5 @@
 {
- "add_total_row": 0,
+ "add_total_row": 1,
  "columns": [],
  "creation": "2024-05-28 14:01:47.208525",
  "disable_prepared_report": 0,
@@ -10,7 +10,7 @@
  "idx": 0,
  "is_standard": "Yes",
  "letter_head": "Vesta Si (without footer image with address)",
- "modified": "2024-05-28 14:01:47.208525",
+ "modified": "2024-05-29 07:45:59.184433",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "COGS Analysis Report",
