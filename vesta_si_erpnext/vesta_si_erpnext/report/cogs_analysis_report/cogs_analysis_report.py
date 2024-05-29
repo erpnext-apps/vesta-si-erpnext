@@ -28,12 +28,13 @@ def get_data(filters):
 		si.posting_date,
 		si.customer,
 		si.customer_name,
-		sii.base_net_amount,
+		sum(sii.base_net_amount) as base_net_amount,
 		cu.customer_group
 		From `tabSales Invoice` as si
 		Left Join `tabSales Invoice Item` as sii ON sii.parent = si.name
 		left join `tabCustomer` as cu ON si.customer=cu.name
 		Where si.docstatus = 1 {cond}
+		Group By si.name
 	""",as_dict = 1)
 	for row in data:
 		if row.customer_group == "SKF Customer":
