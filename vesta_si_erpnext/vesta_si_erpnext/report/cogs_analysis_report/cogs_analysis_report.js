@@ -25,7 +25,7 @@ frappe.query_reports["COGS Analysis Report"] = {
 			"label":__("SKF/Non-SKF/Both"),
 			"fieldtype":"Select",
 			"width": "80",
-			"options":["","SKF","Non-SKF"]
+			"options":["SKF","Non-SKF","Both"]
 		}
 	]
 };
