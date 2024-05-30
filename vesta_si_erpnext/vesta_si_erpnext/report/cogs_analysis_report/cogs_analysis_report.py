@@ -14,27 +14,28 @@ def execute(filters=None):
 def get_data(filters):
 	cond = ''
 	if filters.get('from_date'):
-		cond += f" and si.posting_date >= '{filters.get('from_date')}'"
+		cond += f" and gl.posting_date >= '{filters.get('from_date')}'"
 	if filters.get('to_date'):
-		cond += f" and si.posting_date <= '{filters.get('to_date')}'"
+		cond += f" and gl.posting_date <= '{filters.get('to_date')}'"
 	if filters.get('customer_group') == "SKF":
-		cond += f" and si.customer_group = 'SKF Customer'"
+		cond += f" and cu.customer_group = 'SKF Customer'"
 	if filters.get('customer_group') == 'Non-SKF':
-		cond += f" and si.customer_group != 'SKF Customer'"
+		cond += f" and cu.customer_group != 'SKF Customer'"
 
 	data = frappe.db.sql(f"""
-		Select 
-		si.name,
-		si.posting_date,
+		Select gl.name as gl_entry,
+		gl.posting_date,
+		gl.voucher_no as name,
+		gl.debit as base_net_amount,
+		si.name, 
+		cu.customer_name,
 		si.customer,
-		si.customer_name,
-		sum(sii.base_net_amount) as base_net_amount,
 		cu.customer_group
-		From `tabSales Invoice` as si
-		Left Join `tabSales Invoice Item` as sii ON sii.parent = si.name
-		left join `tabCustomer` as cu ON si.customer=cu.name
-		Where si.docstatus = 1 {cond}
-		Group By si.name
+		From `tabGL Entry` as gl
+		right Join `tabAccount` as acc ON acc.name = gl.account and acc.account_type = 'Cost of Goods Sold'
+		Left Join `tabSales Invoice` as si ON si.name = gl.voucher_no
+		Left Join `tabCustomer` as cu ON cu.name = si.customer
+		where gl.is_cancelled = 0 and gl.is_opening = 'No' and gl.voucher_type = "Sales Invoice" {cond}
 	""",as_dict = 1)
 	for row in data:
 		if row.customer_group == "SKF Customer":
