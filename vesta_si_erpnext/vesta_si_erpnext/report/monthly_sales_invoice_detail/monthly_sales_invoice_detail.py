@@ -22,7 +22,7 @@ def get_data(filters):
 		cond += f" and si.status = '{filters.get('status')}'"
 	if filters.get('item_code'):
 		cond += f" and sii.item_code = '{filters.get('item_code')}'"
-
+	cond += f"and si.workflow_state in ('Goods in Transit', 'Invoice Completed')"
 	data = frappe.db.sql(f"""
 					Select si.name, 
 					si.posting_date, 
