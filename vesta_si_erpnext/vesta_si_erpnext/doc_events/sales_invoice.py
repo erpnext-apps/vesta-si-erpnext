@@ -28,3 +28,16 @@ def check_account_frozzen_date(self, method):
         if si_frozen_date:
             if self.posting_date <= getdate(si_frozen_date):
                 frappe.throw(f"Accounting period till <b>{si_frozen_date}</b> is closed. Select a date after <b>{si_frozen_date}</b> in 'Posting Date' field.")
+
+
+from erpnext.setup.utils import get_exchange_rate
+
+def validate(self, method):
+    set_exchange_rate(self, method)
+    self.validate()
+
+
+def set_exchange_rate(self,method):
+    default_currency = frappe.db.get_value('Company', self.company, "default_currency")
+    exchange_rate = get_exchange_rate(self.currency, default_currency, transaction_date = self.posting_date, args=None)
+    self.conversion_rate = exchange_rate

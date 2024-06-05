@@ -131,6 +131,10 @@ doc_events = {
 	},
 	"GL Entry":{
 		'validate': "vesta_si_erpnext.vesta_si_erpnext.doc_events.sales_invoice.check_account_frozzen_date",
+	},
+	"Sales Invoice":{
+		'before_validate':"vesta_si_erpnext.vesta_si_erpnext.doc_events.sales_invoice.set_exchange_rate",
+		'validate':"vesta_si_erpnext.vesta_si_erpnext.doc_events.sales_invoice.validate",
 	}
 }
 
