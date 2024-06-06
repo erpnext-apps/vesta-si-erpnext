@@ -43,8 +43,10 @@ def get_purchase_invoice(due_date=None, payable_account=None, currency=None):
 				pi.grand_total, 
 				pi.outstanding_amount as panding_amount, 
 				pi.supplier_name, 
-				pi.workflow_state, 
+				pi.workflow_state,
+				pi.due_date,
 				pi.supplier,
+				pi.status,
 				per.parent as payment_entry,
 				per.total_amount,
 				per.outstanding_amount
@@ -55,12 +57,8 @@ def get_purchase_invoice(due_date=None, payable_account=None, currency=None):
 		""",as_dict=1)
 		invoices = []
 		for row in data:
-			if not row.get('payment_entry'):
+			if row.status in ['Partly Paid' ,'Paid','Unpaid','Overdue']:
 				invoices.append(row)
-			if row.get('payment_entry'):
-				if not (row.total_amount - row.outstanding_amount == 0) :
-					invoices.append(row)
-		
 		return {"invoices" : invoices, 'currency':currency}
 
 @frappe.whitelist()

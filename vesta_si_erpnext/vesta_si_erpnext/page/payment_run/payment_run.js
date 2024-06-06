@@ -66,7 +66,7 @@ frappe.payment_run = {
 					},
 					callback:r=>{
 						if(!r.message){
-							frappe.msgprint("Payments Runs Successfull")
+							frappe.msgprint("Payment entries are being created. This process may take a few moments.<br><br>Please check payment entry List")
 						}else{
 							frappe.msgprint(r.message)
 						}
