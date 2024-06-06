@@ -146,15 +146,19 @@ def get_payment_entry(
 	pe.contact_person = doc.get("contact_person")
 	pe.contact_email = doc.get("contact_email")
 	pe.ensure_supplier_is_not_blocked()
-
+	settings = frappe.get_doc("Payment Run Setting")
+	for row in settings.payment_account:
+		if row.currency == doc.currency:
+			account_paid_from = row.account_paid_from
+			break
 	pe.paid_from = account_paid_from
-
+	pe.paid_from_account_currency = doc.currency
 	pe.paid_to = party_account if payment_type == "Pay" else bank.account
 
 	pe.paid_from_account_currency = (
-		party_account_currency if payment_type == "Receive" else bank.account_currency
+		doc.currency
 	)
-	pe.paid_to_account_currency = party_account_currency if payment_type == "Pay" else bank.account_currency
+	pe.paid_to_account_currency = doc.currency
 	pe.paid_amount = paid_amount
 	pe.received_amount = received_amount
 	pe.letter_head = doc.get("letter_head")
