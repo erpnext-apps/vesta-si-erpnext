@@ -19,7 +19,7 @@ def get_penalty_cost_paid_suppliers(filters):
     filters = json.loads(filters)
     cond = ''
     if filters.get('expense_account'):
-        cond += f" and pi.expense_account = '{filters.get('expense_account')}'"
+        cond += f" and pii.expense_account = '{filters.get('expense_account')}'"
     if filters.get('from_date'):
         cond += f" and pi.posting_date >= '{filters.get('from_date')}'"
     if filters.get('to_date'):
