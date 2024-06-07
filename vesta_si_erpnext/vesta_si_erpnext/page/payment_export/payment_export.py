@@ -111,7 +111,7 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         formatted_date = formatted_date.replace(' ','-')
         payments = eval(payments)
         payments = list(filter(None, payments))
-        # gen_payment_export_log(content, transaction_count, control_sum, payments, 'EUR')
+        gen_payment_export_log(content, transaction_count, control_sum, payments, 'EUR')
         return { 'content': content, 'skipped': 0 , 'time':formatted_date}
     
 
