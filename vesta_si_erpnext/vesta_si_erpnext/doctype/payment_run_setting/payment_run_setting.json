@@ -7,16 +7,9 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "excluded_state",
   "payment_account"
  ],
  "fields": [
-  {
-   "fieldname": "excluded_state",
-   "fieldtype": "Table MultiSelect",
-   "label": "Excluded State",
-   "options": "Excluded State"
-  },
   {
    "fieldname": "payment_account",
    "fieldtype": "Table",
@@ -27,7 +20,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-05-20 16:50:12.997596",
+ "modified": "2024-06-07 07:16:28.145717",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Payment Run Setting",
