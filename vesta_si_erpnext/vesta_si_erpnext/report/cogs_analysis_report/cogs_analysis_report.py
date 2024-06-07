@@ -26,7 +26,10 @@ def get_data(filters):
 		Select gl.name as gl_entry,
 		gl.posting_date,
 		gl.voucher_no as name,
-		gl.debit as base_net_amount,
+		CASE 
+			WHEN gl.debit != 0 THEN gl.debit 
+			ELSE -gl.credit 
+		END AS base_net_amount,
 		si.name, 
 		cu.customer_name,
 		si.customer,
