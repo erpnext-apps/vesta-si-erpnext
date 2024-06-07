@@ -23,7 +23,7 @@ def get_penalty_cost_paid_suppliers(filters):
     if filters.get('from_date'):
         cond += f" and pi.posting_date >= '{filters.get('from_date')}'"
     if filters.get('to_date'):
-        cond += f" and pi.posting_date <= '{filters.get('   ')}'"
+        cond += f" and pi.posting_date <= '{filters.get('to_date')}'"
     data = frappe.db.sql(f"""
             Select count(pi.supplier) as number_of_supplier
             from `tabPurchase Invoice` as pi
