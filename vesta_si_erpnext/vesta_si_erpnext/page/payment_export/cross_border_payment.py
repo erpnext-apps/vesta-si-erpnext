@@ -151,11 +151,11 @@ def get_cross_border_xml_file(payments ,payment_export_settings , posting_date ,
         addr = get_supplier_address(payment_record.party)
 
         content += make_line("<PstlAdr>")
-        content += make_line("  <StrtNm>{0}</StrtNm>".format(addr.address_line1 if addr.address_line1 else ''))
-        content += make_line("  <PstCd>{0}</PstCd>".format(addr.pincode if addr.pincode else ''))
-        content += make_line("  <TwnNm>{0}</TwnNm>".format(addr.city if addr.city else ''))
-        content += make_line("  <Ctry>{0}</Ctry>".format(addr.country if addr.country else ''))
-        content += make_line("  <AdrLine>{0}</AdrLine>".format(addr.address_line2 if addr.address_line2 else ''))
+        content += make_line("  <StrtNm>{0}</StrtNm>".format(addr.address_line1 if addr.get('address_line1') else ''))
+        content += make_line("  <PstCd>{0}</PstCd>".format(addr.pincode if addr.get('pincode') else ''))
+        content += make_line("  <TwnNm>{0}</TwnNm>".format(addr.city if addr.get('city') else ''))
+        content += make_line("  <Ctry>{0}</Ctry>".format(addr.country if addr.get('country') else ''))
+        content += make_line("  <AdrLine>{0}</AdrLine>".format(addr.address_line2 if addr.get('address_line2') else ''))
         content += make_line("  </PstlAdr>")
         content += make_line("      <Id>")
         content += make_line("          <OrgId>")
@@ -216,6 +216,8 @@ def get_company_name(payment_entry):
     return frappe.get_value('Payment Entry', payment_entry, 'company')
 
 def get_supplier_address(party):
-    addr_name = frappe.db.get_value('Dynamic Link', {"link_doctype":"Supplier", 'link_name':party }, ['parent'])
-    addr_doc = frappe.get_doc('Address', addr_name)
-    return addr_doc
+    addr_name = frappe.db.get_value('Dynamic Link', {"link_doctype":"Supplier", 'link_name':party, "parenttype":"Address" }, ['parent'])
+    if addr_name:
+        addr_doc = frappe.get_doc('Address', addr_name)
+        return addr_doc
+    return {}
