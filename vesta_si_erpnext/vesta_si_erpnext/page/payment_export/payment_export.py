@@ -61,7 +61,9 @@ def get_payments(payment_type, payment_export_settings):
         if not creditor_info:
             continue
         if payment_type == "Domestic (Swedish) Payments (SEK)":
-            if frappe.db.get_value("Supplier", row.party , 'plus_giro_number') or frappe.db.get_value("Supplier", row.party , 'bank_giro_number'):
+            if ((frappe.db.get_value("Supplier", row.party , 'plus_giro_number') or 
+                frappe.db.get_value("Supplier", row.party , 'bank_giro_number')) and
+                frappe.db.get_value("Supplier", row.party , 'custom_payment_type') == 'Domestic (Swedish) Payments (SEK)'):
                 _payments.append(row)
                 list_of_amount.append(row.paid_amount)
         if payment_type == "SEPA (EUR)" and frappe.db.get_value('Supplier', row.party, 'custom_payment_type') == 'SEPA (EUR)':

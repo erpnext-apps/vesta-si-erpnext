@@ -78,7 +78,14 @@ def get_cross_border_xml_file(payments ,payment_export_settings , posting_date ,
     content += make_line("          </Dbtr>")
     content += make_line("          <DbtrAcct>")
     content += make_line("              <Id>")
-    iban = frappe.db.get_value('Payment Export Settings',payment_export_settings,'iban_for_cross_border_payment') #new field
+
+    if payment_type == "Cross Border Payments (USD)":
+        iban = frappe.db.get_value('Payment Export Settings',payment_export_settings,'iban_for_cross_border_payments_usd') #new field
+    if payment_type == "Cross Border Payments (EUR)":
+        iban = frappe.db.get_value('Payment Export Settings',payment_export_settings,'iban_for_cross_border_payments_eur') #new field
+    if payment_type == "Cross Border Payments (OTHER)":
+        iban = frappe.db.get_value('Payment Export Settings',payment_export_settings,'iban_for_cross_border_payments_other') #new field
+    
     if not iban: 
         frappe.throw("Please update <b>'Iban For Cross Border Payment'</b> in {0}".format(f"<a href='https://erpnext-skf-9150.frappe.cloud/app/payment-export-settings/{payment_export_settings}'>Payment Export Settings</a>"))
     bank_bic = frappe.db.get_value('Payment Export Settings',payment_export_settings,'bic') 
