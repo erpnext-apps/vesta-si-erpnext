@@ -78,7 +78,14 @@ def get_cross_border_xml_file(payments ,payment_export_settings , posting_date ,
     content += make_line("          </Dbtr>")
     content += make_line("          <DbtrAcct>")
     content += make_line("              <Id>")
-    iban = frappe.db.get_value('Payment Export Settings',payment_export_settings,'iban_for_cross_border_payment') #new field
+
+    if payment_type == "Cross Border Payments (USD)":
+        iban = frappe.db.get_value('Payment Export Settings',payment_export_settings,'iban_for_cross_border_payments_usd') #new field
+    if payment_type == "Cross Border Payments (EUR)":
+        iban = frappe.db.get_value('Payment Export Settings',payment_export_settings,'iban_for_cross_border_payments_eur') #new field
+    if payment_type == "Cross Border Payments (OTHER)":
+        iban = frappe.db.get_value('Payment Export Settings',payment_export_settings,'iban_for_cross_border_payments_other') #new field
+    
     if not iban: 
         frappe.throw("Please update <b>'Iban For Cross Border Payment'</b> in {0}".format(f"<a href='https://erpnext-skf-9150.frappe.cloud/app/payment-export-settings/{payment_export_settings}'>Payment Export Settings</a>"))
     bank_bic = frappe.db.get_value('Payment Export Settings',payment_export_settings,'bic') 
@@ -144,11 +151,11 @@ def get_cross_border_xml_file(payments ,payment_export_settings , posting_date ,
         addr = get_supplier_address(payment_record.party)
 
         content += make_line("<PstlAdr>")
-        content += make_line("  <StrtNm>{0}</StrtNm>".format(addr.address_line1 if addr.address_line1 else ''))
-        content += make_line("  <PstCd>{0}</PstCd>".format(addr.pincode if addr.pincode else ''))
-        content += make_line("  <TwnNm>{0}</TwnNm>".format(addr.city if addr.city else ''))
-        content += make_line("  <Ctry>{0}</Ctry>".format(addr.country if addr.country else ''))
-        content += make_line("  <AdrLine>{0}</AdrLine>".format(addr.address_line2 if addr.address_line2 else ''))
+        content += make_line("  <StrtNm>{0}</StrtNm>".format(addr.address_line1 if addr.get('address_line1') else ''))
+        content += make_line("  <PstCd>{0}</PstCd>".format(addr.pincode if addr.get('pincode') else ''))
+        content += make_line("  <TwnNm>{0}</TwnNm>".format(addr.city if addr.get('city') else ''))
+        content += make_line("  <Ctry>{0}</Ctry>".format(addr.country if addr.get('country') else ''))
+        content += make_line("  <AdrLine>{0}</AdrLine>".format(addr.address_line2 if addr.get('address_line2') else ''))
         content += make_line("  </PstlAdr>")
         content += make_line("      <Id>")
         content += make_line("          <OrgId>")
@@ -209,6 +216,8 @@ def get_company_name(payment_entry):
     return frappe.get_value('Payment Entry', payment_entry, 'company')
 
 def get_supplier_address(party):
-    addr_name = frappe.db.get_value('Dynamic Link', {"link_doctype":"Supplier", 'link_name':party }, ['parent'])
-    addr_doc = frappe.get_doc('Address', addr_name)
-    return addr_doc
+    addr_name = frappe.db.get_value('Dynamic Link', {"link_doctype":"Supplier", 'link_name':party, "parenttype":"Address" }, ['parent'])
+    if addr_name:
+        addr_doc = frappe.get_doc('Address', addr_name)
+        return addr_doc
+    return {}
