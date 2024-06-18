@@ -112,7 +112,6 @@ def get_ordered_to_be_billed_data(args, filters):
 	cond = ''
 	if filters.get('account'):
 		cond = "and acc.account_type = '{account}'".format(account=filters.get('account'))
-
 	return frappe.db.sql(
 		"""
 		Select
@@ -128,10 +127,11 @@ def get_ordered_to_be_billed_data(args, filters):
 			`{child_tab}`.item_name, `{child_tab}`.description,
 			{project_field}, `{parent_tab}`.company
 		from
-			`{parent_tab}`, `{child_tab}` 
-			left join `tabAccount` as acc ON acc.name = `{child_tab}`.expense_account {cond}
+			`{parent_tab}`
+			Left Join `{child_tab}` ON  `{child_tab}`.parent = `{parent_tab}`.name
+			Left join `tabAccount` as acc ON acc.name = `{child_tab}`.expense_account
 		where
-			`{parent_tab}`.name = `{child_tab}`.parent and `{parent_tab}`.docstatus = 1
+			`{parent_tab}`.name = `{child_tab}`.parent and `{parent_tab}`.docstatus = 1 {cond}
 			and `{parent_tab}`.status not in ('Closed', 'Completed')
 			and `{child_tab}`.amount > 0
 			and (`{child_tab}`.base_amount -
@@ -151,7 +151,6 @@ def get_ordered_to_be_billed_data(args, filters):
 			order_by=args.get("order_by"),
 			from_date = filters.get('from_date'),
 			to_date = filters.get('to_date'),
-			account = filters.get('account'),
 			cond = cond
 		)
 	)
