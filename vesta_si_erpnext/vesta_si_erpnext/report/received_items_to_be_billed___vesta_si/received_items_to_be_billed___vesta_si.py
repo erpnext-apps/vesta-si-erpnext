@@ -129,7 +129,7 @@ def get_ordered_to_be_billed_data(args, filters):
 			{project_field}, `{parent_tab}`.company
 		from
 			`{parent_tab}`, `{child_tab}` 
-			Right join `tabAccount` as acc ON acc.name = `{child_tab}`.expense_account {cond}
+			left join `tabAccount` as acc ON acc.name = `{child_tab}`.expense_account {cond}
 		where
 			`{parent_tab}`.name = `{child_tab}`.parent and `{parent_tab}`.docstatus = 1
 			and `{parent_tab}`.status not in ('Closed', 'Completed')
