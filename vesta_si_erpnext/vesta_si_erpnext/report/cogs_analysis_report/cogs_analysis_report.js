@@ -25,7 +25,8 @@ frappe.query_reports["COGS Analysis Report"] = {
 			"label":__("SKF/Non-SKF/Both"),
 			"fieldtype":"Select",
 			"width": "80",
-			"options":["SKF","Non-SKF","Both"]
+			"options":["SKF", "Non-SKF", "Both", "Product Wise Cost"],
+			"default":"Both"
 		}
 	]
 };
