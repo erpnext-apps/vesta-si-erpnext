@@ -1,4 +1,5 @@
 import frappe
+from erpnext.accounts.utils import get_outstanding_invoices
 
 def validate(self, method):
     currency_list = []    
@@ -10,6 +11,9 @@ def validate(self, method):
             frappe.throw("Purchase Invoices have different currencies. All selected purchase invoices must have the same currency.")
         elif self.paid_from_account_currency != list(set(currency_list))[0]:
             frappe.throw(f"Account Paid From should be in <b>{list(set(currency_list))[0]}<b>")
+        # if self.payment_type == "Pay":
+        #     data = get_outstanding_invoices(party_type="Supplier", party = self.party)
+        #     frappe.throw(str(data))
 
 
 def on_submit(self, method):

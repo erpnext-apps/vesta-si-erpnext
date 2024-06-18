@@ -60,8 +60,9 @@ def get_purchase_invoice(due_date=None, payable_account=None, currency=None):
 
 		invoices = []
 		for row in data:
-			if row.status in ['Partly Paid' ,'Paid','Unpaid','Overdue']:
+			if row.status in ['Partly Paid','Unpaid','Overdue']:
 				invoices.append(row)
+				
 		return {"invoices" : invoices, 'currency':currency}
 
 @frappe.whitelist()

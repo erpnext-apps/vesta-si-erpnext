@@ -5,6 +5,7 @@ import frappe
 import json
 from frappe import _
 from datetime import date
+from frappe.utils import getdate, flt
 
 
 def execute(filters=None):
@@ -38,7 +39,19 @@ def get_version_data(filters):
 
 	version = {}
 	state_counter = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth']
-	
+	days_to_First_approve = 0 
+	days_to_Second_approve = 0 
+	days_to_Third_approve = 0 
+	days_to_Fourth_approve = 0 
+	days_to_Fifth_approve = 0 
+	days_to_Sixth_approve = 0 
+	days_to_Seventh_approve = 0 
+	days_to_Eighth_approve = 0 
+	days_to_Ninth_approve = 0 
+	days_to_Tenth_approve = 0
+
+
+	average_processing_days = 0 
 	state_list = []
 	for row in data:
 		d = json.loads(row.data)
@@ -52,11 +65,14 @@ def get_version_data(filters):
 						'name':row.docname,
 						'creation_date':row.creation,
 						'posting_date':row.posting_date,
+						'processing_days':(row.posting_date - getdate(row.creation)).days,
 						f'{state_counter[idx]}_state':r[-1],
 						f'{state_counter[idx]}_approver':frappe.db.get_value("User", row.owner, "full_name"),
 						f'{state_counter[idx]}_approval_on':row.versioncreation,
-						f'days_to_{state_counter[idx]}_approve':(row.versioncreation - row.creation).days
-					}				
+						f'days_to_{state_counter[idx]}_approve':(row.versioncreation - row.creation).days,
+					}
+					days_to_First_approve += (row.versioncreation - row.creation).days
+					average_processing_days += flt((row.posting_date - getdate(row.creation)).days)				
 				else:
 					idx += 1
 					version[row.docname].update({
@@ -65,8 +81,46 @@ def get_version_data(filters):
 						f'{state_counter[idx]}_approval_on':row.versioncreation,
 						f'days_to_{state_counter[idx]}_approve':(row.versioncreation - version[row.docname].get(f'{state_counter[idx-1]}_approval_on')).days
 					})
+					if idx == 1:
+						days_to_Second_approve += (row.versioncreation - version[row.docname].get(f'{state_counter[idx-1]}_approval_on')).days
+					if idx == 2:
+						days_to_Third_approve += (row.versioncreation - version[row.docname].get(f'{state_counter[idx-1]}_approval_on')).days
+					if idx == 3:
+						days_to_Fourth_approve += (row.versioncreation - version[row.docname].get(f'{state_counter[idx-1]}_approval_on')).days
+					if idx == 4:
+						days_to_Fifth_approve += (row.versioncreation - version[row.docname].get(f'{state_counter[idx-1]}_approval_on')).days
+					if idx == 5:
+						days_to_Sixth_approve += (row.versioncreation - version[row.docname].get(f'{state_counter[idx-1]}_approval_on')).days
+					if idx == 6:
+						days_to_Seventh_approve += (row.versioncreation - version[row.docname].get(f'{state_counter[idx-1]}_approval_on')).days
+					if idx == 7:
+						days_to_Eighth_approve += (row.versioncreation - version[row.docname].get(f'{state_counter[idx-1]}_approval_on')).days
+					if idx == 8:
+						days_to_Ninth_approve += (row.versioncreation - version[row.docname].get(f'{state_counter[idx-1]}_approval_on')).days	
+					if idx == 9:
+						days_to_Tenth_approve += (row.versioncreation - version[row.docname].get(f'{state_counter[idx-1]}_approval_on')).days
+
+
+	
+	data = list(version.values())
+	average_row = {
+			"processing_days": "<b>Average : {0}</b>".format(round(average_processing_days/len(data),2)),
+			"days_to_First_approve": "<b>Average : {0}</b>".format(round(days_to_First_approve/len(data))),
+			"days_to_Second_approve": "<b>Average : {0}</b>".format(round(days_to_Second_approve/len(data))),
+			"days_to_Fourth_approve": "<b>Average : {0}</b>".format(round(days_to_Fourth_approve/len(data))),
+			"days_to_Third_approve": "<b>Average : {0}</b>".format(round(days_to_Third_approve/len(data))),
+			"days_to_Fifth_approve": "<b>Average : {0}</b>".format(round(days_to_Fifth_approve/len(data))),
+			"days_to_Sixth_approve": "<b>Average : {0}</b>".format(round(days_to_Sixth_approve/len(data))),
+			"days_to_Seventh_approve": "<b>Average : {0}</b>".format(round(days_to_Seventh_approve/len(data))),
+			"days_to_Eighth_approve": "<b>Average : {0}</b>".format(round(days_to_Eighth_approve/len(data))),
+			"days_to_Ninth_approve": "<b>Average : {0}</b>".format(round(days_to_Ninth_approve/len(data))),
+			"days_to_Tenth_approve": "<b>Average : {0}</b>".format(round(days_to_Tenth_approve/len(data))),
+			}
+	
+	if data:
+		daat = data.insert(0, average_row)
 	columns = get_columns(state_list, state_counter)
-	return columns , list(version.values())
+	return columns , data
 
 def get_columns(state_list, state_counter):
 	columns = [
@@ -87,6 +141,12 @@ def get_columns(state_list, state_counter):
 			"label": _("Posting Date"),
 			"fieldname": "posting_date",
 			"fieldtype": "Date",
+			"width": 150,
+		},
+		{
+			"label": _("Processing Day"),
+			"fieldname": "processing_days",
+			"fieldtype": "Data",
 			"width": 150,
 		},
 	]
