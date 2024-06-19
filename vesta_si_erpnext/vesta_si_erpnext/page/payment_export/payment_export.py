@@ -725,6 +725,7 @@ def gen_payment_export_log(content, total_no_of_payments, total_paid_amount, pay
             data_["Supplier"] = row.get('supplier')
             data_["Supplier Name"] = frappe.db.get_value("Supplier", row.get('supplier'), 'supplier_name')
             data_["Paid Amount"] = row.get('paid_amount')
+            data_["Currency"] = frappe.db.get_value("Payment Entry", row.get('payment_entry'), "paid_to_account_currency")
             json_data.append(data_)
         # Json to DataFrame
         df = pd.DataFrame(json_data)
