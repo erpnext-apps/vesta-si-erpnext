@@ -23,9 +23,11 @@ def get_data(filters):
 		cond += f" and cu.customer_group != 'SKF Customer'"
 	if filters.get('customer_group') in ["SKF", "Non-SKF", "Both"]:
 		cond += f" and gl.voucher_type = 'Sales Invoice'"
-	if filters.get('customer_group') == "Product Wise Cost":
-		cond += f" and gl.voucher_type != 'Sales Invoice'"
-
+	if filters.get('customer_group') == "Stock Entry":
+		cond += f" and gl.voucher_type = 'Stock Entry'"
+	if filters.get('customer_group') == "Purchase Invoice":
+		cond += f" and gl.voucher_type = 'Purchase Invoice'"
+		
 	data = frappe.db.sql(f"""
 		Select gl.name as gl_entry,
 		gl.posting_date,
