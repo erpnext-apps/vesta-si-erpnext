@@ -8,10 +8,8 @@ import html              # used to escape xml content
 from frappe.utils import flt, get_link_to_form, getdate, nowdate, now
 from datetime import datetime
 
-def get_cross_border_xml_file(payments ,payment_export_settings , posting_date , payment_type):
+def get_cross_border_xml_file(payments ,payment_export_settings , posting_date , payment_type, bank_account):
     payments = eval(payments)
-    payments = list(filter(None, payments))
-
     content = make_line('<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03 pain.001.001.03.xsd">')
     content += make_line("<CstmrCdtTrfInitn>")
     content += make_line("<GrpHdr>")
@@ -84,7 +82,8 @@ def get_cross_border_xml_file(payments ,payment_export_settings , posting_date ,
     if payment_type == "Cross Border Payments (EUR)":
         iban = frappe.db.get_value('Payment Export Settings',payment_export_settings,'iban_for_cross_border_payments_eur') #new field
     if payment_type == "Cross Border Payments (OTHER)":
-        iban = frappe.db.get_value('Payment Export Settings',payment_export_settings,'iban_for_cross_border_payments_other') #new field
+        bank_account = frappe.get_doc("Bank Account", bank_account)
+        iban = bank_account.iban 
     
     if not iban: 
         frappe.throw("Please update <b>'Iban For Cross Border Payment'</b> in {0}".format(f"<a href='https://erpnext-skf-9150.frappe.cloud/app/payment-export-settings/{payment_export_settings}'>Payment Export Settings</a>"))

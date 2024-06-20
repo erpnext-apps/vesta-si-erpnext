@@ -26,8 +26,15 @@ frappe.pages['payment-export'].on_page_load = function(wrapper) {
         options:"Domestic (Swedish) Payments (SEK)\nSEPA (EUR)\nCross Border Payments (USD)\nCross Border Payments (EUR)\nCross Border Payments (OTHER)",
         onchange: () => {
             frappe.payment_export.run(page);
-        getfindSelected()
+            getfindSelected()
+            togglebankaccount(page)
         }
+    });
+    page.bank_account_field = page.add_field({
+        fieldname: 'account',
+        label: __('Bank Account'),
+        fieldtype:'Link',
+        options: "Bank Account",
     });
     frappe.payment_export.run(page);
     getfindSelected()
@@ -36,6 +43,7 @@ frappe.pages['payment-export'].on_page_load = function(wrapper) {
 frappe.payment_export = {
     start: 0,
     make: function(page) {
+        
         var me = frappe.payment_export;
         me.page = page;
         me.body = $('<div></div>').appendTo(me.page.main);
@@ -61,7 +69,8 @@ frappe.payment_export = {
                         'payments': payments,
                         "payment_export_settings": page.payment_export_settings_field.get_value(),
                         "posting_date": page.posting_date_field.get_value(),
-                        'payment_type':page.payment_type_field.get_value()
+                        'payment_type': page.payment_type_field.get_value(),
+                        'bank_account': page.bank_account_field.get_value()
                        
                     },
                     callback: function(r) {
@@ -92,7 +101,9 @@ frappe.payment_export = {
             } else {
                 frappe.msgprint( __("Please select at least one payment."), __("Information") );
             }
+            
         });
+        
         this.page.main.find(".btn-refresh").on('click', function() {
             // refresh
             location.reload(); 
@@ -105,8 +116,10 @@ frappe.payment_export = {
                 }
             })
         });
+        
     },
     run: function(page) {  
+        togglebankaccount(page)
         // populate payment entries
         frappe.call({
             method: 'vesta_si_erpnext.vesta_si_erpnext.page.payment_export.payment_export.get_payments',
@@ -200,4 +213,14 @@ function selectunselect(){
     });
     
     getfindSelected()
+}
+
+function togglebankaccount(page){
+    console.log(page)
+    var element = document.querySelector('[data-fieldname="account"]');
+    if (page.payment_type_field.get_value() == 'Cross Border Payments (OTHER)'){
+        element.hidden = false;                                                                                                      
+    }else{
+        element.hidden = true;
+    }
 }
