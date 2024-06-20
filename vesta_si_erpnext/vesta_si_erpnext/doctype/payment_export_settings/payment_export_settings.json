@@ -22,7 +22,6 @@
   "iban_for_sepa_payment",
   "iban_for_cross_border_payments_usd",
   "iban_for_cross_border_payments_eur",
-  "iban_for_cross_border_payments_other",
   "bic",
   "chrgbr",
   "cd",
@@ -144,11 +143,6 @@
    "label": "IBAN For Cross Border Payments (EUR)"
   },
   {
-   "fieldname": "iban_for_cross_border_payments_other",
-   "fieldtype": "Data",
-   "label": "IBAN For Cross Border Payments (Other)"
-  },
-  {
    "fieldname": "iban_for_cross_border_payments_usd",
    "fieldtype": "Data",
    "label": "Iban For Cross Border Payments (USD)"
@@ -156,7 +150,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-08 07:39:26.611677",
+ "modified": "2024-06-20 09:49:56.457946",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Payment Export Settings",

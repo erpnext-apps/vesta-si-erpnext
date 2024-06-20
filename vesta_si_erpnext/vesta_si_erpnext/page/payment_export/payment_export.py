@@ -91,7 +91,7 @@ def get_payments(payment_type, payment_export_settings):
     return { 'payments': _payments, "total_paid_amount" : sum(list_of_amount)}
 
 @frappe.whitelist()
-def generate_payment_file(payments ,payment_export_settings , posting_date , payment_type):
+def generate_payment_file(payments ,payment_export_settings , posting_date , payment_type , bank_account = None):
     if payment_type == "SEPA (EUR)":
         content, transaction_count, control_sum = genrate_file_for_sepa(payments ,payment_export_settings , posting_date , payment_type)
         current_time = now()
@@ -105,8 +105,10 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         return { 'content': content, 'skipped': 0 , 'time':formatted_date}
 
     if payment_type in ["Cross Border Payments (USD)" , "Cross Border Payments (EUR)", "Cross Border Payments (OTHER)"]:
+        if payment_type == "Cross Border Payments (OTHER)" and not bank_account:
+            frappe.throw("Bank Account is mandatory for payment type <b>Cross Border Payments (OTHER)</b>")
         from vesta_si_erpnext.vesta_si_erpnext.page.payment_export.cross_border_payment import get_cross_border_xml_file
-        content, transaction_count, control_sum = get_cross_border_xml_file(payments ,payment_export_settings , posting_date , payment_type)
+        content, transaction_count, control_sum = get_cross_border_xml_file(payments ,payment_export_settings , posting_date , payment_type, bank_account=None)
         current_time = now()
         original_date = datetime.strptime(str(current_time), '%Y-%m-%d %H:%M:%S.%f')
         formatted_date = original_date.strftime('%Y-%m-%d %H-%M-%S')
