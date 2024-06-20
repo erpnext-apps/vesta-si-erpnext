@@ -1,6 +1,6 @@
 import frappe
 import json
-from frappe.utils import nowdate, getdate
+from frappe.utils import nowdate, getdate, flt
 import datetime
 import calendar
 
@@ -40,7 +40,7 @@ def get_penalty_cost_paid_suppliers(filters):
         """,as_dict = True) 
     
     return {
-                "value": len(data),
+                "value": flt(len(data)),
                 "fieldtype": "Float",
             }
 
@@ -70,8 +70,8 @@ def get_total_penalty_cost_remitted_to_suppliers(filters):
             Where pi.docstatus = 1 {cond}
     """,as_dict = 1)
     return {
-                "value": data[0].get('base_net_amount') if data else 0,
-                "fieldtype": "Float",
+                "value": flt(data[0].get('base_net_amount')) if data else 0,
+                "fieldtype": "Currency",
             }
 
 @frappe.whitelist()
@@ -98,5 +98,5 @@ def get_total_penalty_cost_remitted_to_suppliers_monthly(filters):
     """,as_dict = 1)
     return {
                 "value": data[0].get('base_net_amount') if data and data[0].get('base_net_amount') else 0,
-                "fieldtype": "Float",
+                "fieldtype": "Currency",
             }

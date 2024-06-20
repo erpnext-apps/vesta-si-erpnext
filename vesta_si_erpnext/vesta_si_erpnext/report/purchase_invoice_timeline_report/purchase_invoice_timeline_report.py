@@ -144,7 +144,7 @@ def get_columns(state_list, state_counter):
 			"width": 150,
 		},
 		{
-			"label": _("Processing Day"),
+			"label": _("Processing Days"),
 			"fieldname": "processing_days",
 			"fieldtype": "Data",
 			"width": 150,
