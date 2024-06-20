@@ -36,6 +36,12 @@ def get_columns(filters):
 		'width': 100
 		},
 		{
+			"label": _("Processing Days"),
+			"fieldname": "processing_days",
+			"fieldtype": "Data",
+			"width": 150,
+		},
+		{
 		'fieldname': 'due_date',
 		'label': _('Due Date'),
 		'fieldtype': 'Date',
@@ -129,6 +135,7 @@ def get_data(filters):
 	result_map = {}
 
 	for row in result:
+		row.update({"processing_days": (row.invoice_date - getdate(row.creation)).days})
 		result_map[row.payment_entry] = row
 
 	version_data = get_version_data()
