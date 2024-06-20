@@ -105,10 +105,13 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         return { 'content': content, 'skipped': 0 , 'time':formatted_date}
 
     if payment_type in ["Cross Border Payments (USD)" , "Cross Border Payments (EUR)", "Cross Border Payments (OTHER)"]:
+        
         if payment_type == "Cross Border Payments (OTHER)" and not bank_account:
             frappe.throw("Bank Account is mandatory for payment type <b>Cross Border Payments (OTHER)</b>")
+        
         from vesta_si_erpnext.vesta_si_erpnext.page.payment_export.cross_border_payment import get_cross_border_xml_file
-        content, transaction_count, control_sum = get_cross_border_xml_file(payments ,payment_export_settings , posting_date , payment_type, bank_account=None)
+        
+        content, transaction_count, control_sum = get_cross_border_xml_file(payments ,payment_export_settings , posting_date , payment_type, bank_account)
         current_time = now()
         original_date = datetime.strptime(str(current_time), '%Y-%m-%d %H:%M:%S.%f')
         formatted_date = original_date.strftime('%Y-%m-%d %H-%M-%S')
@@ -116,6 +119,7 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         payments = eval(payments)
         payments = list(filter(None, payments))
         gen_payment_export_log(content, transaction_count, control_sum, payments, 'EUR')
+        
         return { 'content': content, 'skipped': 0 , 'time':formatted_date}
     
 
