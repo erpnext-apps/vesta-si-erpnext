@@ -133,10 +133,11 @@ def get_data(filters):
 	result = frappe.db.sql(f"{query}", as_dict=True)
 	
 	result_map = {}
-
+	total_processing_days  = 0
 	for row in result:
 		row.update({"processing_days": (row.invoice_date - getdate(row.creation)).days})
 		result_map[row.payment_entry] = row
+		total_processing_days += (row.invoice_date - getdate(row.creation)).days
 
 	version_data = get_version_data()
 	total_days = 0
@@ -151,7 +152,7 @@ def get_data(filters):
 			total_days += (creation - payment_date).days
 	
 	total_tow = len(data)
-	data.insert(0,{"day_diff" : "<b>Average : {0}</b>".format(round(total_days/total_tow, 2))})
+	data.insert(0,{"day_diff" : "<b>Average : {0}</b>".format(round(total_days/total_tow, 2)), "processing_days":"<b>Average : {0}</b>".format(round(total_processing_days/total_tow, 2))})
 
 
 	return data
