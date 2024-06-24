@@ -9,9 +9,21 @@ def execute(filters=None):
 	args = get_args()
 	data = get_ordered_to_be_billed_data(args, filters)
 	final_data = []
+	gl_entry_data = frappe.db.sql(f"""
+					Select name , voucher_no, account
+					From `tabGL Entry`
+					Where voucher_type = "Purchase Receipt" and account in ('222503 - Goods & services received/Invoice received - non SKF - 9150', '222501 - Goods & services received/Invoice received - non SKF - 9150') and
+					is_cancelled = 0
+	""",as_dict = 1)
+	gl_map = {}
+	for row in gl_entry_data:
+		gl_map[row.voucher_no] = row
+	
 	for row in data:
-		if row[-1] == filters.get('account'):
-			final_data.append(row)
+		if gl_map.get(row[0]):
+			if filters.get('account') == gl_map.get(row[0]).get('account'):
+				final_data.append(row)
+	
 	return columns, final_data
 
 
