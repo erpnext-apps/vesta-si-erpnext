@@ -48,10 +48,11 @@ def get_data(filters):
 		where gl.is_cancelled = 0 and gl.is_opening = 'No' {cond}
 	""",as_dict = 1)
 	for row in data:
-		if row.customer_group == "SKF Customer":
-			row.update({"customer_group":"SKF" })
-		else:
-			row.update({"customer_group":"Non-SKF" })
+		if row.voucher_type == "Sales Invoice":
+			if row.customer_group == "SKF Customer":
+				row.update({"customer_group":"SKF" })
+			else:
+				row.update({"customer_group":"Non-SKF" })
 	return data
 
 def get_columns(filters):
@@ -95,7 +96,7 @@ def get_columns(filters):
 			"fieldtype":"Float"
 		},
 	]
-	if filters.get('customer_group') in ["SKF", "Non-SKF"]:
+	if filters.get('customer_group') in ["SKF", "Non-SKF", "All"]:
 		columns.append(
 			{
 			"fieldname":"customer_group",
