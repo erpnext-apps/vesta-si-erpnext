@@ -4,15 +4,15 @@
 import frappe
 import json
 from frappe import _
-from frappe.utils import getdate
-from datetime import datetime
+from frappe.utils import getdate, flt
+from datetime import datetime, timedelta	
 
 
 def execute(filters=None):
 	columns, data = [], []
 	columns = get_columns(filters)
-	data = get_data(filters)
-	return columns, data
+	data, chart = get_data(filters)
+	return columns, data , None, chart
 
 def get_columns(filters):
 	column = [
@@ -118,6 +118,7 @@ def get_data(filters):
 	pi.supplier, pi.due_date, 
 	pi.workflow_state, 
 	pi.company, 
+	pi.base_grand_total,
 	pi.cost_center, 
 	per.parent as payment_entry,
 	pe.posting_date as payment_date 
@@ -152,10 +153,109 @@ def get_data(filters):
 			total_days += (creation - payment_date).days
 	
 	total_tow = len(data)
+	chart = prepare_chart_data(filters, data)
 	data.insert(0,{"day_diff" : "<b>Average : {0}</b>".format(round(total_days/total_tow, 2)), "processing_days":"<b>Average : {0}</b>".format(round(total_processing_days/total_tow, 2))})
 
+	return data, chart
 
-	return data
+def prepare_chart_data(filters, data):
+	range1 = filters.get('range1')
+	range2 = int(filters.get('range2')) + int(filters.get('range1'))
+	range3 = int(filters.get('range3')) + int(filters.get('range2')) + int(filters.get('range1'))
+	current_date = getdate()
+	range1_days_to_add = timedelta(days=flt(-range1))
+	range1_date = current_date + range1_days_to_add
+	range2_days_to_add = timedelta(days=flt(-range2))
+	range2_date = current_date + range2_days_to_add
+	range3_days_to_add = timedelta(days=flt(-range3))
+	range3_date = current_date + range3_days_to_add
+
+	labels = []
+	labels.append("{}-{}".format(0,range1))
+	labels.append("{}-{}".format(range1,range2))
+	labels.append("{}-{}".format(range2,range3))
+	labels.append("{}-{}".format("Before", range3))
+	
+	chart_value = {}
+
+	for row in data:
+		if current_date >= row.due_date >= range1_date:
+			if not chart_value.get('first'):
+				chart_value['first'] = []
+				chart_value['first_total'] = []
+				chart_value['first'].append(row)
+				chart_value['first_total'].append(row.base_grand_total)
+			else:
+				chart_value['first'].append(row)
+				chart_value['first_total'].append(row.base_grand_total)
+
+		if range1_date >= row.due_date >= range2_date:
+			if not chart_value.get('second'):
+				chart_value['second'] = []
+				chart_value['second_total'] = []
+				chart_value['second'].append(row)
+				chart_value['second_total'].append(row.base_grand_total)
+			else:
+				chart_value['second'].append(row)
+				chart_value['second_total'].append(row.base_grand_total)
+			
+		if range2_date >= row.due_date >= range3_date:
+			if not chart_value.get('third'):
+				chart_value['third'] = []
+				chart_value['third_total'] = []
+				chart_value['third'].append(row)
+				chart_value['third_total'].append(row.base_grand_total)
+			else:
+				chart_value['third'].append(row)
+				chart_value['third_total'].append(row.base_grand_total)
+
+		if range3_date >= row.due_date:
+			if not chart_value.get('forth'):
+				chart_value['forth'] = []
+				chart_value['forth_total'] = []
+				chart_value['forth'].append(row)
+				chart_value['forth_total'].append(row.base_grand_total)
+			else:
+				chart_value['forth'].append(row)
+				chart_value['forth_total'].append(row.base_grand_total)
+
+	row = [
+		len(chart_value.get('first')) if chart_value.get('first') else 0,
+		len(chart_value.get('second')) if chart_value.get('second') else 0, 
+		len(chart_value.get('third')) if chart_value.get('third') else 0, 
+		len(chart_value.get('forth')) if chart_value.get('forth') else 0
+		]
+	total_value = [
+		sum(chart_value.get('first_total')) if chart_value.get('first_total') else 0,
+		sum(chart_value.get('second_total')) if chart_value.get('second_total') else 0, 
+		sum(chart_value.get('third_total')) if chart_value.get('third_total') else 0, 
+		sum(chart_value.get('forth_total')) if chart_value.get('forth_total') else 0
+		]
+	chart =	{
+		"data": {
+					'labels': labels,
+					'datasets': [
+						{
+							'name': 'Invoice',
+							'values': row,
+							'type': 'bar',
+							"color": "#blue"
+						},
+						{
+							'name': 'Total',
+							'values': total_value,
+							'type': 'line',
+							"color": "#008000"
+						},
+						
+					]
+				},
+				'type': 'line',
+    			'height': 250,
+				"colors": ["#blue","008000"],
+			}
+	
+	return chart
 
 def get_version_data():
 	data = frappe.db.sql(f"""
