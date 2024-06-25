@@ -95,7 +95,7 @@ def get_columns(filters):
 			"fieldtype":"Float"
 		},
 	]
-	if filters.get('customer_group') in ["SKF", "Non-SKF", "All"]:
+	if filters.get('customer_group') in ["SKF", "Non-SKF"]:
 		columns.append(
 			{
 			"fieldname":"customer_group",

@@ -40,6 +40,13 @@ frappe.query_reports["Overdue Invoice Summary"] = {
 			"fieldtype": "Int",
 			'default':90,
 			"reqd": 1
+		},
+		{
+			'fieldname':"chart_type",
+			"label": __("Chart Type"),
+			"fieldtype": "Select",
+			'options':['Pie', 'Bar', 'Line'],
+			'default':'Pie'
 		}
 	]
 };
