@@ -22,11 +22,11 @@ frappe.query_reports["COGS Analysis Report"] = {
 		},
 		{
 			"fieldname":"customer_group",
-			"label":__("SKF/Non-SKF/Both"),
+			"label":__("SKF/Non-SKF/All"),
 			"fieldtype":"Select",
 			"width": "80",
-			"options":["SKF", "Non-SKF", "Both", "Stock Entry", "Purchase Invoice"],
-			"default":"Both"
+			"options":["SKF", "Non-SKF", "All", "Stock Entry", "Purchase Invoice"],
+			"default":"All"
 		}
 	]
 };

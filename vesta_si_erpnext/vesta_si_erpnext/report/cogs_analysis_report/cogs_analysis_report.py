@@ -21,7 +21,7 @@ def get_data(filters):
 		cond += f" and cu.customer_group = 'SKF Customer'"
 	if filters.get('customer_group') == 'Non-SKF':
 		cond += f" and cu.customer_group != 'SKF Customer'"
-	if filters.get('customer_group') in ["SKF", "Non-SKF", "Both"]:
+	if filters.get('customer_group') in ["SKF", "Non-SKF"]:
 		cond += f" and gl.voucher_type = 'Sales Invoice'"
 	if filters.get('customer_group') == "Stock Entry":
 		cond += f" and gl.voucher_type = 'Stock Entry'"
@@ -48,10 +48,11 @@ def get_data(filters):
 		where gl.is_cancelled = 0 and gl.is_opening = 'No' {cond}
 	""",as_dict = 1)
 	for row in data:
-		if row.customer_group == "SKF Customer":
-			row.update({"customer_group":"SKF" })
-		else:
-			row.update({"customer_group":"Non-SKF" })
+		if row.voucher_type == "Sales Invoice":
+			if row.customer_group == "SKF Customer":
+				row.update({"customer_group":"SKF" })
+			else:
+				row.update({"customer_group":"Non-SKF" })
 	return data
 
 def get_columns(filters):
@@ -74,7 +75,7 @@ def get_columns(filters):
 			"fieldtype":"Date",
 		},
 	]
-	if filters.get('customer_group') in ["SKF", "Non-SKF", "Both"]:
+	if filters.get('customer_group') in ["SKF", "Non-SKF", "All"]:
 		columns += [
 			{
 			"fieldname":"customer",
@@ -95,7 +96,7 @@ def get_columns(filters):
 			"fieldtype":"Float"
 		},
 	]
-	if filters.get('customer_group') in ["SKF", "Non-SKF", "Both"]:
+	if filters.get('customer_group') in ["SKF", "Non-SKF", "All"]:
 		columns.append(
 			{
 			"fieldname":"customer_group",
