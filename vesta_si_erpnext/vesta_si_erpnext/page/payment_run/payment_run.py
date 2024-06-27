@@ -116,19 +116,10 @@ def get_payment_entry(
 	grand_total, outstanding_amount = set_grand_total_and_outstanding_amount(
 		party_amount, dt, party_account_currency, doc
 	)
-	account_paid_from = None
 	
 	# bank or cash
 	bank = get_bank_cash_account(doc, bank_account)
-	if not bank:
-		settings = frappe.get_doc("Payment Run Setting")
-		for row in settings.payment_account:
-			if row.currency == doc.currency:
-				account_paid_from = row.account_paid_from
-				break
-		if account_paid_from:
-			chart_account = frappe.get_doc('Account', account_paid_from)
-			bank = chart_account
+	
 	# if default bank or cash account is not set in company master and party has default company bank account, fetch it
 	if party_type in ["Customer", "Supplier"] and not bank:
 		party_bank_account = get_party_bank_account(party_type, doc.get(scrub(party_type)))
@@ -144,7 +135,6 @@ def get_payment_entry(
 	paid_amount, received_amount, discount_amount, valid_discounts = apply_early_payment_discount(
 		paid_amount, received_amount, doc, party_account_currency, reference_date
 	)
-	company_currency = frappe.get_cached_value("Company", doc.get("company"), "default_currency")
 
 	pe = frappe.new_doc("Payment Entry")
 	pe.payment_type = payment_type
