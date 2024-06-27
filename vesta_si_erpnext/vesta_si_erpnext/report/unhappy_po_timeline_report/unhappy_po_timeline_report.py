@@ -5,13 +5,14 @@ import frappe
 import json
 from frappe import _
 from datetime import date
+from frappe.utils import flt
 
 
 def execute(filters=None):
 	columns, data = [], []
-	data = get_version_data(filters)
+	data, chart = get_version_data(filters)
 	columns = get_columns(filters)
-	return columns, data
+	return columns, data, None, chart
 
 
 def get_version_data(filters):
@@ -60,9 +61,35 @@ def get_version_data(filters):
 	for row in log:
 		if map_user.get(row.get('approval_user')):
 			row.update({'approval_user':map_user.get(row.get('approval_user'))})
+	labels = []
+	chart_log = {}
+	for row in log:
+		if row.get('approval_user') not in labels:
+			labels.append(row.get('approval_user'))
+		if not chart_log.get(row.get('approval_user')):
+			chart_log[row.get('approval_user')] = []
+			chart_log[row.get('approval_user')].append(flt(row.get('days')))
+		else:
+			chart_log[row.get('approval_user')].append(flt(row.get('days')))
+	row_ =[]
+	for row in labels:
+		row_.append(sum(chart_log.get(row)))
 
-
-	return log
+	chart = {
+		"data": {
+						'labels': labels,
+						'datasets': [
+							{
+								'name': 'Number of Day to Approve',
+								'values': row_,
+								'type': 'pie',
+							},					
+						]
+					},
+					'type': 'pie',
+					'height': 250,
+	}
+	return log , chart
 
 def get_columns(filters):
 	columns =[
@@ -101,7 +128,7 @@ def get_columns(filters):
 		{
 			"label": _("Number of day for approval"),
 			"fieldname": "days",
-			"fieldtype": "Data",
+			"fieldtype": "Float",
 			"width": 100,
 		}
 
