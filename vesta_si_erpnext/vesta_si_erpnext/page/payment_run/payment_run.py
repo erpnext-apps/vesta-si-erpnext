@@ -116,10 +116,10 @@ def get_payment_entry(
 	grand_total, outstanding_amount = set_grand_total_and_outstanding_amount(
 		party_amount, dt, party_account_currency, doc
 	)
-
+	
 	# bank or cash
 	bank = get_bank_cash_account(doc, bank_account)
-
+	
 	# if default bank or cash account is not set in company master and party has default company bank account, fetch it
 	if party_type in ["Customer", "Supplier"] and not bank:
 		party_bank_account = get_party_bank_account(party_type, doc.get(scrub(party_type)))

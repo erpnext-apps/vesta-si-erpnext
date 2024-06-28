@@ -17,6 +17,7 @@ from frappe.utils import (
 )
 
 def validate(self, method):
+    
     currency_list = []    
     if self.party_type == "Supplier":
         for row in self.references:
@@ -62,6 +63,8 @@ def get_advance_entries(self):
 			frappe.throw("Advance payments available against supplier <b>{0}</b> <br> Enable <b>'Set Advances and Allocate (FIFO)'</b> or click on the <b>'Get Advances Paid'</b> button under the payments section.".format(self.supplier))
 
 def on_submit(self, method):
+    if not (self.custom_is_manual_payment_process or self.custom_xml_file_generated):
+        frappe.throw("XML file is not generated for this payment entry <b>{0}</b>.".format(self.name))
     data =  frappe.db.sql(f'''
             Select parent From `tabPayment Transaction Log` 
             Where payment_entry = "{self.name}"

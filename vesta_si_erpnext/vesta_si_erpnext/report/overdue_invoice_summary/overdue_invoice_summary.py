@@ -176,41 +176,53 @@ def prepare_chart_data(filters, data):
 			if not chart_value.get('range1'):
 				chart_value['range1'] = []
 				chart_value['total_range1'] = []
+				chart_value['pro_days1'] = []
 				chart_value['range1'].append(row.get('day_diff'))
 				chart_value['total_range1'].append(row.get('base_grand_total'))
+				chart_value['pro_days1'].append(row.get('processing_days'))
 			else:
 				chart_value['range1'].append(row.get('day_diff'))
 				chart_value['total_range1'].append(row.get('base_grand_total'))
+				chart_value['pro_days1'].append(row.get('processing_days'))
 
 		if range1 < flt(row.day_diff) <= range2:
 			if not chart_value.get('range2'):
 				chart_value['range2'] = []
 				chart_value['total_range2'] = []
+				chart_value['pro_days2'] = []
 				chart_value['range2'].append(row.get('day_diff'))
 				chart_value['total_range2'].append(row.get('base_grand_total'))
+				chart_value['pro_days2'].append(row.get('processing_days'))
 			else:
 				chart_value['range2'].append(row.get('day_diff'))
 				chart_value['total_range2'].append(row.get('base_grand_total'))
+				chart_value['pro_days2'].append(row.get('processing_days'))
 
 		if range2 < flt(row.day_diff) <= range3:
 			if not chart_value.get('range3'):
 				chart_value['range3'] = []
+				chart_value['pro_days3'] = []
 				chart_value['total_range3'] = []
 				chart_value['range3'].append(row.get('day_diff'))
 				chart_value['total_range3'].append(row.get('base_grand_total'))
+				chart_value['pro_days3'].append(row.get('processing_days'))
 			else:
 				chart_value['range3'].append(row.get('day_diff'))
 				chart_value['total_range3'].append(row.get('base_grand_total'))
+				chart_value['pro_days3'].append(row.get('processing_days'))
 			
 		if range3 < flt(row.day_diff):
 			if not chart_value.get('range4'):
 				chart_value['range4'] = []
+				chart_value['pro_days4'] = []
 				chart_value['total_range4'] = []
 				chart_value['range4'].append(row.get('day_diff'))
 				chart_value['total_range4'].append(row.get('base_grand_total'))
+				chart_value['pro_days4'].append(row.get('processing_days'))
 			else:
 				chart_value['range4'].append(row.get('day_diff'))
 				chart_value['total_range4'].append(row.get('base_grand_total'))
+				chart_value['pro_days4'].append(row.get('processing_days'))
 
 	row = [
 		len(chart_value.get('range1')) if chart_value.get('range1') else 0,
@@ -225,20 +237,27 @@ def prepare_chart_data(filters, data):
 		sum(chart_value.get('total_range3')) if chart_value.get('total_range3') else 0,
 		sum(chart_value.get('total_range4')) if chart_value.get('total_range4') else 0
 	]
+
+	pro_total_value = [
+		sum(chart_value.get('pro_days1')) if chart_value.get('pro_days1') else 0,
+		sum(chart_value.get('pro_days2')) if chart_value.get('pro_days2') else 0,
+		sum(chart_value.get('pro_days3')) if chart_value.get('pro_days3') else 0,
+		sum(chart_value.get('pro_days4')) if chart_value.get('pro_days4') else 0
+	]
 	if filters.get('chart_type') == "Pie":
 		chart =	{
 			"data": {
 						'labels': labels,
 						'datasets': [
 							{
-								'name': 'Invoice',
+								'name': 'Payment Delayed',
 								'values': row,
 								'type': 'pie',
 								"color": "#blue"
 							},
 							{
 								'name': 'Total',
-								'values': total_value,
+								'values': total_value if filters.get('chart_base_on') == "Delayed Days" else pro_total_value,
 								'type': 'pie',
 								"color": "#008000"
 							},
@@ -256,14 +275,14 @@ def prepare_chart_data(filters, data):
 						'labels': labels,
 						'datasets': [
 							{
-								'name': 'Invoice',
+								'name': 'Payment Delayed',
 								'values': row,
 								'type': 'line',
 								"color": "#blue"
 							},
 							{
 								'name': 'Total',
-								'values': total_value,
+								'values': total_value if filters.get('chart_base_on') == "Delayed Days" else pro_total_value ,
 								'type': 'line',
 								"color": "#008000"
 							},
@@ -280,14 +299,14 @@ def prepare_chart_data(filters, data):
 						'labels': labels,
 						'datasets': [
 							{
-								'name': 'Invoice',
+								'name': 'Payment Delayed',
 								'values': row,
 								'type': 'bar',
 								"color": "#blue"
 							},
 							{
 								'name': 'Total',
-								'values': total_value,
+								'values': total_value if filters.get('chart_base_on') == "Delayed Days" else pro_total_value,
 								'type': 'bar',
 								"color": "#008000"
 							},

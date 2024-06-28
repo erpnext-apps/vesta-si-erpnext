@@ -42,6 +42,13 @@ frappe.query_reports["Overdue Invoice Summary"] = {
 			"reqd": 1
 		},
 		{
+			'fieldname':"chart_base_on",
+			"label": __("Chart Based On"),
+			"fieldtype": "Select",
+			'options':['Processing Days', "Delayed Days"],
+			'default':'Delayed Days'
+		},
+		{
 			'fieldname':"chart_type",
 			"label": __("Chart Type"),
 			"fieldtype": "Select",

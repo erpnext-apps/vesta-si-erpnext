@@ -11,6 +11,7 @@ from frappe.utils import getdate, flt
 def execute(filters=None):
 	columns, data = [], []
 	columns , data = get_version_data(filters)
+	
 	return columns, data
 
 
@@ -39,6 +40,7 @@ def get_version_data(filters):
 
 	version = {}
 	state_counter = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth']
+
 	days_to_First_approve = 0 
 	days_to_Second_approve = 0 
 	days_to_Third_approve = 0 
@@ -100,9 +102,10 @@ def get_version_data(filters):
 					if idx == 9:
 						days_to_Tenth_approve += (row.versioncreation - version[row.docname].get(f'{state_counter[idx-1]}_approval_on')).days
 
-
-	
 	data = list(version.values())
+
+	# chart  = prepare_chart_data(data)
+
 	average_row = {
 			"processing_days": "<b>Average : {0}</b>".format(round(average_processing_days/len(data),2)),
 			"days_to_First_approve": "<b>Average : {0}</b>".format(round(days_to_First_approve/len(data))),
@@ -115,13 +118,16 @@ def get_version_data(filters):
 			"days_to_Eighth_approve": "<b>Average : {0}</b>".format(round(days_to_Eighth_approve/len(data))),
 			"days_to_Ninth_approve": "<b>Average : {0}</b>".format(round(days_to_Ninth_approve/len(data))),
 			"days_to_Tenth_approve": "<b>Average : {0}</b>".format(round(days_to_Tenth_approve/len(data))),
-			}
+	}
 	
 	if data:
 		daat = data.insert(0, average_row)
+
 	columns = get_columns(state_list, state_counter)
+	
 	return columns , data
 
+	
 def get_columns(state_list, state_counter):
 	columns = [
 		{
@@ -150,6 +156,7 @@ def get_columns(state_list, state_counter):
 			"width": 150,
 		},
 	]
+	
 	for idx, row in enumerate(state_list):
 		columns += [
 			{
@@ -177,4 +184,60 @@ def get_columns(state_list, state_counter):
 				"width": 150,
 			},
 		]
+	
 	return columns
+
+
+# def prepare_chart_data(data):
+# 	chart_map = {}
+	
+# 	for row in data:
+# 		if not chart_map.get('days_to_First_approve'):
+# 			chart_map['days_to_First_approve'] = []
+# 			chart_map['days_to_First_approve'].append(row.get('days_to_First_approve'))
+# 		else:
+# 			chart_map['days_to_First_approve'].append(row.get('days_to_First_approve'))
+
+# 		if not chart_map.get('days_to_Second_approve'):
+# 			chart_map['days_to_Second_approve'] = []
+# 			chart_map['days_to_Second_approve'].append(row.get('days_to_Second_approve'))
+# 		else:
+# 			chart_map['days_to_Second_approve'].append(row.get('days_to_Second_approve'))
+
+# 		if not chart_map.get('days_to_Third_approve'):
+# 			chart_map['days_to_Third_approve'] = []
+# 			chart_map['days_to_Third_approve'].append(row.get('days_to_Third_approve'))
+# 		else:
+# 			chart_map['days_to_Third_approve'].append(row.get('days_to_Third_approve'))
+
+
+# 		if not chart_map.get('days_to_Fourth_approve'):
+# 			chart_map['days_to_Fourth_approve'] = []
+# 			chart_map['days_to_Fourth_approve'].append(row.get('days_to_Fourth_approve'))
+# 		else:
+# 			chart_map['days_to_Fourth_approve'].append(row.get('days_to_Fourth_approve'))
+
+
+# 		if not chart_map.get('days_to_Fifth_approve'):
+# 			chart_map['days_to_Fifth_approve'] = []
+# 			chart_map['days_to_Fifth_approve'].append(row.get('days_to_Fifth_approve'))
+# 		else:
+# 			chart_map['days_to_Fifth_approve'].append(row.get('days_to_Fifth_approve'))
+
+# 		if not chart_map.get('days_to_Sixth_approve'):
+# 			chart_map['days_to_Sixth_approve'] = []
+# 			chart_map['days_to_Sixth_approve'].append(row.get('days_to_Sixth_approve'))
+# 		else:
+# 			chart_map['days_to_Sixth_approve'].append(row.get('days_to_Sixth_approve'))
+		
+# 		if not chart_map.get('days_to_Seventh_approve'):
+# 			chart_map['days_to_Seventh_approve'] = []
+# 			chart_map['days_to_Seventh_approve'].append(row.get('days_to_Seventh_approve'))
+# 		else:
+# 			chart_map['days_to_Seventh_approve'].append(row.get('days_to_Seventh_approve'))
+
+# 		if not chart_map.get('days_to_Eighth_approve'):
+# 			chart_map['days_to_Eighth_approve'] = []
+# 			chart_map['days_to_Eighth_approve'].append(row.get('days_to_Eighth_approve'))
+# 		else:
+# 			chart_map['days_to_Eighth_approve'].append(row.get('days_to_Eighth_approve'))
