@@ -104,7 +104,7 @@ def get_version_data(filters):
 
 	data = list(version.values())
 
-	chart  = prepare_chart_data(data)
+	# chart  = prepare_chart_data(data)
 
 	average_row = {
 			"processing_days": "<b>Average : {0}</b>".format(round(average_processing_days/len(data),2)),
@@ -188,56 +188,56 @@ def get_columns(state_list, state_counter):
 	return columns
 
 
-def prepare_chart_data(data):
-	chart_map = {}
+# def prepare_chart_data(data):
+# 	chart_map = {}
 	
-	for row in data:
-		if not chart_map.get('days_to_First_approve'):
-			chart_map['days_to_First_approve'] = []
-			chart_map['days_to_First_approve'].append(row.get('days_to_First_approve'))
-		else:
-			chart_map['days_to_First_approve'].append(row.get('days_to_First_approve'))
+# 	for row in data:
+# 		if not chart_map.get('days_to_First_approve'):
+# 			chart_map['days_to_First_approve'] = []
+# 			chart_map['days_to_First_approve'].append(row.get('days_to_First_approve'))
+# 		else:
+# 			chart_map['days_to_First_approve'].append(row.get('days_to_First_approve'))
 
-		if not chart_map.get('days_to_Second_approve'):
-			chart_map['days_to_Second_approve'] = []
-			chart_map['days_to_Second_approve'].append(row.get('days_to_Second_approve'))
-		else:
-			chart_map['days_to_Second_approve'].append(row.get('days_to_Second_approve'))
+# 		if not chart_map.get('days_to_Second_approve'):
+# 			chart_map['days_to_Second_approve'] = []
+# 			chart_map['days_to_Second_approve'].append(row.get('days_to_Second_approve'))
+# 		else:
+# 			chart_map['days_to_Second_approve'].append(row.get('days_to_Second_approve'))
 
-		if not chart_map.get('days_to_Third_approve'):
-			chart_map['days_to_Third_approve'] = []
-			chart_map['days_to_Third_approve'].append(row.get('days_to_Third_approve'))
-		else:
-			chart_map['days_to_Third_approve'].append(row.get('days_to_Third_approve'))
-
-
-		if not chart_map.get('days_to_Fourth_approve'):
-			chart_map['days_to_Fourth_approve'] = []
-			chart_map['days_to_Fourth_approve'].append(row.get('days_to_Fourth_approve'))
-		else:
-			chart_map['days_to_Fourth_approve'].append(row.get('days_to_Fourth_approve'))
+# 		if not chart_map.get('days_to_Third_approve'):
+# 			chart_map['days_to_Third_approve'] = []
+# 			chart_map['days_to_Third_approve'].append(row.get('days_to_Third_approve'))
+# 		else:
+# 			chart_map['days_to_Third_approve'].append(row.get('days_to_Third_approve'))
 
 
-		if not chart_map.get('days_to_Fifth_approve'):
-			chart_map['days_to_Fifth_approve'] = []
-			chart_map['days_to_Fifth_approve'].append(row.get('days_to_Fifth_approve'))
-		else:
-			chart_map['days_to_Fifth_approve'].append(row.get('days_to_Fifth_approve'))
+# 		if not chart_map.get('days_to_Fourth_approve'):
+# 			chart_map['days_to_Fourth_approve'] = []
+# 			chart_map['days_to_Fourth_approve'].append(row.get('days_to_Fourth_approve'))
+# 		else:
+# 			chart_map['days_to_Fourth_approve'].append(row.get('days_to_Fourth_approve'))
 
-		if not chart_map.get('days_to_Sixth_approve'):
-			chart_map['days_to_Sixth_approve'] = []
-			chart_map['days_to_Sixth_approve'].append(row.get('days_to_Sixth_approve'))
-		else:
-			chart_map['days_to_Sixth_approve'].append(row.get('days_to_Sixth_approve'))
+
+# 		if not chart_map.get('days_to_Fifth_approve'):
+# 			chart_map['days_to_Fifth_approve'] = []
+# 			chart_map['days_to_Fifth_approve'].append(row.get('days_to_Fifth_approve'))
+# 		else:
+# 			chart_map['days_to_Fifth_approve'].append(row.get('days_to_Fifth_approve'))
+
+# 		if not chart_map.get('days_to_Sixth_approve'):
+# 			chart_map['days_to_Sixth_approve'] = []
+# 			chart_map['days_to_Sixth_approve'].append(row.get('days_to_Sixth_approve'))
+# 		else:
+# 			chart_map['days_to_Sixth_approve'].append(row.get('days_to_Sixth_approve'))
 		
-		if not chart_map.get('days_to_Seventh_approve'):
-			chart_map['days_to_Seventh_approve'] = []
-			chart_map['days_to_Seventh_approve'].append(row.get('days_to_Seventh_approve'))
-		else:
-			chart_map['days_to_Seventh_approve'].append(row.get('days_to_Seventh_approve'))
+# 		if not chart_map.get('days_to_Seventh_approve'):
+# 			chart_map['days_to_Seventh_approve'] = []
+# 			chart_map['days_to_Seventh_approve'].append(row.get('days_to_Seventh_approve'))
+# 		else:
+# 			chart_map['days_to_Seventh_approve'].append(row.get('days_to_Seventh_approve'))
 
-		if not chart_map.get('days_to_Eighth_approve'):
-			chart_map['days_to_Eighth_approve'] = []
-			chart_map['days_to_Eighth_approve'].append(row.get('days_to_Eighth_approve'))
-		else:
-			chart_map['days_to_Eighth_approve'].append(row.get('days_to_Eighth_approve'))
+# 		if not chart_map.get('days_to_Eighth_approve'):
+# 			chart_map['days_to_Eighth_approve'] = []
+# 			chart_map['days_to_Eighth_approve'].append(row.get('days_to_Eighth_approve'))
+# 		else:
+# 			chart_map['days_to_Eighth_approve'].append(row.get('days_to_Eighth_approve'))
