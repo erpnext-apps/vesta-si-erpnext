@@ -17,26 +17,26 @@ frappe.query_reports["Purchase Invoice Timeline Report"] = {
 			"fieldtype": "Date",
 			"default": frappe.datetime.get_today()
 		},
-		{
-			'fieldname':"range1",
-			"label": __("Range 1"),
-			"fieldtype": "Int",
-			'default':30,
-			"reqd": 1
-		},
-		{
-			'fieldname':"range2",
-			"label": __("Range 2"),
-			"fieldtype": "Int",
-			'default':60,
-			"reqd": 1
-		},
-		{
-			'fieldname':"range3",
-			"label": __("Range 3"),
-			"fieldtype": "Int",
-			'default':90,
-			"reqd": 1
-		},
+		// {
+		// 	'fieldname':"range1",
+		// 	"label": __("Range 1"),
+		// 	"fieldtype": "Int",
+		// 	'default':30,
+		// 	"reqd": 1
+		// },
+		// {
+		// 	'fieldname':"range2",
+		// 	"label": __("Range 2"),
+		// 	"fieldtype": "Int",
+		// 	'default':60,
+		// 	"reqd": 1
+		// },
+		// {
+		// 	'fieldname':"range3",
+		// 	"label": __("Range 3"),
+		// 	"fieldtype": "Int",
+		// 	'default':90,
+		// 	"reqd": 1
+		// },
 	]
 };
