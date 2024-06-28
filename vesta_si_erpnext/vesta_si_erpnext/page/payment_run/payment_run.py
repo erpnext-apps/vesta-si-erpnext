@@ -32,7 +32,7 @@ from erpnext.accounts.party import get_party_account
 from erpnext.setup.utils import get_exchange_rate
 
 @frappe.whitelist()
-def get_purchase_invoice(due_date=None, payable_account=None, currency=None):
+def get_purchase_invoice(orderby, due_date=None, payable_account=None, currency=None):
 	settings = frappe.get_doc("Payment Run Setting")
 	excluded_state = [ row.workflow_state for row in settings.exclude_approval_state ]
 	conditions = " and pi.workflow_state not in {} ".format(
@@ -56,6 +56,7 @@ def get_purchase_invoice(due_date=None, payable_account=None, currency=None):
 				From `tabPurchase Invoice` as pi
 				left join `tabPayment Entry Reference` as per ON per.reference_name = pi.name and per.reference_doctype = "Purchase Invoice"
 				Where pi.docstatus = 1 and pi.outstanding_amount > 0 and pi.due_date <= '{due_date}' and pi.currency = '{currency}' {conditions}
+				Order By pi.due_date {orderby}
 		""",as_dict=1)
 
 		invoices = []
