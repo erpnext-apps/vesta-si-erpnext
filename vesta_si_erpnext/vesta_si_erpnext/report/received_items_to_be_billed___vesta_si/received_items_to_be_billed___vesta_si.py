@@ -24,7 +24,19 @@ def execute(filters=None):
 			if filters.get('account') == gl_map.get(row[0]).get('account'):
 				final_data.append(row)
 	
-	return columns, final_data
+	item_map = {}
+	item_data = frappe.get_all("Item", ['is_stock_item', 'name'])
+	for row in item_data:
+		if row.get('is_stock_item'):
+			item_map[row.get('name')] = row
+
+
+	data = []
+	for row in final_data:
+		if item_map.get(row[4]):
+			data.append(row)
+	
+	return columns, data
 
 
 def get_column():
