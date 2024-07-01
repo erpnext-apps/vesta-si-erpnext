@@ -5,7 +5,7 @@ import frappe
 import json
 from frappe import _
 from datetime import date
-from frappe.utils import flt
+from frappe.utils import flt, getdate
 
 
 def execute(filters=None):
@@ -24,7 +24,7 @@ def get_version_data(filters):
 		conditions += f" and po.transaction_date <= '{filters.get('to_date')}'"
 
 	data = frappe.db.sql(f""" 
-		Select v.data, po.name, po.creation, po.transaction_date, v.owner, v.creation as versioncreation
+		Select v.data, po.name, po.creation, po.transaction_date, v.owner, v.creation as versioncreation, po.owner
 		from `tabPurchase Order` as po 
 		left join `tabVersion` as v on po.name = v.docname
 		where data like '%workflow_state%' and ref_doctype = 'Purchase Order' {conditions}
@@ -44,7 +44,9 @@ def get_version_data(filters):
 					'posting_date':row.transaction_date,
 					'approval_user':row.owner,
 					"versioncreation":row.versioncreation,
-					"days": (row.versioncreation - row.creation).days
+					"days": (row.versioncreation - row.creation).days,
+					"processing_days": (getdate(row.creation) - row.transaction_date).days,
+					'created_by' : frappe.db.get_value("User", row.owner, 'full_name')
 				})
 				log.append(version)
 				break
@@ -113,6 +115,12 @@ def get_columns(filters):
 			"width": 150,
 		},
 		{
+			"label": _("Processing Days"),
+			"fieldname": "processing_days",
+			"fieldtype": "Float",
+			"width": 150,
+		},
+		{
 			"label": _("Approver name "),
 			"fieldname": "approval_user",
 			"fieldtype": "Data",
@@ -129,6 +137,12 @@ def get_columns(filters):
 			"label": _("Number of day for approval"),
 			"fieldname": "days",
 			"fieldtype": "Float",
+			"width": 100,
+		},
+		{
+			"label": _("Created By"),
+			"fieldname": "created_by",
+			"fieldtype": "Data",
 			"width": 100,
 		}
 

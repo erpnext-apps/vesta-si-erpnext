@@ -77,12 +77,14 @@ frappe.payment_run = {
 			}
 		})
 	},
-	run: (page) => {
+	run: (page , orderby="ASC") => {
+		console.log(orderby)
 		frappe.call({
 			method:"vesta_si_erpnext.vesta_si_erpnext.page.payment_run.payment_run.get_purchase_invoice",
 			args:{
+				orderby : orderby,
 				due_date: page.due_date.get_value(),
-				currency:page.currency.get_value()
+				currency:page.currency.get_value(),
 			},
 			callback:(r)=>{
 				var parent = page.main.find(".purchase_invoice_table").empty();
@@ -92,6 +94,14 @@ frappe.payment_run = {
 				} else {
 					$('<p class="text-muted">' + __("No payment entries to be paid found with status draft") + '</p>').appendTo(parent);
 				}
+				$(".descending").on('click', function() {
+					console.log('desc')
+					frappe.payment_run.run(page,orderby = "DESC");
+				})
+				$(".ascending").on('click', function() {
+					console.log('asc')
+					frappe.payment_run.run(page,orderby = "ASC");
+				})
 			}
 		})
 	}
