@@ -24,7 +24,7 @@ def get_version_data(filters):
 		conditions += f" and po.posting_date <= '{filters.get('to_date')}'"
 
 	data = frappe.db.sql(f""" 
-		Select v.data, po.name as purchase_invoice, po.creation, po.posting_date, v.owner, v.creation as versioncreation , v.docname
+		Select v.data, po.name as purchase_invoice, po.creation, po.posting_date, v.owner, v.creation as versioncreation , v.docname, po.bill_date
 		from `tabPurchase Invoice` as po 
 		left join `tabVersion` as v on po.name = v.docname
 		where data like '%workflow_state%' and ref_doctype = 'Purchase Invoice' {conditions}
@@ -66,8 +66,10 @@ def get_version_data(filters):
 					version[row.docname] = {
 						'name':row.docname,
 						'creation_date':row.creation,
+						'bill_date':row.bill_date,
 						'posting_date':row.posting_date,
 						'processing_days':(row.posting_date - getdate(row.creation)).days,
+						'proce_days':(getdate(row.creation) - row.bill_date).days if row.bill_date else 0,
 						f'{state_counter[idx]}_state':r[-1],
 						f'{state_counter[idx]}_approver':frappe.db.get_value("User", row.owner, "full_name"),
 						f'{state_counter[idx]}_approval_on':row.versioncreation,
@@ -141,6 +143,18 @@ def get_columns(state_list, state_counter):
 			"label": _("Creation Date"),
 			"fieldname": "creation_date",
 			"fieldtype": "Datetime",
+			"width": 180,
+		},
+		{
+			"label": _("Supplier Invoice Date"),
+			"fieldname": "bill_date",
+			"fieldtype": "Date",
+			"width": 180,
+		},
+		{
+			"label": _("Invoice Process Days"),
+			"fieldname": "proce_days",
+			"fieldtype": "Float",
 			"width": 180,
 		},
 		{
