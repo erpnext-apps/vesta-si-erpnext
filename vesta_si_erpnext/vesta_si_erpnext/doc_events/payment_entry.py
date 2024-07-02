@@ -31,28 +31,28 @@ def validate(self, method):
         
         company_currency = frappe.db.get_value("Company", self.company, 'default_currency')
         
-        # if self.payment_type == "Pay" and self.party_type == "Supplier":
-        #     data = get_negative_outstanding_invoices(
-        #             "Supplier", 
-        #             self.party, 
-        #             self.paid_to, 
-        #             party_account_currency, 
-        #             company_currency,
-        #             condition = '')
-        #     if len(data):
-        #         for row in data:
-        #             message = "Debit Note and Payment Entry available against this supplier {0}<br>".format(get_link_to_form(self.party_type, self.party))
-        #             message +="First reconcile those entry, reference available as mentioned below"
-        #             message += "<br><br>"
-        #             message += """<table width='100%'>"""
-        #             for row in data:
-        #                 message += "<tr><td>{0}</td><td>{1} {2}</td></tr>".format(get_link_to_form(row.voucher_type, row.voucher_no),self.paid_to_account_currency, row.outstanding_amount)
-        #             message += "</table>"
-        #             frappe.throw(message)
-        # if len(self.references):
-        #     if self.references[0].reference_doctype == "Purchase Invoice":
-        #         doc = frappe.get_doc("Purchase Invoice", self.references[0].reference_name)
-        #         get_advance_entries(doc)
+        if self.payment_type == "Pay" and self.party_type == "Supplier":
+            data = get_negative_outstanding_invoices(
+                    "Supplier", 
+                    self.party, 
+                    self.paid_to, 
+                    party_account_currency, 
+                    company_currency,
+                    condition = '')
+            if len(data):
+                for row in data:
+                    message = "Debit Note and Payment Entry available against this supplier {0}<br>".format(get_link_to_form(self.party_type, self.party))
+                    message +="First reconcile those entry, reference available as mentioned below"
+                    message += "<br><br>"
+                    message += """<table width='100%'>"""
+                    for row in data:
+                        message += "<tr><td>{0}</td><td>{1} {2}</td></tr>".format(get_link_to_form(row.voucher_type, row.voucher_no),self.paid_to_account_currency, row.outstanding_amount)
+                    message += "</table>"
+                    frappe.throw(message)
+        if len(self.references):
+            if self.references[0].reference_doctype == "Purchase Invoice":
+                doc = frappe.get_doc("Purchase Invoice", self.references[0].reference_name)
+                get_advance_entries(doc)
 
 def get_advance_entries(self):
 	res = self.get_advance_entries(
