@@ -63,14 +63,15 @@ def get_advance_entries(self):
 			frappe.throw("Advance payments available against supplier <b>{0}</b> <br> Enable <b>'Set Advances and Allocate (FIFO)'</b> or click on the <b>'Get Advances Paid'</b> button under the payments section.".format(self.supplier))
 
 def on_submit(self, method):
-    if not (self.custom_is_manual_payment_process or self.custom_xml_file_generated):
-        frappe.throw("XML file is not generated for this payment entry <b>{0}</b>.".format(self.name))
-    data =  frappe.db.sql(f'''
-            Select parent From `tabPayment Transaction Log` 
-            Where payment_entry = "{self.name}"
-        ''', as_dict =1)
-    if len(data):
-        pel_doc = frappe.get_doc('Payment Export Log', data[0].parent)
-        for row in pel_doc.logs:
-            if row.payment_entry == self.name:
-                frappe.db.set_value(row.doctype , row.name, 'status', 'Submitted')
+    if self.party_type == "Supplier" and self.payment_type == "Pay":
+        if not (self.custom_is_manual_payment_process or self.custom_xml_file_generated):
+            frappe.throw("XML file is not generated for this payment entry <b>{0}</b>.".format(self.name))
+        data =  frappe.db.sql(f'''
+                Select parent From `tabPayment Transaction Log` 
+                Where payment_entry = "{self.name}"
+            ''', as_dict =1)
+        if len(data):
+            pel_doc = frappe.get_doc('Payment Export Log', data[0].parent)
+            for row in pel_doc.logs:
+                if row.payment_entry == self.name:
+                    frappe.db.set_value(row.doctype , row.name, 'status', 'Submitted')
