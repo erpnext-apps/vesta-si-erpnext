@@ -20,11 +20,12 @@ def get_payments(payment_type, payment_export_settings):
                                 per.reference_name, pe.received_amount
                                 From `tabPayment Entry` as pe 
                                 Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
-                                Where pe.docstatus = 0 and pe.payment_type = "Pay" and pe.party_type = "Supplier" and pe.custom_xml_file_generated = 0
+                                Where pe.docstatus = 0 and pe.payment_type = "Pay" and pe.party_type = "Supplier" and pe.custom_xml_file_generated = 0 and pe.custom_is_manual_payment_process = 0
                                 order by posting_date
                                 """,as_dict = 1)
     submitted_entry = None
     allow_after_submit = frappe.db.get_value("Payment Export Settings", payment_export_settings, "include_payment_in_xml_after_submit")
+    
     if allow_after_submit:
         submitted_entry = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype,
                                     per.reference_name, pe.received_amount
@@ -35,6 +36,7 @@ def get_payments(payment_type, payment_export_settings):
                                     """,as_dict = 1)
     if submitted_entry:
         payments = payments + submitted_entry
+    
     merged_data = defaultdict(list)
     for row in payments:
         key = row['name']
