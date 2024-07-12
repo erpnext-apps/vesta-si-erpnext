@@ -25,8 +25,8 @@
             <td class="ontop onbottom"><p><a href="/desk/Form/Purchase Invoice/{{ row.name }}">{{ row.name }}</a></p></td>
             <td class="ontop onbottom" width="20%"><p><a href="/desk/Form/Supplier/{{ row.supplier }}">{{ row.supplier_name }}</a></p></td>
             <td class="ontop onbottom"><p>{{ row.bill_no }}</p></td>
-            <td class="ontop onbottom" ><p>{{ currency }} {{ row.grand_total }}</p></td>
-            <td class="ontop onbottom" ><p>{{ currency }} {{ row.panding_amount }}</p></td>
+            <td class="ontop onbottom" ><p>{{ row.currency }} {{ row.grand_total }}</p></td>
+            <td class="ontop onbottom" ><p>{{ row.currency }} {{ row.panding_amount }}</p></td>
             <td class="ontop onbottom" ><p>{{ row.due_date }}</p></td>
         </tr>
         {% endfor %}

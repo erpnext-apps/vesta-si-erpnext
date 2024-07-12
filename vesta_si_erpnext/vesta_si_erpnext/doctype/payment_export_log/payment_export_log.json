@@ -70,7 +70,8 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "Draft\nSubmitted"
+   "options": "Draft\nSubmitted",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_sncuv",
@@ -83,7 +84,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-08 15:01:59.456829",
+ "modified": "2024-07-11 14:12:12.526459",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Payment Export Log",

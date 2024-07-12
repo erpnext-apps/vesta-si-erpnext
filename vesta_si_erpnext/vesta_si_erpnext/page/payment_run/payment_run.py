@@ -32,7 +32,7 @@ from erpnext.accounts.party import get_party_account
 from erpnext.setup.utils import get_exchange_rate
 
 @frappe.whitelist()
-def get_purchase_invoice(orderby, due_date=None, payable_account=None, currency=None):
+def get_purchase_invoice(orderby, payment_type, due_date=None, payable_account=None, bank_account=None ):
 	settings = frappe.get_doc("Payment Run Setting")
 	excluded_state = [ row.workflow_state for row in settings.exclude_approval_state ]
 	conditions = " and pi.workflow_state not in {} ".format(
@@ -49,30 +49,59 @@ def get_purchase_invoice(orderby, due_date=None, payable_account=None, currency=
 				pi.workflow_state,
 				pi.due_date,
 				pi.supplier,
+				pi.currency,
+				su.custom_payment_type,
 				pi.status,
 				per.parent as payment_entry,
 				per.total_amount,
 				per.outstanding_amount
 				From `tabPurchase Invoice` as pi
+				Left Join `tabSupplier` as su On su.name = pi.supplier
 				left join `tabPayment Entry Reference` as per ON per.reference_name = pi.name and per.reference_doctype = "Purchase Invoice"
-				Where pi.docstatus = 1 and pi.outstanding_amount > 0 and pi.due_date <= '{due_date}' and pi.currency = '{currency}' {conditions}
+				Where pi.docstatus = 1 and pi.outstanding_amount > 0 and pi.due_date <= '{due_date}' {conditions}
 				Order By pi.due_date {orderby}
 		""",as_dict=1)
 
 		invoices = []
 		for row in data:
-			if row.status in ['Partly Paid','Unpaid','Overdue']:
-				invoices.append(row)
-				
+			if row.status in ['Unpaid','Overdue'] and not row.payment_entry:
+				if payment_type == row.custom_payment_type:
+					invoices.append(row)
+			if row.status == "Partly Paid":
+				if payment_type == row.custom_payment_type:
+					invoices.append(row)
+		if payment_type in ["SEPA (EUR)", "Cross Border Payments (EUR)"]:
+			currency = "EUR"
+		if payment_type == "Domestic (Swedish) Payments (SEK)":
+			currency = "SEK"
+		if payment_type == "Cross Border Payments (USD)":
+			currency = "USD"
+		if payment_type == "Cross Border Payments (OTHER)":
+			if not bank_account:
+				invoices = []
+				return {"invoices" : invoices, 'currency':"SEK"}
+			doc = frappe.get_doc("Bank Account", bank_account)
+			currency = frappe.db.get_value("Account", doc.account , "account_currency")
+
 		return {"invoices" : invoices, 'currency':currency}
 
 @frappe.whitelist()
-def get_invoices(invoices, currency):
+def get_invoices(invoices, payment_type, bank_account=None):
+	if payment_type in ["SEPA (EUR)", "Cross Border Payments (EUR)"]:
+		currency = "EUR"
+	if payment_type == "Domestic (Swedish) Payments (SEK)":
+		currency = "SEK"
+	if payment_type == "Cross Border Payments (USD)":
+		currency = "USD"
+	if payment_type == "Cross Border Payments (OTHER)":
+		doc = frappe.get_doc("Bank Account", bank_account)
+		currency = frappe.db.get_value("Account", doc.account , "account_currency")
+		account_paid_from = doc.account
 	invoices = eval(invoices)
 	invoices = list(filter(None, invoices))
 	settings = frappe.get_doc("Payment Run Setting")
 	for row in settings.payment_account:
-		if row.currency == currency:
+		if row.currency == currency and not bank_account:
 			account_paid_from = row.account_paid_from
 			break
 	Error = []

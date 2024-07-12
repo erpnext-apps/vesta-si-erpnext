@@ -21,22 +21,28 @@ frappe.pages['payment-run'].on_page_load = function(wrapper) {
 			frappe.payment_run.run(page);
 		}
 	})
-	// page.payable_account = page.add_field({
-	// 	fieldname: 'payable_account',
-    //     label: __('Payable Account'),
-    //     fieldtype:'Link',
-	// 	options:'Account',
-	// })
-	page.currency = page.add_field({
-		fieldname: 'currency',
-        label: __('Currency'),
+
+	page.payment_type_field = page.add_field({
+        fieldname: 'payment_type',
+        label: __('Payment Type'),
+        fieldtype:'Select',
+        default:"Domestic (Swedish) Payments (SEK)",
+        options:"Domestic (Swedish) Payments (SEK)\nSEPA (EUR)\nCross Border Payments (USD)\nCross Border Payments (EUR)\nCross Border Payments (OTHER)",
+        onchange: () => {
+            getfindSelected()
+			togglecurrency(page)
+            frappe.payment_run.run(page);
+        }
+    });
+	page.bank_account = page.add_field({
+        fieldname: 'account',
+        label: __('Bank Account'),
         fieldtype:'Link',
-		options:'Currency',
-		default:'SEK',
-		onchange:()=>{
-			frappe.payment_run.run(page);
-		}
-	})
+        options: "Bank Account",
+		onchange: () => {
+            getfindSelected()
+        }
+    });
 
 	frappe.payment_run.make(page);
 	frappe.payment_run.run(page);
@@ -52,7 +58,6 @@ frappe.payment_run = {
         $(frappe.render_template('payment_run', data)).appendTo(me.body);
 		$(".create-payment").on('click', function() {
 			let checked = findSelected()
-			console.log(checked)
 			if (checked.length > 0) {
                 var invoices = [];
                 for (var i = 0; i < checked.length; i++) {
@@ -62,7 +67,8 @@ frappe.payment_run = {
 					method:"vesta_si_erpnext.vesta_si_erpnext.page.payment_run.payment_run.get_invoices",
 					args:{
 						invoices : invoices,
-						currency : page.currency.get_value()
+						payment_type : page.payment_type_field.get_value(),
+						bank_account : page.bank_account.get_value()
 					},
 					callback:r=>{
 						if(!r.message){
@@ -70,21 +76,26 @@ frappe.payment_run = {
 						}else{
 							frappe.msgprint(r.message)
 						}
-						frappe.payment_run.run(page);
+						page.main.find(".btn-create").addClass("hide");
+                        page.main.find(".btn-refresh").removeClass("hide");
 					}
 				})
 
 			}
 		})
+		page.main.find(".btn-refresh").on('click', function() {
+            location.reload(); 
+        });
 	},
 	run: (page , orderby="ASC") => {
-		console.log(orderby)
+		togglecurrency(page)
 		frappe.call({
 			method:"vesta_si_erpnext.vesta_si_erpnext.page.payment_run.payment_run.get_purchase_invoice",
 			args:{
 				orderby : orderby,
+				payment_type : page.payment_type_field.get_value(),
 				due_date: page.due_date.get_value(),
-				currency:page.currency.get_value(),
+				bank_account : page.bank_account.get_value()
 			},
 			callback:(r)=>{
 				var parent = page.main.find(".purchase_invoice_table").empty();
@@ -95,11 +106,9 @@ frappe.payment_run = {
 					$('<p class="text-muted">' + __("No payment entries to be paid found with status draft") + '</p>').appendTo(parent);
 				}
 				$(".descending").on('click', function() {
-					console.log('desc')
 					frappe.payment_run.run(page,orderby = "DESC");
 				})
 				$(".ascending").on('click', function() {
-					console.log('asc')
 					frappe.payment_run.run(page,orderby = "ASC");
 				})
 			}
@@ -138,7 +147,6 @@ function findSelected(){
 function getfindSelected() {
 	// Get all checkboxes in the table with the class 'inputcheck'
 	var checkboxes = document.querySelectorAll('.inputcheck');
-	console.log(checkboxes)
 	// Count the number of checked checkboxes
 	var total_row = 0;
 	var selectedCount = 0;
@@ -149,9 +157,17 @@ function getfindSelected() {
 		}
 	});
 
-	// Display the count of selected checkboxes (for example, in the console or an alert)
-	console.log('Selected count:', selectedCount);
 	// Alternatively, you could display this count in the UI
 	document.getElementById('selectedCountDisplay').innerText = `${selectedCount} / ${total_row}`;
 
+}
+
+function togglecurrency(page){
+    var element = document.querySelector('[data-fieldname="account"]');
+	console.log(element)
+    if (page.payment_type_field.get_value() == 'Cross Border Payments (OTHER)'){
+        element.hidden = false;
+    }else{
+        element.hidden = true;
+    }
 }

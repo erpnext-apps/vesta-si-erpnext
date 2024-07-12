@@ -2,7 +2,11 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Payment Export Log', {
+	onload: function(frm) {
+		frm.get_field('logs').grid.cannot_add_rows = true;
+	},
 	refresh: frm => {
+		
 		if(frm.doc.status != 'Submitted'){
 			frm.add_custom_button(
 				__("Submit Payment Entry"),
