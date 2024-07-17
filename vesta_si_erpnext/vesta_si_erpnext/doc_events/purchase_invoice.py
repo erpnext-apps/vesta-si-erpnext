@@ -75,7 +75,7 @@ def on_submit(self, method):
 						"account" : expense_account,
 						"credit_in_account_currency" : rate_diff
 					})
-					tranfer_account = frappe.db.get_value("Company", jv.company, "custom_difference_account_purchase_receipt_and_purchase_invoice")
+				tranfer_account = frappe.db.get_value("Company", jv.company, "custom_difference_account_purchase_receipt_and_purchase_invoice")
 				jv.append("accounts", {
 					"account" : tranfer_account,
 					"debit_in_account_currency" : rate_diff
@@ -84,8 +84,8 @@ def on_submit(self, method):
 				jv.cheque_date = getdate()
 				jv.save()
 				jv.submit()
-				frappe.msgprint("The difference of {0} SEK between the purchase invoice {1} and the purchase receipt {2} is recorded in this journal entry {3}.".format(
-					rate_diff,
+				frappe.msgprint("The difference of <span style='color:red'>{0}</span> SEK between the purchase invoice {1} and the purchase receipt {2} is recorded in this journal entry {3}.".format(
+					frappe.bold(rate_diff),
 					get_link_to_form("Purchase Invoice",self.name),
 					get_link_to_form("Purchase Receipt", row.purchase_receipt),
 					get_link_to_form("Journal Entry",jv.name)
