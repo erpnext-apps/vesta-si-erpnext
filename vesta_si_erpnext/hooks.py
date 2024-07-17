@@ -56,9 +56,9 @@ doctype_js = {
 
 # Generators
 # ----------
-# from erpnext.assets.doctype.asset import asset 
-# from vesta_si_erpnext.api import get_straight_line_or_manual_depr_amount
-# asset.get_straight_line_or_manual_depr_amount = get_straight_line_or_manual_depr_amount
+from erpnext.assets.doctype.asset import asset 
+from vesta_si_erpnext.api import get_straight_line_or_manual_depr_amount
+asset.get_straight_line_or_manual_depr_amount = get_straight_line_or_manual_depr_amount
 # automatically create page for each record of this doctype
 # website_generators = ["Web Page"]
 
