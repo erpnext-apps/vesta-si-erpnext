@@ -56,9 +56,9 @@ doctype_js = {
 
 # Generators
 # ----------
-from erpnext.assets.doctype.asset import asset 
-from vesta_si_erpnext.api import get_straight_line_or_manual_depr_amount
-asset.get_straight_line_or_manual_depr_amount = get_straight_line_or_manual_depr_amount
+# from erpnext.assets.doctype.asset import asset 
+# from vesta_si_erpnext.api import get_straight_line_or_manual_depr_amount
+# asset.get_straight_line_or_manual_depr_amount = get_straight_line_or_manual_depr_amount
 # automatically create page for each record of this doctype
 # website_generators = ["Web Page"]
 
@@ -130,7 +130,8 @@ doc_events = {
 	},
 	"Purchase Invoice": {
 		"on_update_after_submit": "vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_invoice.set_due_date_after_submit",
-		"validate" : "vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_invoice.validate"
+		"validate" : "vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_invoice.validate",
+		"on_submit" : "vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_invoice.on_submit"
 	},
 	"GL Entry":{
 		'validate': "vesta_si_erpnext.vesta_si_erpnext.doc_events.sales_invoice.check_account_frozzen_date",

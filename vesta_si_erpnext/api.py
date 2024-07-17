@@ -133,6 +133,8 @@ def get_total_penalty_cost_remitted_to_suppliers_monthly(filters):
                 "value": data[0].get('base_net_amount') if data and data[0].get('base_net_amount') else 0,
                 "fieldtype": "Currency",
             }
+
+#Remove After Update
 #Override from asset.py
 def get_straight_line_or_manual_depr_amount(
     asset, row, schedule_idx, number_of_pending_depreciations
