@@ -48,7 +48,7 @@ def validate(self, method):
                     for row in data:
                         message += "<tr><td>{0}</td><td>{1} {2}</td></tr>".format(get_link_to_form(row.voucher_type, row.voucher_no),self.paid_to_account_currency, row.outstanding_amount)
                     message += "</table>"
-                    frappe.throw(message)
+                    frappe.msgprint(message)
         if len(self.references):
             if self.references[0].reference_doctype == "Purchase Invoice":
                 doc = frappe.get_doc("Purchase Invoice", self.references[0].reference_name)
