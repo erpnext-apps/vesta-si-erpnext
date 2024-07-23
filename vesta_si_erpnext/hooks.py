@@ -177,7 +177,8 @@ override_whitelisted_methods = {
 
 override_doctype_class = {
 	"Stock Entry": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.CustomStockEntry",
-	"Purchase Invoice": "vesta_si_erpnext.overrides.purchase_invoice.CustomPurchaseInvoice"
+	"Purchase Invoice": "vesta_si_erpnext.overrides.purchase_invoice.CustomPurchaseInvoice",
+	"Asset" : "vesta_si_erpnext.vesta_si_erpnext.asset.CustomAsset"
 	}
 
 #
