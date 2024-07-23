@@ -291,7 +291,6 @@ class CustomAsset(Asset):
 		number_of_pending_depreciations = cint(finance_book.total_number_of_depreciations) - cint(
 			self.number_of_depreciations_booked
 		)
-
 		has_pro_rata = self.check_is_pro_rata(finance_book)
 		if has_pro_rata:
 			number_of_pending_depreciations += 1
@@ -309,7 +308,7 @@ class CustomAsset(Asset):
 		should_get_last_day = is_last_day_of_the_month(finance_book.depreciation_start_date)
 
 		depreciation_amount = 0
-
+		pending_depreciations = number_of_pending_depreciations - start[finance_book.idx - 1]
 		for n in range(start[finance_book.idx - 1], number_of_pending_depreciations):
 			# If depreciation is already completed (for double declining balance)
 			if skip_row:
@@ -319,12 +318,11 @@ class CustomAsset(Asset):
 				prev_depreciation_amount = self.get("schedules")[n - 1].depreciation_amount
 			else:
 				prev_depreciation_amount = 0
-
 			depreciation_amount = get_depreciation_amount(
 				self,
 				value_after_depreciation,
 				finance_book,
-				number_of_pending_depreciations,
+				pending_depreciations,
 				n,
 				prev_depreciation_amount,
 				has_wdv_or_dd_non_yearly_pro_rata,
@@ -1273,13 +1271,13 @@ def get_depreciation_amount(
 	asset,
 	depreciable_value,
 	row,
-	number_of_pending_depreciations,
+	pending_depreciations,
 	schedule_idx=0,
 	prev_depreciation_amount=0,
 	has_wdv_or_dd_non_yearly_pro_rata=False,
 ):
 	if row.depreciation_method in ("Straight Line", "Manual"):
-		return get_straight_line_or_manual_depr_amount(asset, row, number_of_pending_depreciations)
+		return get_straight_line_or_manual_depr_amount(asset, row, pending_depreciations)
 	else:
 		return get_wdv_or_dd_depr_amount(
 			depreciable_value,
@@ -1291,7 +1289,7 @@ def get_depreciation_amount(
 		)
 
 
-def get_straight_line_or_manual_depr_amount(asset, row, number_of_pending_depreciations):
+def get_straight_line_or_manual_depr_amount(asset, row, pending_depreciations):
 	# if the Depreciation Schedule is being modified after Asset Repair due to increase in asset life and value
 	if asset.flags.increase_in_asset_life:
 		return (flt(row.value_after_depreciation) - flt(row.expected_value_after_useful_life)) / (
@@ -1300,7 +1298,7 @@ def get_straight_line_or_manual_depr_amount(asset, row, number_of_pending_deprec
 	# if the Depreciation Schedule is being modified after Asset Repair due to increase in asset value
 	elif asset.flags.increase_in_asset_value_due_to_repair:
 		return (flt(row.value_after_depreciation) - flt(row.expected_value_after_useful_life)) / flt(
-			number_of_pending_depreciations
+			pending_depreciations
 		)
 	# if the Depreciation Schedule is being prepared for the first time
 	else:
