@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 from frappe.utils import get_link_to_form, comma_and, flt
 from erpnext.accounts.doctype.payment_entry.payment_entry import get_negative_outstanding_invoices
 from frappe.utils import (
@@ -45,6 +46,7 @@ def validate(self, method):
 				message += "<tr><td>{0}</td><td>{1} {2}</td></tr>".format(get_link_to_form(row.voucher_type, row.voucher_no),self.currency, row.outstanding_amount)
 			message += "</table>"
 			frappe.msgprint(message)
+	validate_with_previous_doc(self)
 
 def get_advance_entries(self):
 	res = self.get_advance_entries(
@@ -90,3 +92,61 @@ def on_submit(self, method):
 					get_link_to_form("Purchase Receipt", row.purchase_receipt),
 					get_link_to_form("Journal Entry",jv.name)
 				))
+
+def validate_with_previous_doc(self):
+	if (
+		not self.is_return
+		and not self.is_internal_supplier
+	):
+		validate_rate_with_reference_doc(self,
+			[
+				["Purchase Order", "purchase_order", "po_detail"],
+				["Purchase Receipt", "purchase_receipt", "pr_detail"],
+			]
+		)
+
+def validate_rate_with_reference_doc(self, ref_details):
+	if self.get("is_internal_supplier"):
+		return
+
+	buying_doctypes = ["Purchase Order", "Purchase Invoice", "Purchase Receipt"]
+
+	stop_actions = []
+	action = "Stop"
+	for ref_dt, ref_dn_field, ref_link_field in ref_details:
+		reference_names = [d.get(ref_link_field) for d in self.get("items") if d.get(ref_link_field)]
+		reference_details = get_reference_details(self, reference_names, ref_dt + " Item")
+		for d in self.get("items"):
+			if not frappe.db.get_value("Item", d.item_code, "is_stock_item"):
+				continue
+			if d.get(ref_link_field):
+				ref_rate = reference_details.get(d.get(ref_link_field))
+
+				if abs(flt(d.rate - ref_rate, d.precision("rate"))) >= 0.01:
+					if action == "Stop":
+						# if role_allowed_to_override not in frappe.get_roles():
+						stop_actions.append(
+							_("Row #{0}: Rate must be same as {1}: {2} ({3} / {4})").format(
+								d.idx, ref_dt, d.get(ref_dn_field), d.rate, ref_rate
+							)
+						)
+					else:
+						frappe.msgprint(
+							_("Row #{0}: Rate must be same as {1}: {2} ({3} / {4})").format(
+								d.idx, ref_dt, d.get(ref_dn_field), d.rate, ref_rate
+							),
+							title=_("Warning"),
+							indicator="orange",
+						)
+	if stop_actions:
+		frappe.throw(stop_actions, as_list=True)
+
+def get_reference_details(self, reference_names, reference_doctype):
+	return frappe._dict(
+		frappe.get_all(
+			reference_doctype,
+			filters={"name": ("in", reference_names)},
+			fields=["name", "rate"],
+			as_list=1,
+		)
+	)
