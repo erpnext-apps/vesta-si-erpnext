@@ -24,11 +24,9 @@ def submit_all_payment_entry(self : dict):
 	for row in log.logs:
 		if not row.ignore_to_submit_payment_entry:
 			payment_doc = frappe.get_doc('Payment Entry', row.get('payment_entry'))
-			try:
-				payment_doc.submit()
-				frappe.db.set_value("Payment Transaction Log", row.get('name'), 'status', payment_doc.status)
-			except:
-				skipped.append(payment_doc.name)
+			payment_doc.submit()
+			frappe.db.set_value("Payment Transaction Log", row.get('name'), 'status', payment_doc.status)
+			skipped.append(payment_doc.name)
 	if skipped:
 		message = "Error While submitting payment entry<br>"
 		for d in skipped:
