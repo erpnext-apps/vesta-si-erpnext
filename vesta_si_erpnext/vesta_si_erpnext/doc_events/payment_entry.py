@@ -70,8 +70,19 @@ def on_submit(self, method):
                 Select parent From `tabPayment Transaction Log` 
                 Where payment_entry = "{self.name}"
             ''', as_dict =1)
+        flag = True
         if len(data):
             pel_doc = frappe.get_doc('Payment Export Log', data[0].parent)
             for row in pel_doc.logs:
                 if row.payment_entry == self.name:
                     frappe.db.set_value(row.doctype , row.name, 'status', 'Submitted')
+                
+            pel_doc = frappe.get_doc('Payment Export Log', data[0].parent)
+            for row in pel_doc.logs:
+                if row.status == "Draft":
+                    flag = False
+            if flag:
+                pel_doc = frappe.get_doc('Payment Export Log', data[0].parent)
+                pel_doc.status = "Submitted"
+                pel_doc.save()
+            

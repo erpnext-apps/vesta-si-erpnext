@@ -21,18 +21,13 @@ def submit_all_payment_entry(self : dict):
 	doc = json.loads(self)
 	skipped = []
 	log = frappe.get_doc('Payment Export Log', doc.get('name'))
+	flag = False
 	for row in log.logs:
 		if not row.ignore_to_submit_payment_entry:
 			payment_doc = frappe.get_doc('Payment Entry', row.get('payment_entry'))
 			payment_doc.submit()
 			frappe.db.set_value("Payment Transaction Log", row.get('name'), 'status', payment_doc.status)
-			skipped.append(payment_doc.name)
-	if skipped:
-		message = "Error While submitting payment entry<br>"
-		for d in skipped:
-			message += "<p>{0}</p><br>".format(get_link_to_form('Payment Entry', d))
-		frappe.msgprint(message)
-	else:
-		frappe.db.set_value('Payment Export Log', doc.get('name'), 'status', 'Submitted')
-		frappe.msgprint('Payment entries have been submitted successfully.')
+			flag = True
+	if flag:
+		frappe.msgprint("Payment Entry has been submitted succesfully")
 
