@@ -447,7 +447,7 @@ def get_billing_address(supplier_name, supplier_type="Supplier"):
     if len(linked_addresses) > 0:
         if len(linked_addresses) > 1:
             for address_name in linked_addresses:
-                address = frappe.get_doc('Address', address_name)            
+                address = frappe.get_doc('Address', address_name.parent)            
                 if address.address_type == "Billing":
                     # this is a billing address, keep as option
                     billing_address = address
