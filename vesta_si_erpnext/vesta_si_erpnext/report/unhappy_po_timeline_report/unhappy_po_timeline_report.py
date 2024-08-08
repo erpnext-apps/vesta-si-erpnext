@@ -31,7 +31,7 @@ def get_version_data(filters):
 		order by docname
 	""",as_dict = 1)
 	log = []
-
+	processing_days = 0
 	for row in data:
 		version = {}
 		d = json.loads(row.data)
@@ -49,6 +49,7 @@ def get_version_data(filters):
 					'created_by' : frappe.db.get_value("User", row.owner, 'full_name')
 				})
 				log.append(version)
+				processing_days += (getdate(row.creation) - row.transaction_date).days
 				break
 		continue
 
@@ -91,6 +92,9 @@ def get_version_data(filters):
 					'type': 'pie',
 					'height': 250,
 	}
+	length = len(log)
+	if length:
+		log.insert(0, {"processing_days" : processing_days/length})
 	return log , chart
 
 def get_columns(filters):
