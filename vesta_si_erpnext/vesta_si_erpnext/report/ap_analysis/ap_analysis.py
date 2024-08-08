@@ -25,6 +25,14 @@ def execute(filters=None):
 
 	uptr_columns = get_columns(filters)
 	columns = uptr_columns + columns_pi
+
+	length = len(po_timeline)
+	processing_days = 0
+
+	for row in po_timeline:
+		processing_days += flt(row.get('processing_days'))
+	po_timeline.insert(0, {'processing_days':processing_days/length})
+
 	return columns, po_timeline
 
 def get_purchase_invoice_timeline_report(filters):
