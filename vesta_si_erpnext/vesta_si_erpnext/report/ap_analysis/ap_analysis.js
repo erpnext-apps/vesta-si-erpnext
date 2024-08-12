@@ -17,5 +17,29 @@ frappe.query_reports["AP Analysis"] = {
 			"fieldtype": "Date",
 			"default": frappe.datetime.get_today()
 		},
+		{
+			"fieldname":"document",
+			"label": __("Document"),
+			"fieldtype": "Select",
+			"options" : ['','Purchase Invoice','Purchase Order'],
+			on_change:()=>{
+				frappe.query_report.set_filter_value("workflow_state", "");
+			},
+		},
+		{
+			"fieldname":"workflow_state",
+			"label": __("Workflow State"),
+			"fieldtype": "Link",
+			"options" : "Workflow State",
+			get_query: () => {
+				var document = frappe.query_report.get_filter_value("document");
+				return {
+					query : "vesta_si_erpnext.vesta_si_erpnext.report.ap_analysis.ap_analysis.get_workflow_state",
+					filters:{
+						docname : document
+					}
+				};
+			},
+		}
 	]
 };

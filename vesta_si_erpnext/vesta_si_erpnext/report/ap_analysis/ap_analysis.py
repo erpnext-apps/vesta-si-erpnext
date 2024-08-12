@@ -26,18 +26,14 @@ def execute(filters=None):
 	uptr_columns = get_columns(filters)
 	columns = uptr_columns + columns_pi
 
-	length = len(po_timeline)
-	processing_days = 0
-
-	for row in po_timeline:
-		processing_days += flt(row.get('processing_days'))
-	po_timeline.insert(0, {'processing_days':processing_days/length})
-
 	return columns, po_timeline
 
 def get_purchase_invoice_timeline_report(filters):
 	workflow = frappe.get_doc('Workflow', {'document_type' : "Purchase Invoice" , 'is_active':1})
 	workflow_creation = workflow.creation
+	condition = ''
+	if filters.get("workflow_state"):
+		condition = f" and po.workflow_state = '{filters.get('workflow_state')}'"
 
 	query = frappe.db.sql(f""" 
 		Select v.data,
@@ -52,7 +48,7 @@ def get_purchase_invoice_timeline_report(filters):
 		from `tabPurchase Invoice` as po 
 		left join `tabVersion` as v on po.name = v.docname
 		Left Join `tabPayment Entry Reference` as per ON per.reference_doctype = "Purchase Invoice" and per.reference_name = po.name
-		where data like '%workflow_state%' and ref_doctype = 'Purchase Invoice' and po.creation > '2024-01-01 00:00:00'
+		where data like '%workflow_state%' and ref_doctype = 'Purchase Invoice' and po.creation > '2024-01-01 00:00:00' {condition}
 		order by docname , v.creation
 	""",as_dict = 1)
 
@@ -294,3 +290,14 @@ def get_columns_pi(state_list, state_counter):
 	
 	return columns
 
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def get_workflow_state(doctype, txt, searchfield, start=0, page_len=20, filters=None):
+	document = filters.get('docname')
+	workflow = frappe.db.sql("""""")
+	data = frappe.db.sql(f"""
+			Select state
+			From `tabWorkflow Document State`
+			Where parent = '{workflow}'
+	""")
+	return data

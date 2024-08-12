@@ -32,6 +32,7 @@ def get_version_data(filters):
 	""",as_dict = 1)
 	log = []
 	processing_days = 0
+	days = 0
 	for row in data:
 		version = {}
 		d = json.loads(row.data)
@@ -50,6 +51,7 @@ def get_version_data(filters):
 				})
 				log.append(version)
 				processing_days += (getdate(row.creation) - row.transaction_date).days
+				days += (row.versioncreation - row.creation).days
 				break
 		continue
 
@@ -94,7 +96,7 @@ def get_version_data(filters):
 	}
 	length = len(log)
 	if length:
-		log.insert(0, {"processing_days" : processing_days/length})
+		log.insert(0, {"purchase_order":"<b>Average</b>","processing_days" : processing_days/length, "days" : days})
 	return log , chart
 
 def get_columns(filters):
