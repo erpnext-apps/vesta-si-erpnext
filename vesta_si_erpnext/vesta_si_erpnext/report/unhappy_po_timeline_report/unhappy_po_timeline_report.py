@@ -96,7 +96,7 @@ def get_version_data(filters):
 	}
 	length = len(log)
 	if length:
-		log.insert(0, {"purchase_order":"<b>Average</b>","processing_days" : processing_days/length, "days" : days})
+		log.insert(0, {"purchase_order":"<b>Average</b>","processing_days" : processing_days/length, "days" : days/length})
 	return log , chart
 
 def get_columns(filters):
