@@ -11,53 +11,39 @@ import itertools
 import time
 
 
-def execute(filters={'from_date': '2024-07-19', 'to_date': '2024-07-19'}):
+def execute(filters=None):
 	columns, data = [], []
-	start = time.time()
 	columns_pi , pi_timeline = get_purchase_invoice_timeline_report(filters)
-	end = time.time()
-	print(end - start)
-
-	start = time.time()
 	po_timeline = unhappy_po_timeline_report(filters)
-	end = time.time()
-	print(end - start)
-
-	start = time.time()
+	
 	pi_timeline_map = {}
 	for row in pi_timeline:
 		if row.get('pi_purchase_order'):
 			pi_timeline_map[row.get('pi_purchase_order')] = row
-	end = time.time()
-	print(end - start)
 
-	start = time.time()
 	for row in po_timeline:
 		if pi_timeline_map.get(row.get('purchase_order')):
 			row.update(pi_timeline_map.get(row.get('purchase_order')))
-	end = time.time()
-	print(end - start)
-
-	start = time.time()
+	
 	uptr_columns = get_columns(filters)
 	columns = uptr_columns + columns_pi
-	end = time.time()
-	print(end - start)
-
-	start = time.time()
+	
 	days  = 0
 	processing_days = 0
+	delay_in_pr = 0
 	for row in po_timeline:
 		processing_days += row.get("processing_days")
 		days += row.get("days")
-	end = time.time()
-	print(end - start)
-	
+		delay_in_pr += row.get('delay_in_pr')
+
 	length = len(po_timeline)
 	if length:
-		po_timeline.insert(0, {"purchase_order":"Average","processing_days" : processing_days/length, "days" : days/length})
-
-
+		po_timeline.insert(0, {
+		"purchase_order":"Average",
+		"processing_days" : processing_days/length, 
+		"days" : days/length,
+		"delay_in_pr" : delay_in_pr / length
+		})
 
 	return columns, po_timeline
 
@@ -207,11 +193,11 @@ def get_purchase_receipt_data(filters):
 					version.update({
 						"pr_name" : row.pr_name,
 						"po_ref" : row.purchase_order,
-						"pr_created_by":row.pr_owner,
+						"pr_created_by":frappe.db.get_value("User",row.pr_owner,'full_name'),
 						"pr_posting_date": row.pr_date,
 						"pr_posting_time": row.pr_time,
 						"pr_submited_on" : row.v_creation,
-						"pr_submitted_by":row.v_owner,
+						"pr_submitted_by":frappe.db.get_value("User",row.v_owner,'full_name'),
 						"pr_created_on" : row.pr_creation
 					})
 					log.append(version)
@@ -221,7 +207,7 @@ def get_purchase_receipt_data(filters):
 			version.update({
 				"pr_name" : row.pr_name,
 				"po_ref" : row.purchase_order,
-				"pr_created_by":row.pr_owner,
+				"pr_created_by":frappe.db.get_value("User",row.pr_owner,'full_name'),
 				"pr_posting_date": row.pr_date,
 				"pr_posting_time": row.pr_time,
 				"pr_created_on" : row.pr_creation
@@ -270,7 +256,7 @@ def get_version_data(filters):
 					'created_by' : frappe.db.get_value("User", row.owner, 'full_name'),
 					"pr_name" : row.pr_name if row.get('pr_name') else '',
 					"po_ref" : row.get('purchase_order') if row.get('purchase_order') else '',
-					"pr_created_by":frappe.db.get_value("User",row.get('pr_owner'),"full_name") if row.get('pr_owner') else '',
+					"pr_created_by":frappe.db.get_value("User", row.get('pr_owner'), "full_name") if row.get('pr_owner') else '',
 					"pr_posting_date": row.get('pr_date') if row.get('pr_date') else '',
 					"pr_posting_time": row.get('pr_time') if row.get('pr_time') else '',
 					"pr_submited_on" : row.get('v_creation') if row.get('v_creation') else '',
