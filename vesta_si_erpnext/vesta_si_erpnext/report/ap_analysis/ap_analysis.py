@@ -7,14 +7,16 @@ import json
 from frappe import _
 from datetime import date
 from frappe.utils import getdate, flt
+import itertools 
+import time
+
 
 def execute(filters=None):
 	columns, data = [], []
 	columns_pi , pi_timeline = get_purchase_invoice_timeline_report(filters)
 	po_timeline = unhappy_po_timeline_report(filters)
-
+	
 	pi_timeline_map = {}
-
 	for row in pi_timeline:
 		if row.get('pi_purchase_order'):
 			pi_timeline_map[row.get('pi_purchase_order')] = row
@@ -22,22 +24,42 @@ def execute(filters=None):
 	for row in po_timeline:
 		if pi_timeline_map.get(row.get('purchase_order')):
 			row.update(pi_timeline_map.get(row.get('purchase_order')))
-
+	
 	uptr_columns = get_columns(filters)
 	columns = uptr_columns + columns_pi
+	
+	days  = 0
+	processing_days = 0
+	delay_in_pr = 0
+	for row in po_timeline:
+		processing_days += row.get("processing_days")
+		days += row.get("days")
+		delay_in_pr += row.get('delay_in_pr')
 
 	length = len(po_timeline)
-	processing_days = 0
-
-	for row in po_timeline:
-		processing_days += flt(row.get('processing_days'))
-	po_timeline.insert(0, {'processing_days':processing_days/length})
+	if length:
+		po_timeline.insert(0, {
+		"purchase_order":"Average",
+		"processing_days" : processing_days/length, 
+		"days" : days/length,
+		"delay_in_pr" : delay_in_pr / length
+		})
 
 	return columns, po_timeline
+
+def get_unic_pr(data):
+	f_data = []
+	key_func = lambda x: x['pr_name'] 
+	for key, group in itertools.groupby(data, key_func): 
+		f_data.append(list(group)[0])
+	return f_data
 
 def get_purchase_invoice_timeline_report(filters):
 	workflow = frappe.get_doc('Workflow', {'document_type' : "Purchase Invoice" , 'is_active':1})
 	workflow_creation = workflow.creation
+	condition = ''
+	if filters.get("workflow_state"):
+		condition = f" and po.workflow_state = '{filters.get('workflow_state')}'"
 
 	query = frappe.db.sql(f""" 
 		Select v.data,
@@ -52,7 +74,7 @@ def get_purchase_invoice_timeline_report(filters):
 		from `tabPurchase Invoice` as po 
 		left join `tabVersion` as v on po.name = v.docname
 		Left Join `tabPayment Entry Reference` as per ON per.reference_doctype = "Purchase Invoice" and per.reference_name = po.name
-		where data like '%workflow_state%' and ref_doctype = 'Purchase Invoice' and po.creation > '2024-01-01 00:00:00'
+		where data like '%workflow_state%' and ref_doctype = 'Purchase Invoice' and po.creation > '2024-01-01 00:00:00' {condition}
 		order by docname , v.creation
 	""",as_dict = 1)
 
@@ -140,10 +162,67 @@ def get_purchase_invoice_timeline_report(filters):
 
 def unhappy_po_timeline_report(filters):
 	data = get_version_data(filters)
+
 	return data
 
-def get_version_data(filters):
+def get_purchase_receipt_data(filters):
+	data = frappe.db.sql(f"""
+		Select pr.name as pr_name, 
+		pri.purchase_order, 
+		pr.owner as pr_owner, 
+		pr.posting_date as pr_date, 
+		pr.creation as pr_creation,
+		pr.posting_time as pr_time, 
+		pr.modified_by as pr_modified_by,
+		v.data,
+		v.creation as v_creation,
+		v.owner as v_owner
+		From `tabPurchase Receipt` as pr
+		Left Join `tabPurchase Receipt Item` as pri On pri.parent = pr.name
+		Left join `tabVersion` as v ON v.docname = pr.name and v.ref_doctype = 'Purchase Receipt'
+		where pr.docstatus != 2
+	""",as_dict=1)
+	log = []
 
+	for row in data:
+		version = {}
+		if row.get('data'):
+			d = json.loads(row.data)
+			for r in d.get('changed'):
+				if r[0] == 'docstatus' and r[-1] == 1:
+					version.update({
+						"pr_name" : row.pr_name,
+						"po_ref" : row.purchase_order,
+						"pr_created_by":frappe.db.get_value("User",row.pr_owner,'full_name'),
+						"pr_posting_date": row.pr_date,
+						"pr_posting_time": row.pr_time,
+						"pr_submited_on" : row.v_creation,
+						"pr_submitted_by":frappe.db.get_value("User",row.v_owner,'full_name'),
+						"pr_created_on" : row.pr_creation
+					})
+					log.append(version)
+					break
+			continue
+		else:
+			version.update({
+				"pr_name" : row.pr_name,
+				"po_ref" : row.purchase_order,
+				"pr_created_by":frappe.db.get_value("User",row.pr_owner,'full_name'),
+				"pr_posting_date": row.pr_date,
+				"pr_posting_time": row.pr_time,
+				"pr_created_on" : row.pr_creation
+			})
+			log.append(version)
+		
+	f_data = []
+	key_func = lambda x: x['pr_name'] 
+	for key, group in itertools.groupby(log, key_func): 
+		f_data.append(list(group)[0])
+	
+	return f_data
+
+
+def get_version_data(filters):
 	conditions = ''
 	if filters.get("from_date"):
 		conditions += f" and po.transaction_date >= '{filters.get('from_date')}'"
@@ -153,10 +232,10 @@ def get_version_data(filters):
 	data = frappe.db.sql(f""" 
 		Select v.data, po.name, po.creation, po.transaction_date, v.owner, v.creation as versioncreation, po.owner, per.parent as payment_entry
 		from `tabPurchase Order` as po 
-		left join `tabVersion` as v on po.name = v.docname
+		Left join `tabVersion` as v on po.name = v.docname
 		Left Join `tabPayment Entry Reference` as per ON per.reference_doctype = "Purchase Order" and per.reference_name = po.name
 		where data like '%workflow_state%' and ref_doctype = 'Purchase Order' {conditions}
-		order by docname
+		order by v.docname
 	""",as_dict = 1)
 	log = []
 
@@ -164,7 +243,6 @@ def get_version_data(filters):
 		version = {}
 		d = json.loads(row.data)
 		for r in d.get('changed'):
-			print(r[-1])
 			if r[0] == 'workflow_state' and r[-1] == 'Approved':
 				version.update({
 					'purchase_order':row.name,
@@ -175,7 +253,16 @@ def get_version_data(filters):
 					"versioncreation":row.versioncreation,
 					"days": (row.versioncreation - row.creation).days,
 					"processing_days": (getdate(row.creation) - row.transaction_date).days,
-					'created_by' : frappe.db.get_value("User", row.owner, 'full_name')
+					'created_by' : frappe.db.get_value("User", row.owner, 'full_name'),
+					"pr_name" : row.pr_name if row.get('pr_name') else '',
+					"po_ref" : row.get('purchase_order') if row.get('purchase_order') else '',
+					"pr_created_by":frappe.db.get_value("User", row.get('pr_owner'), "full_name") if row.get('pr_owner') else '',
+					"pr_posting_date": row.get('pr_date') if row.get('pr_date') else '',
+					"pr_posting_time": row.get('pr_time') if row.get('pr_time') else '',
+					"pr_submited_on" : row.get('v_creation') if row.get('v_creation') else '',
+					"pr_submitted_by": frappe.db.get_value("User", row.get('v_owner'), "full_name") if row.get('v_owner') else '',
+					"pr_created_on" : row.get('pr_creation') if row.get('pr_creation') else '',
+					"delay_in_pr": (row.get('pr_creation') - row.get('v_creation')) if row.get('pr_creation') and row.get('v_creation') else 0
 				})
 				log.append(version)
 				break
@@ -205,12 +292,89 @@ def get_version_data(filters):
 	row_ =[]
 	for row in labels:
 		row_.append(sum(chart_log.get(row)))
-
 	
-	return log
+	pr_data = get_purchase_receipt_data(filters)
+	
+	pr_data_map = {}
+	
+	double_pr = []
+	for row in pr_data:
+		if not pr_data_map.get(row.get('po_ref')):
+			pr_data_map[row.get('po_ref')] = row
+			continue
+		if pr_data_map.get(row.get('po_ref')):
+			double_pr.append(row)
+	
+	extra_log = []
+
+	for row in log:
+		if pr_data_map.get(row.get('purchase_order')):
+			row.update(pr_data_map.get(row.get('purchase_order')))
+
+		for d in double_pr:
+			if row.get('purchase_order') == d.get('po_ref'):
+				new_row = row
+				new_row.update(d)
+				extra_log.append(new_row)
+	
+	log = log + extra_log
+
+	f_data = []
+	from itertools import groupby
+	from operator import itemgetter
+	sorted_data = sorted(log, key=itemgetter('purchase_order'))
+
+	# Group the data by 'po' key
+	for k, v in groupby(sorted_data, key=itemgetter('purchase_order')):
+		f_data += v
+
+	return f_data
 
 def get_columns_pi(state_list, state_counter):
 	columns = [
+		{
+			"label": _("Purchase Receipt"),
+			"fieldname": "pr_name",
+			"fieldtype": "Link",
+			"options": "Purchase Receipt",
+			"width": 150,
+		},
+		{
+			"label": _("PR Created On"),
+			"fieldname": "pr_created_on",
+			"fieldtype": "Datetime",
+			"width": 150,
+		},
+		{
+			"label": _("PR Created By"),
+			"fieldname": "pr_created_by",
+			"fieldtype": "Data",
+			"width": 150,
+		},
+		{
+			"label": _("PR Posting Date"),
+			"fieldname": "pr_posting_date",
+			"fieldtype": "Date",
+			"width": 150,
+		},
+		{
+			"label": _("PR Submited Time"),
+			"fieldname": "pr_submited_on",
+			"fieldtype": "Datetime",
+			"width": 150,
+		},
+		{
+			"label": _("PR Submited By"),
+			"fieldname": "pr_submitted_by",
+			"fieldtype": "Data",
+			"width": 150,
+		},
+		{
+			"label": _("Delay In PR"),
+			"fieldname": "delay_in_pr",
+			"fieldtype": "Float",
+			"width": 150,
+		},
 		{
 			"label": _("Purchase Invoice"),
 			"fieldname": "pi_name",
@@ -294,3 +458,14 @@ def get_columns_pi(state_list, state_counter):
 	
 	return columns
 
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def get_workflow_state(doctype, txt, searchfield, start=0, page_len=20, filters=None):
+	document = filters.get('docname')
+	workflow = frappe.db.sql("""""")
+	data = frappe.db.sql(f"""
+			Select state
+			From `tabWorkflow Document State`
+			Where parent = '{workflow}'
+	""")
+	return data

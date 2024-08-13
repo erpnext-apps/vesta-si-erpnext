@@ -130,11 +130,7 @@ def get_cross_border_xml_file(payments ,payment_export_settings , posting_date ,
         content += make_line("                      <BIC>{0}</BIC>".format(bank_bic if bank_bic else ''))
         content += make_line("                      <Nm>{0}</Nm>".format(payment_record.party))
         content += make_line("                  </FinInstnId>")
-        content += make_line("              </CdtrAgt>")
-
-
-        content += make_line("              <!-- Note: Creditor Agent should not be used at all for IBAN only on Creditor side -->")
-        
+        content += make_line("              </CdtrAgt>")        
         if payment_record.party_type == "Employee":
             name = frappe.get_value("Employee", payment_record.party, "employee_name")
         if payment_record.party_type == "Supplier":
@@ -160,7 +156,6 @@ def get_cross_border_xml_file(payments ,payment_export_settings , posting_date ,
         content += make_line("          <OrgId>")
         content += make_line("              <Othr>")
         content += make_line("              <Id>0008001879</Id>")
-        content += make_line("              <!--  Vendor ID from system  -->")
         content += make_line("              </Othr>")
         content += make_line("          </OrgId>")
         content += make_line("      </Id>")
