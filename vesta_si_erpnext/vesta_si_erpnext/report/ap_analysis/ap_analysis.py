@@ -462,10 +462,10 @@ def get_columns_pi(state_list, state_counter):
 @frappe.validate_and_sanitize_search_inputs
 def get_workflow_state(doctype, txt, searchfield, start=0, page_len=20, filters=None):
 	document = filters.get('docname')
-	workflow = frappe.db.sql("""""")
-	data = frappe.db.sql(f"""
-			Select state
-			From `tabWorkflow Document State`
-			Where parent = '{workflow}'
-	""")
+	data = frappe.db.sql(f""" 
+					Select wds.state 
+					From `tabWorkflow Document State` as wds
+					Left join  `tabWorkflow` as w on w.name = wds.parent
+					where w.is_active=1 and w.document_type = '{document}' """)
+
 	return data
