@@ -26,6 +26,14 @@ def execute(filters=None):
 			row.update(pi_timeline_map.get(row.get('purchase_order')))
 	
 	uptr_columns = get_columns(filters)
+	uptr_columns.insert(1,
+		{
+			"label": _("PO Status"),
+			"fieldname": "po_workflow_state",
+			"fieldtype": "Data",
+			"width": 150
+		},
+	)
 	columns = uptr_columns + columns_pi
 	
 	days  = 0
@@ -70,6 +78,7 @@ def get_purchase_invoice_timeline_report(filters):
 		v.creation as pi_versioncreation, 
 		v.docname,
 		po.bill_date,
+		po.workflow_state as pi_workflow_state,
 		per.parent as payment_entry
 		from `tabPurchase Invoice` as po 
 		left join `tabVersion` as v on po.name = v.docname
@@ -132,6 +141,7 @@ def get_purchase_invoice_timeline_report(filters):
 					idx = 0
 					version[row.docname] = {
 						'pi_name':row.docname,
+						"pi_workflow_state":row.pi_workflow_state,
 						"payment_entry":row.payment_entry,
 						'pi_creation_date':row.pi_creation,
 						'bill_date':row.bill_date,
@@ -169,6 +179,7 @@ def get_purchase_receipt_data(filters):
 	data = frappe.db.sql(f"""
 		Select pr.name as pr_name, 
 		pri.purchase_order, 
+		pr.status as pr_status,
 		pr.owner as pr_owner, 
 		pr.posting_date as pr_date, 
 		pr.creation as pr_creation,
@@ -192,6 +203,7 @@ def get_purchase_receipt_data(filters):
 				if r[0] == 'docstatus' and r[-1] == 1:
 					version.update({
 						"pr_name" : row.pr_name,
+						"pr_status":row.pr_status,
 						"po_ref" : row.purchase_order,
 						"pr_created_by":frappe.db.get_value("User",row.pr_owner,'full_name'),
 						"pr_posting_date": row.pr_date,
@@ -206,6 +218,7 @@ def get_purchase_receipt_data(filters):
 		else:
 			version.update({
 				"pr_name" : row.pr_name,
+				"pr_status":row.pr_status,
 				"po_ref" : row.purchase_order,
 				"pr_created_by":frappe.db.get_value("User",row.pr_owner,'full_name'),
 				"pr_posting_date": row.pr_date,
@@ -228,13 +241,15 @@ def get_version_data(filters):
 		conditions += f" and po.transaction_date >= '{filters.get('from_date')}'"
 	if filters.get("to_date"):
 		conditions += f" and po.transaction_date <= '{filters.get('to_date')}'"
+	if filters.get("workflow_state"):
+		conditions += f" and po.workflow_state = '{filters.get('workflow_state')}'"
 
 	data = frappe.db.sql(f""" 
-		Select v.data, po.name, po.creation, po.transaction_date, v.owner, v.creation as versioncreation, po.owner, per.parent as payment_entry
+		Select v.data, po.name, po.creation, po.transaction_date, v.owner, v.creation as versioncreation, po.owner, per.parent as payment_entry, po.workflow_state as po_workflow_state
 		from `tabPurchase Order` as po 
 		Left join `tabVersion` as v on po.name = v.docname
 		Left Join `tabPayment Entry Reference` as per ON per.reference_doctype = "Purchase Order" and per.reference_name = po.name
-		where data like '%workflow_state%' and ref_doctype = 'Purchase Order' {conditions}
+		where data like '%workflow_state%' and ref_doctype = 'Purchase Order' {conditions} 
 		order by v.docname
 	""",as_dict = 1)
 	log = []
@@ -246,6 +261,7 @@ def get_version_data(filters):
 			if r[0] == 'workflow_state' and r[-1] == 'Approved':
 				version.update({
 					'purchase_order':row.name,
+					'po_workflow_state': row.po_workflow_state,
 					"payment_entry":row.payment_entry,
 					'creation':row.creation,
 					'posting_date':row.transaction_date,
@@ -340,6 +356,12 @@ def get_columns_pi(state_list, state_counter):
 			"width": 150,
 		},
 		{
+			"label": _("PR Status"),
+			"fieldname": "pr_status",
+			"fieldtype": "Data",
+			"width": 150,
+		},
+		{
 			"label": _("PR Created On"),
 			"fieldname": "pr_created_on",
 			"fieldtype": "Datetime",
@@ -379,6 +401,13 @@ def get_columns_pi(state_list, state_counter):
 			"label": _("Purchase Invoice"),
 			"fieldname": "pi_name",
 			"fieldtype": "Link",
+			"options": "Purchase Invoice",
+			"width": 180,
+		},
+		{
+			"label": _("PI Status"),
+			"fieldname": "pi_workflow_state",
+			"fieldtype": "Data",
 			"options": "Purchase Invoice",
 			"width": 180,
 		},
