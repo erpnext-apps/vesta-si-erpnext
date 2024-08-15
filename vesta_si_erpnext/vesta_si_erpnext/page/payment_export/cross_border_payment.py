@@ -149,7 +149,7 @@ def get_cross_border_xml_file(payments ,payment_export_settings , posting_date ,
         content += make_line("  <StrtNm>{0}</StrtNm>".format(addr.address_line1 if addr.get('address_line1') else ''))
         content += make_line("  <PstCd>{0}</PstCd>".format(addr.pincode if addr.get('pincode') else ''))
         content += make_line("  <TwnNm>{0}</TwnNm>".format(addr.city if addr.get('city') else ''))
-        content += make_line("  <Ctry>{0}</Ctry>".format(addr.country_code if addr.get('contry_code') else ''))
+        content += make_line("  <Ctry>{0}</Ctry>".format(addr.country_code if addr.get('country_code') else ''))
         content += make_line("  <AdrLine>{0}</AdrLine>".format(addr.address_line2 if addr.get('address_line2') else ''))
         content += make_line("  </PstlAdr>")
         content += make_line("      <Id>")
