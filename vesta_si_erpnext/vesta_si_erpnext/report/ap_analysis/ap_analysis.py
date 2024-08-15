@@ -40,9 +40,9 @@ def execute(filters=None):
 	processing_days = 0
 	delay_in_pr = 0
 	for row in po_timeline:
-		processing_days += row.get("processing_days")
-		days += row.get("days")
-		delay_in_pr += row.get('delay_in_pr')
+		processing_days += flt(row.get("processing_days"))
+		days += flt(row.get("days"))
+		delay_in_pr += flt(row.get('delay_in_pr'))
 
 	length = len(po_timeline)
 	if length:
@@ -249,9 +249,17 @@ def get_version_data(filters):
 		from `tabPurchase Order` as po 
 		Left join `tabVersion` as v on po.name = v.docname
 		Left Join `tabPayment Entry Reference` as per ON per.reference_doctype = "Purchase Order" and per.reference_name = po.name
-		where data like '%workflow_state%' and ref_doctype = 'Purchase Order' {conditions} 
+		where data like '%workflow_state%' and v.ref_doctype = 'Purchase Order' {conditions} 
 		order by v.docname
 	""",as_dict = 1)
+
+	draft_data = frappe.db.sql(f"""
+		Select po.name as purchase_order, po.creation, po.transaction_date as posting_date, po.owner as approval_user, per.parent as payment_entry, po.workflow_state as po_workflow_state
+		From `tabPurchase Order` as po
+		Left Join `tabPayment Entry Reference` as per ON per.reference_doctype = "Purchase Order" and per.reference_name = po.name
+		Where po.docstatus = 0 {conditions}
+	""",as_dict=1)
+
 	log = []
 
 	for row in data:
@@ -283,6 +291,8 @@ def get_version_data(filters):
 				log.append(version)
 				break
 		continue
+
+	log += draft_data
 
 	user_data = frappe.db.sql(f""" 
 		Select name , full_name
