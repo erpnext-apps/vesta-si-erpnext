@@ -139,6 +139,10 @@ doc_events = {
 	"Sales Invoice":{
 		'before_validate':"vesta_si_erpnext.vesta_si_erpnext.doc_events.sales_invoice.set_exchange_rate",
 		'validate':"vesta_si_erpnext.vesta_si_erpnext.doc_events.sales_invoice.validate",
+	},
+	"Supplier":{
+		"after_insert":"vesta_si_erpnext.api.validate_supplier",
+		"validate":"vesta_si_erpnext.vesta_si_erpnext.doc_events.supplier.validate_iban"
 	}
 }
 
