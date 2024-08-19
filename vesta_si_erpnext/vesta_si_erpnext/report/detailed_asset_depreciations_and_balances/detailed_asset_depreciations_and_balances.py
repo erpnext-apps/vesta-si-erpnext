@@ -38,6 +38,12 @@ def execute(filters=None):
 			"fieldtype": "Currency",
 			"width": 270,
 		},
+		{
+			"label": _("Available For Use Date"),
+			"fieldname": "available_for_use_date",
+			"fieldtype": "Date",
+			"width": 270,
+		}
 	]
 	data = get_asset_details(filters)
 	return columns, data
@@ -50,7 +56,7 @@ def get_asset_details(filters):
 	if filters.get('to_date'):
 		condition += f" and purchase_date <= '{filters.get('to_date')}'"
 	data = frappe.db.sql(f""" 
-		Select name, item_code, item_name, gross_purchase_amount, opening_accumulated_depreciation , asset_category
+		Select name, item_code, item_name, gross_purchase_amount, opening_accumulated_depreciation , asset_category, available_for_use_date
 		From `tabAsset`
 		where docstatus = 1  {condition}
 	 """,as_dict = 1)
