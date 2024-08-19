@@ -718,7 +718,11 @@ def gen_payment_export_log(content, total_no_of_payments, total_paid_amount, pay
             'supplier' : pay_doc.party,
             'supplier_name':pay_doc.party_name,
             'paid_amount' : pay_doc.paid_amount,
-            'status' : pay_doc.status
+            'status' : pay_doc.status,
+            'posting_date':pay_doc.posting_date,
+            'document_type':pay_doc.references[0].reference_doctype,
+            'purchase_doc_no':pay_doc.references[0].reference_name,
+            'account':pay_doc.paid_from
         })
 
     doc.save() 
