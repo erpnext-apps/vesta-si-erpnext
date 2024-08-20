@@ -718,7 +718,11 @@ def gen_payment_export_log(content, total_no_of_payments, total_paid_amount, pay
             'supplier' : pay_doc.party,
             'supplier_name':pay_doc.party_name,
             'paid_amount' : pay_doc.paid_amount,
-            'status' : pay_doc.status
+            'status' : pay_doc.status,
+            'posting_date':pay_doc.posting_date,
+            'document_type':pay_doc.references[0].reference_doctype,
+            'purchase_doc_no':pay_doc.references[0].reference_name,
+            'account':pay_doc.paid_from
         })
 
     doc.save() 
@@ -734,6 +738,9 @@ def gen_payment_export_log(content, total_no_of_payments, total_paid_amount, pay
             data_["Supplier Name"] = frappe.db.get_value("Supplier", row.get('supplier'), 'supplier_name')
             data_["Paid Amount"] = row.get('paid_amount')
             data_["Currency"] = frappe.db.get_value("Payment Entry", row.get('payment_entry'), "paid_to_account_currency")
+            data_["document_type"] = row.get('document_type')
+            data_["Purchase Invoice"] = row.get('purchase_doc_no')
+            data_["Account"] = row.get('account')
             json_data.append(data_)
         # Json to DataFrame
         df = pd.DataFrame(json_data)
