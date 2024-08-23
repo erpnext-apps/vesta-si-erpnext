@@ -141,7 +141,6 @@ doc_events = {
 		'validate':"vesta_si_erpnext.vesta_si_erpnext.doc_events.sales_invoice.validate",
 	},
 	"Supplier":{
-		"after_insert":"vesta_si_erpnext.api.validate_supplier",
 		"validate":"vesta_si_erpnext.vesta_si_erpnext.doc_events.supplier.validate_iban"
 	}
 }
