@@ -54,7 +54,7 @@ def get_asset_details(filters):
 	if filters.get('asset_category'):
 		condition += f" and asset_category = '{filters.get('asset_category')}'"
 	if filters.get('to_date'):
-		condition += f" and purchase_date <= '{filters.get('to_date')}'"
+		condition += f" and available_for_use_date <= '{filters.get('to_date')}'"
 	data = frappe.db.sql(f""" 
 		Select name, item_code, item_name, gross_purchase_amount, opening_accumulated_depreciation , asset_category, available_for_use_date
 		From `tabAsset`

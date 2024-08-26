@@ -62,7 +62,7 @@ def get_asset_details(filters):
 	 """,as_dict = 1)
 	condition = ''
 	if filters.get('to_date'):
-		condition += f" and available_for_use_date <= '{filters.get('to_date')}'"
+		condition += f" and posting_date <= '{filters.get('to_date')}'"
 	for row in data:
 		gle_data = frappe.db.sql(f"""
 			Select sum(debit) as debit
