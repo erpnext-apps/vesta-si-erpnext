@@ -13,5 +13,3 @@ def validate(self , method):
         self.custom_approved_and_reviewed = now()
     if not self.custom_rejected and self.workflow_state == "Rejected":
         self.custom_rejected = now()
-    
-    
