@@ -13,9 +13,3 @@ def validate(self , method):
         self.custom_approved_and_reviewed = now()
     if not self.custom_rejected and self.workflow_state == "Rejected":
         self.custom_rejected = now()
-
-    if self.workflow_state == "Approved":
-        user = frappe.session.user
-        roles = frappe.get_roles(user)
-        if "PO - Level 1 - Approver" not in roles or "Level 2 Approver" not in roles:
-            frappe.throw("You do not have sufficient permission to approve this Purchase Order.")
