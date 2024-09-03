@@ -16,7 +16,7 @@ app_license = "MIT"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/vesta_si_erpnext/css/vesta_si_erpnext.css"
-# app_include_js = "/assets/vesta_si_erpnext/js/vesta_si_erpnext.js"
+app_include_js = "/assets/vesta_si_erpnext/js/utils.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/vesta_si_erpnext/css/vesta_si_erpnext.css"
@@ -176,13 +176,15 @@ doc_events = {
 # ------------------------------
 #
 override_whitelisted_methods = {
-	"erpnext.stock.doctype.putaway_rule.putaway_rule.apply_putaway_rule": "vesta_si_erpnext.vesta_si_erpnext.putaway_rule.apply_putaway_rule"
+	"erpnext.stock.doctype.putaway_rule.putaway_rule.apply_putaway_rule": "vesta_si_erpnext.vesta_si_erpnext.putaway_rule.apply_putaway_rule",
+	"erpnext.controllers.accounts_controller.update_child_qty_rate":"vesta_si_erpnext.overrides.account_controller.update_child_qty_rate"
 }
 
 override_doctype_class = {
 	"Stock Entry": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.CustomStockEntry",
 	"Purchase Invoice": "vesta_si_erpnext.overrides.purchase_invoice.CustomPurchaseInvoice",
-	"Asset" : "vesta_si_erpnext.vesta_si_erpnext.asset.CustomAsset"
+	"Asset" : "vesta_si_erpnext.vesta_si_erpnext.asset.CustomAsset",
+	# "Payment Reconciliation": "vesta_si_erpnext.overrides.payment_reconciliation.customPaymentReconciliation"
 	}
 
 #
