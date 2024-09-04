@@ -184,7 +184,7 @@ override_doctype_class = {
 	"Stock Entry": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.CustomStockEntry",
 	"Purchase Invoice": "vesta_si_erpnext.overrides.purchase_invoice.CustomPurchaseInvoice",
 	"Asset" : "vesta_si_erpnext.vesta_si_erpnext.asset.CustomAsset",
-	"Payment Reconciliation": "vesta_si_erpnext.overrides.payment_reconciliation.customPaymentReconciliation"
+	# "Payment Reconciliation": "vesta_si_erpnext.overrides.payment_reconciliation.customPaymentReconciliation"
 	}
 
 #
