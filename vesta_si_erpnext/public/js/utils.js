@@ -124,7 +124,28 @@ erpnext.utils.update_child_items = function(opts) {
 			fieldname: "item_tax_template",
 			options:"Item Tax Template",
 			in_list_view: 1,
+			disabled:0,
 			label: __("Item Tax Template"),
+			get_query: function(e) {
+				let filters;
+				if(!e.item_code) {
+					return frm.doc.company ? {filters: {company: frm.doc.company}} : {};
+				} else {
+					filters = {
+						'item_code': e.item_code,
+						'valid_from': ["<=", frm.doc.transaction_date || frm.doc.bill_date || frm.doc.posting_date],
+					}
+					if (frm.doc.tax_category)
+						filters['tax_category'] = frm.doc.tax_category;
+					if (frm.doc.company)
+						filters['company'] = frm.doc.company;
+					
+					return {
+						query: "vesta_si_erpnext.api.get_tax_template",
+						filters: filters
+					}
+				}
+			}
 		})
 	}
 
