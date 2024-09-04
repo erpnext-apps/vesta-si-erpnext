@@ -19,6 +19,46 @@ from erpnext.accounts.doctype.sales_invoice.sales_invoice import (
 from erpnext.accounts.doctype.purchase_invoice.purchase_invoice import PurchaseInvoice
 
 class CustomPurchaseInvoice(PurchaseInvoice):
+	def make_supplier_gl_entry(self, gl_entries):
+		# Checked both rounding_adjustment and rounded_total
+		# because rounded_total had value even before introduction of posting GLE based on rounded total
+		grand_total = (
+			self.rounded_total if (self.rounding_adjustment and self.rounded_total) else self.grand_total
+		)
+		base_grand_total = flt(
+			self.base_rounded_total
+			if (self.base_rounding_adjustment and self.base_rounded_total)
+			else self.base_grand_total,
+			self.precision("base_grand_total"),
+		)
+		
+		if grand_total and not self.is_internal_transfer():
+			against_voucher = self.name
+			if self.is_return and self.return_against and not self.update_outstanding_for_self:
+				against_voucher = self.return_against
+			# Did not use base_grand_total to book rounding loss gle
+			gl_entries.append(
+				self.get_gl_dict(
+					{
+						"account": self.credit_to,
+						"party_type": "Supplier",
+						"party": self.supplier,
+						"due_date": self.due_date,
+						"against": self.against_expense_account,
+						"credit": base_grand_total,
+						"credit_in_account_currency": base_grand_total
+						if self.party_account_currency == self.company_currency
+						else grand_total,
+						"against_voucher": against_voucher,
+						"against_voucher_type": self.doctype,
+						"project": self.project,
+						"cost_center": self.cost_center,
+					},
+					self.party_account_currency,
+					item=self,
+				)
+			)
+
 	def set_status(self, update=False, status=None, update_modified=True):
 		if self.is_new():
 			if self.get("amended_from"):
