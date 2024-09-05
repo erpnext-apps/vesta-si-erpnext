@@ -58,9 +58,9 @@ def get_advance_entries(self):
 	res = self.get_advance_entries(
 			include_unallocated=not cint(self.get("only_include_allocated_payments"))
 		)
-	# if res and not self.allocate_advances_automatically:
-	# 	if not len(self.advances):
-			# frappe.throw("Advance payments available against supplier <b>{0}</b> <br> Enable <b>'Set Advances and Allocate (FIFO)'</b> or click on the <b>'Get Advances Paid'</b> button under the payments section.".format(self.supplier))
+	if res and not self.allocate_advances_automatically:
+		if not len(self.advances):
+			frappe.throw("Advance payments available against supplier <b>{0}</b> <br> Enable <b>'Set Advances and Allocate (FIFO)'</b> or click on the <b>'Get Advances Paid'</b> button under the payments section.".format(self.supplier))
 
 def on_submit(self, method):
     if self.party_type == "Supplier" and self.payment_type == "Pay":
