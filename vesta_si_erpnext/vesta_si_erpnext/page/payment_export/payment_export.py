@@ -725,7 +725,10 @@ def gen_payment_export_log(content, total_no_of_payments, total_paid_amount, pay
             'account':pay_doc.paid_from
         })
 
-    doc.save() 
+    doc.save()
+    frappe.enqueue(
+            submit_all_payment_entry, doc=doc, queue="long", enqueue_after_commit=True
+        )
     enable = frappe.db.get_value("Payment Export Settings", "PES0001", "generate_excel_file")
     if enable:
         import pandas as pd
@@ -758,3 +761,45 @@ def gen_payment_export_log(content, total_no_of_payments, total_paid_amount, pay
         file_doc.attached_to_name = doc.name
         file_doc.file_name = "{0}.xlsx".format(doc.name)
         file_doc.save()
+
+def submit_all_payment_entry(doc):
+    submitted_entry = []
+    error_docs = []
+    pay_log = frappe.get_doc("Payment Export Log", doc.name)
+    for row in pay_log.logs:
+        payment_entry = frappe.get_doc("Payment Entry", row.payment_entry)
+        try:
+            payment_entry.submit()
+            submitted_entry.append(row.payment_entry)
+        except:
+            error_docs.append(row.payment_entry)
+    
+    
+    msg_for_this_recipient = "Hi {0}".format(frappe.db.get_value("User", pay_log.owner, 'full_name'))
+    msg_for_this_recipient += "<br><br>"
+    msg_for_this_recipient += "<h2>Successfully Submitted Payment Entry</h2>"
+    msg_for_this_recipient += """<table>"""
+    for row in submitted_entry:
+        msg_for_this_recipient +="""    <tr>
+                                            <td>{0}<td>
+                                        </tr> 
+                                """.format(row)
+    msg_for_this_recipient += "</table>"
+
+    msg_for_this_recipient += "<br><br>"
+    if error_docs:
+        msg_for_this_recipient += "<h2></h2>"
+        msg_for_this_recipient += "<table>"
+        for row in error_docs:
+            msg_for_this_recipient +="""    <tr>
+                                                <td>{0}<td>
+                                            </tr> 
+                                    """.format(row)
+        msg_for_this_recipient += "</table>"
+
+    
+    frappe.sendmail(
+        recipients="viral@fosserp.com",
+        subject = "Submitted Payment Entry Details(ERPnext)",
+        message=msg_for_this_recipient,
+    )
