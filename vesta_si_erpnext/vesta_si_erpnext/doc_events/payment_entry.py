@@ -17,7 +17,22 @@ from frappe.utils import (
 )
 
 def validate(self, method):
-    
+    if self.party_type and self.payment_type == "Pay":
+        if self.difference_amount > 0:
+            from erpnext.accounts.doctype.payment_entry.payment_entry import get_company_defaults
+            r = get_company_defaults(self.company)
+            difference_amount = flt(self.difference_amount, self.precision("difference_amount"))
+            if difference_amount > 1:
+                account =  r.get('exchange_gain_loss_account')
+            else:
+                account = r.get("write_off_account")
+            self.deductions = []
+            self.append("deductions", {
+                "account":account,
+                "amount":difference_amount,
+                "cost_center":r.get('cost_center')
+            })
+            self.difference_amount = 0
     currency_list = []    
     if self.party_type == "Supplier":
         for row in self.references:
@@ -85,21 +100,3 @@ def on_submit(self, method):
                 pel_doc = frappe.get_doc('Payment Export Log', data[0].parent)
                 pel_doc.status = "Submitted"
                 pel_doc.save()
-
-def validate(self, method):
-    if self.party_type and self.payment_type == "Pay":
-        if self.difference_amount > 0:
-            from erpnext.accounts.doctype.payment_entry.payment_entry import get_company_defaults
-            r = get_company_defaults(self.company)
-            difference_amount = flt(self.difference_amount, self.precision("difference_amount"))
-            if difference_amount > 1:
-                account =  r.get('exchange_gain_loss_account')
-            else:
-                account = r.get("write_off_account")
-            self.deductions = []
-            self.append("deductions", {
-                "account":account,
-                "amount":difference_amount,
-                "cost_center":r.get('cost_center')
-            })
-            self.difference_amount = 0
