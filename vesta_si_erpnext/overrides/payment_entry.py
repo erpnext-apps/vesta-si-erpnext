@@ -4,7 +4,7 @@ from frappe.utils import cint, comma_or, flt, getdate, nowdate
 from erpnext.accounts.general_ledger import make_gl_entries, process_gl_map
 from vesta_si_erpnext.overrides.account_controller import make_exchange_gain_loss_journal
 
-
+#Remove After Override , This is overrided to create auto exchange gain loss jv
 class CustomPaymentEntry(PaymentEntry):
 	def calculate_base_allocated_amount_for_reference(self, d) -> float:
 		base_allocated_amount = 0
