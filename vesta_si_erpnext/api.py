@@ -237,6 +237,7 @@ def get_straight_line_or_manual_depr_amount(
                 - flt(row.expected_value_after_useful_life)
             ) / flt(row.total_number_of_depreciations - asset.number_of_depreciations_booked)
 
+#This Function help to filter a item tax template in update item child table
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
 def get_tax_template(doctype, txt, searchfield, start, page_len, filters):
