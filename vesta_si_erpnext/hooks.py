@@ -127,7 +127,8 @@ doc_events = {
 	},
 	"Payment Entry": {
 		"validate": "vesta_si_erpnext.vesta_si_erpnext.doc_events.payment_entry.validate",
-		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.doc_events.payment_entry.on_submit"
+		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.doc_events.payment_entry.on_submit",
+		"validate": "vesta_si_erpnext.vesta_si_erpnext.doc_events.payment_entry.validate",
 	},
 	"Purchase Invoice": {
 		"on_update_after_submit": "vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_invoice.set_due_date_after_submit",
@@ -184,7 +185,6 @@ override_doctype_class = {
 	"Stock Entry": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.CustomStockEntry",
 	"Purchase Invoice": "vesta_si_erpnext.overrides.purchase_invoice.CustomPurchaseInvoice",
 	"Asset" : "vesta_si_erpnext.vesta_si_erpnext.asset.CustomAsset",
-	"Payment Entry" : "vesta_si_erpnext.overrides.payment_entry.CustomPaymentEntry"
 	# "Payment Reconciliation": "vesta_si_erpnext.overrides.payment_reconciliation.customPaymentReconciliation"
 	}
 
