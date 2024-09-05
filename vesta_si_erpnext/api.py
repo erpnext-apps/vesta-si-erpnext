@@ -23,8 +23,12 @@ from frappe.utils import (
     month_diff,
     nowdate,
     today,
+    unique
 )
-
+from collections import defaultdict
+from frappe import scrub
+from frappe.desk.reportview import get_filters_cond, get_match_cond
+from erpnext.stock.get_item_details import _get_item_tax_template
 import erpnext
 from erpnext.accounts.general_ledger import make_reverse_gl_entries
 from erpnext.accounts.utils import get_fiscal_year
@@ -232,3 +236,35 @@ def get_straight_line_or_manual_depr_amount(
                 - flt(asset.opening_accumulated_depreciation)
                 - flt(row.expected_value_after_useful_life)
             ) / flt(row.total_number_of_depreciations - asset.number_of_depreciations_booked)
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def get_tax_template(doctype, txt, searchfield, start, page_len, filters):
+
+	item_doc = frappe.get_doc("Item", filters.get("item_code"))
+	item_group = item_doc.get('item_group')
+	company = filters.get("company")
+	taxes = item_doc.taxes or []
+
+	while item_group:
+		item_group_doc = frappe.get_doc("Item Group", item_group)
+		taxes += item_group_doc.taxes or []
+		item_group = item_group_doc.parent_item_group
+
+	if not taxes:
+		return frappe.get_all(
+			"Item Tax Template", filters={"disabled": 0, "company": company}, as_list=True
+		)
+	else:
+		valid_from = filters.get("valid_from")
+		valid_from = valid_from[1] if isinstance(valid_from, list) else valid_from
+
+		args = {
+			"item_code": filters.get("item_code"),
+			"posting_date": valid_from,
+			"tax_category": filters.get("tax_category"),
+			"company": company,
+		}
+
+		taxes = _get_item_tax_template(args, taxes, for_validate=True)
+		return [(d,) for d in set(taxes)]
