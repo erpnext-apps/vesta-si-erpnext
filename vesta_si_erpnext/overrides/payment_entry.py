@@ -1,9 +1,12 @@
 import frappe
 from erpnext.accounts.doctype.payment_entry.payment_entry import PaymentEntry
+from frappe.utils import cint, comma_or, flt, getdate, nowdate
+from erpnext.accounts.general_ledger import make_gl_entries, process_gl_map
+from vesta_si_erpnext.overrides.account_controller import make_exchange_gain_loss_journal
 
 
 class CustomPaymentEntry(PaymentEntry):
-    def calculate_base_allocated_amount_for_reference(self, d) -> float:
+	def calculate_base_allocated_amount_for_reference(self, d) -> float:
 		base_allocated_amount = 0
 		if d.reference_doctype in frappe.get_hooks("advance_payment_doctypes"):
 			# When referencing Sales/Purchase Order, use the source/target exchange rate depending on payment type.
@@ -39,3 +42,12 @@ class CustomPaymentEntry(PaymentEntry):
 			)
 			d.exchange_gain_loss = base_allocated_amount - allocated_amount_in_pe_exchange_rate
 		return base_allocated_amount
+
+	def make_gl_entries(self, cancel=0, adv_adj=0):
+		gl_entries = self.build_gl_map()
+		gl_entries = process_gl_map(gl_entries)
+		make_gl_entries(gl_entries, cancel=cancel, adv_adj=adv_adj)
+		if cancel:
+			cancel_exchange_gain_loss_journal(frappe._dict(doctype=self.doctype, name=self.name))
+		else:
+			make_exchange_gain_loss_journal(self)
