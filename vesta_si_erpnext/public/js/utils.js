@@ -57,6 +57,15 @@ erpnext.utils.update_child_items = function(opts) {
 		}
 	}, 
 	{
+		fieldtype:'Float',
+		fieldname:"qty",
+		default: 0,
+		in_list_view: 1,
+		read_only: 0,
+		label: __('Qty'),
+		precision: get_precision("qty")
+	},
+	{
 		fieldtype:'Currency',
 		fieldname:"rate",
 		options: "currency",
@@ -92,18 +101,10 @@ erpnext.utils.update_child_items = function(opts) {
 				}
 			});
 		}
-	}, {
-		fieldtype:'Float',
-		fieldname:"qty",
-		default: 0,
-		in_list_view: 1,
-		read_only: 0,
-		label: __('Qty'),
-		precision: get_precision("qty")
-	}, ];
+	},  ];
 
 	if (frm.doc.doctype == "Purchase Order"){
-		fields.splice(3, 0, {
+		fields.splice(4, 0, {
 			fieldtype: 'Link',
 			fieldname: "item_tax_template",
 			options:"Item Tax Template",
