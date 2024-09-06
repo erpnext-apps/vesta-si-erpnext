@@ -241,7 +241,6 @@ def get_straight_line_or_manual_depr_amount(
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
 def get_tax_template(doctype, txt, searchfield, start, page_len, filters):
-
 	item_doc = frappe.get_doc("Item", filters.get("item_code"))
 	item_group = item_doc.get('item_group')
 	company = filters.get("company")
