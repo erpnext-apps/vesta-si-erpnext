@@ -100,6 +100,3 @@ def on_submit(self, method):
                 pel_doc = frappe.get_doc('Payment Export Log', data[0].parent)
                 pel_doc.status = "Submitted"
                 pel_doc.save()
-
-def validate(self, method):
-    
