@@ -1,7 +1,6 @@
 frappe.provide("erpnext");
 frappe.provide("erpnext.utils");
 erpnext.utils.update_child_items = function(opts) {
-    console.log("Hello")
 	const frm = opts.frm;
 	const cannot_add_row = (typeof opts.cannot_add_row === 'undefined') ? true : opts.cannot_add_row;
 	const child_docname = (typeof opts.cannot_add_row === 'undefined') ? "items" : opts.child_docname;
