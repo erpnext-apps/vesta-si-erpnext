@@ -149,23 +149,11 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"vesta_si_erpnext.tasks.all"
-# 	],
-# 	"daily": [
-# 		"vesta_si_erpnext.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"vesta_si_erpnext.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"vesta_si_erpnext.tasks.weekly"
-# 	]
-# 	"monthly": [
-# 		"vesta_si_erpnext.tasks.monthly"
-# 	]
-# }
+scheduler_events = {
+	"daily": [
+		"vesta_si_erpnext.vesta_si_erpnext.auto_email_report.send_daily"
+	],
+}
 
 # Testing
 # -------
