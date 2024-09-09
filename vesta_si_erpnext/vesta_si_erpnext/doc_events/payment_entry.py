@@ -18,7 +18,7 @@ from frappe.utils import (
 
 def validate(self, method):
     if self.party_type and self.payment_type == "Pay":
-        if self.difference_amount > 0:
+        if self.difference_amount:
             from erpnext.accounts.doctype.payment_entry.payment_entry import get_company_defaults
             r = get_company_defaults(self.company)
             difference_amount = flt(self.difference_amount, self.precision("difference_amount"))
