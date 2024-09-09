@@ -25,7 +25,6 @@ from frappe.utils import (
     today,
     unique
 )
-import json
 from collections import defaultdict
 from frappe import scrub
 from frappe.desk.reportview import get_filters_cond, get_match_cond
@@ -238,10 +237,11 @@ def get_straight_line_or_manual_depr_amount(
                 - flt(row.expected_value_after_useful_life)
             ) / flt(row.total_number_of_depreciations - asset.number_of_depreciations_booked)
 
+
+#This Function help to filter a item tax template in update item child table
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
 def get_tax_template(doctype, txt, searchfield, start, page_len, filters):
-
 	item_doc = frappe.get_doc("Item", filters.get("item_code"))
 	item_group = item_doc.get('item_group')
 	company = filters.get("company")

@@ -1,7 +1,6 @@
 frappe.provide("erpnext");
 frappe.provide("erpnext.utils");
 erpnext.utils.update_child_items = function(opts) {
-    console.log("Hello")
 	const frm = opts.frm;
 	const cannot_add_row = (typeof opts.cannot_add_row === 'undefined') ? true : opts.cannot_add_row;
 	const child_docname = (typeof opts.cannot_add_row === 'undefined') ? "items" : opts.child_docname;
@@ -56,7 +55,26 @@ erpnext.utils.update_child_items = function(opts) {
 				filters: filters
 			};
 		}
-	}, {
+	}, 
+	{
+		fieldtype:'Float',
+		fieldname:"qty",
+		default: 0,
+		in_list_view: 1,
+		read_only: 0,
+		label: __('Qty'),
+		precision: get_precision("qty")
+	},
+	{
+		fieldtype:'Currency',
+		fieldname:"rate",
+		options: "currency",
+		default: 0,
+		read_only: 0,
+		in_list_view: 1,
+		label: __('Rate'),
+		precision: get_precision("rate")
+	},{
 		fieldtype:'Link',
 		fieldname:'uom',
 		options: 'UOM',
@@ -83,41 +101,8 @@ erpnext.utils.update_child_items = function(opts) {
 				}
 			});
 		}
-	}, {
-		fieldtype:'Float',
-		fieldname:"qty",
-		default: 0,
-		read_only: 0,
-		in_list_view: 1,
-		label: __('Qty'),
-		precision: get_precision("qty")
-	}, {
-		fieldtype:'Currency',
-		fieldname:"rate",
-		options: "currency",
-		default: 0,
-		read_only: 0,
-		in_list_view: 1,
-		label: __('Rate'),
-		precision: get_precision("rate")
-	}];
+	},  ];
 
-	if (frm.doc.doctype == 'Sales Order' || frm.doc.doctype == 'Purchase Order' ) {
-		fields.splice(2, 0, {
-			fieldtype: 'Date',
-			fieldname: frm.doc.doctype == 'Sales Order' ? "delivery_date" : "schedule_date",
-			in_list_view: 1,
-			label: frm.doc.doctype == 'Sales Order' ? __("Delivery Date") : __("Reqd by date"),
-			reqd: 1
-		})
-		fields.splice(3, 0, {
-			fieldtype: 'Float',
-			fieldname: "conversion_factor",
-			in_list_view: 1,
-			label: __("Conversion Factor"),
-			precision: get_precision('conversion_factor')
-		})
-	}
 	if (frm.doc.doctype == "Purchase Order"){
 		fields.splice(4, 0, {
 			fieldtype: 'Link',
@@ -149,6 +134,24 @@ erpnext.utils.update_child_items = function(opts) {
 		})
 	}
 
+	if (frm.doc.doctype == 'Sales Order' || frm.doc.doctype == 'Purchase Order' ) {
+		fields.splice(2, 0, {
+			fieldtype: 'Date',
+			fieldname: frm.doc.doctype == 'Sales Order' ? "delivery_date" : "schedule_date",
+			in_list_view: 1,
+			label: frm.doc.doctype == 'Sales Order' ? __("Delivery Date") : __("Reqd by date"),
+			reqd: 1
+		})
+		fields.splice(7, 0, {
+			fieldtype: 'Float',
+			fieldname: "conversion_factor",
+			label: __("Conversion Factor"),
+			in_list_view: 1,
+			precision: get_precision('conversion_factor')
+		})
+	}
+	
+
 	new frappe.ui.Dialog({
 		title: __("Update Items"),
 		fields: [
@@ -160,7 +163,7 @@ erpnext.utils.update_child_items = function(opts) {
 				in_place_edit: false,
 				reqd: 1,
 				data: this.data,
-				size: 'large', // small, large, extra-large 
+				size: "extra-large", // small, large, extra-large 
 				get_data: () => {
 					return this.data;
 				},
