@@ -798,7 +798,7 @@ def submit_all_payment_entry(doc):
         msg_for_this_recipient += "</table>"
 
     frappe.sendmail(
-        recipients="viral@fosserp.com",
+        recipients=pay_log.owner,
         subject = "Submitted Payment Entry Details(ERPnext)",
         message=msg_for_this_recipient,
     )
