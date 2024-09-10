@@ -16,6 +16,10 @@ def get_data(filters):
 	condition = ''
 	if filters.get('item_code'):
 		condition += f" and qi.item_code = '{filters.get('item_code')}'"
+	if filters.get('workstation'):
+		condition += f" and qi.workstation = '{filters.get('workstation')}'"
+	if filters.get('item_group'):
+		condition += f" and qi.item_group = '{filters.get('item_group')}'"
 	if filters.get('from_date'):
 		condition += f" and qi.report_date >= '{filters.get('from_date')}'"
 	if filters.get('to_date'):
@@ -23,7 +27,7 @@ def get_data(filters):
 	if filters.get('qi_parameter'):
 		condition += f" and qri.specification = '{filters.get('qi_parameter')}'"
 	
-	qi_data = frappe.db.sql(f"""Select qi.name, qi.item_code, qri.specification, qri.min_value, qri.max_value, qri.reading_1
+	qi_data = frappe.db.sql(f"""Select qi.name, qi.item_code,qi.item_group, qi.workstation, qi.report_date, qri.specification, qri.min_value, qri.max_value, qri.reading_1
 								From `tabQuality Inspection` as qi
 								Left Join `tabQuality Inspection Reading` as qri ON qri.parent = qi.name
 								Where qi.docstatus = 1 and qri.numeric = 1 {condition}
@@ -41,10 +45,30 @@ def get_columns(filters):
 			"width":150
 		},
 		{
+			"fieldname":"report_date",
+			"label": _("Report Date"),
+			"fieldtype": "Date",
+			"width":150
+		},
+		{
 			"fieldname":"item_code",
 			"label": _("Item Code"),
 			"fieldtype": "Link",
 			"options": "Item",
+			"width":150
+		},
+		{
+			"fieldname":"item_group",
+			"label": _("Item Group"),
+			"fieldtype": "Link",
+			"options": "Item Group",
+			"width":150
+		},
+		{
+			"fieldname":"workstation",
+			"label": _("Workstation"),
+			"fieldtype": "Link",
+			"options": "Workstation",
 			"width":150
 		},
 		{
