@@ -29,6 +29,37 @@ frappe.query_reports["Inspection Control Chart Based On Permissible Limits"] = {
 			"reqd": 1
 		},
 		{
+			"fieldname":"group_by",
+			"label": __("Group By"),
+			"fieldtype": "Select",
+			"default":"Item Code",
+			"options": ["Item Code", "Item Group"],
+			on_change: function () {
+				frappe.query_report.toggle_filter_display(
+					"item_code",
+					frappe.query_report.get_filter_value("group_by") == "Item Group"
+				);
+				frappe.query_report.toggle_filter_display(
+					"item_group",
+					frappe.query_report.get_filter_value("group_by") == "Item Code"
+				);
+				frappe.query_report.set_filter_value("item_group", "");
+				frappe.query_report.set_filter_value("item_code", "");
+			},
+			onload: function () {
+				frappe.query_report.toggle_filter_display(
+					"item_code",
+					frappe.query_report.get_filter_value("group_by") == "Item Group"
+				);
+				frappe.query_report.toggle_filter_display(
+					"item_group",
+					frappe.query_report.get_filter_value("group_by") == "Item Code"
+				);
+				frappe.query_report.set_filter_value("item_group", "");
+				frappe.query_report.set_filter_value("item_code", "");
+			},
+		},
+		{
 			"fieldname":"item_code",
 			"label": __("Item Code"),
 			"fieldtype": "Link",
@@ -40,13 +71,24 @@ frappe.query_reports["Inspection Control Chart Based On Permissible Limits"] = {
 					}
 				};
 			},
-			"reqd":1
+		},
+		{
+			"fieldname":"item_group",
+			"label": __("Item Group"),
+			"fieldtype": "Link",
+			"options": "Item Group",
 		},
 		{
 			"fieldname":"qi_parameter",
 			"label": __("QI Parameter"),
 			"fieldtype": "Link",
 			"options": "Quality Inspection Parameter",
+		},
+		{
+			"fieldname":"workstation",
+			"label":__("Workstation"),
+			"fieldtype":"Link",
+			"options":"Workstation"
 		}
 	],
 	formatter: function (value, row, column, data, default_formatter) {
