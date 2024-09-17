@@ -35,7 +35,11 @@ def validate(self, method):
 				party_account_currency, 
 				company_currency,
 				condition = '')
-	if len(data):
+	final_data = []
+	for row in data:
+		if not row.voucher_no in ["ACC-PINV-2024-00250-1", "ACC-PINV-2024-00251-1"]:
+			final_data.append(row)
+	if len(final_data):
 		message = "Debit Note and Payment Entry available against this supplier <b>{0}</b><br>".format(get_link_to_form("Supplier",self.supplier))
 		message +="First reconcile those entry, reference available as mentioned below"
 		message += "<br><br>"
