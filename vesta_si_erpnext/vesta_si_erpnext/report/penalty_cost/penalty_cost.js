@@ -8,12 +8,14 @@ frappe.query_reports["Penalty Cost"] = {
 			"fieldname":"from_date",
 			"label": __("From Date"),
 			"fieldtype": "Date",
+			"default": frappe.sys_defaults.year_start_date,
 			"width": "80"
 		},
 		{
 			"fieldname":"to_date",
 			"label": __("To Date"),
 			"fieldtype": "Date",
+			"default": frappe.datetime.get_today()
 		},
 		{
 			"fieldname" : "expense_account",
