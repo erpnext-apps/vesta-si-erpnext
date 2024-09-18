@@ -232,5 +232,5 @@ def get_chart_data(label , value1, value2):
 						}
 					]
 				},
-				"type": "line",
+				"type": "bar",
 			}
