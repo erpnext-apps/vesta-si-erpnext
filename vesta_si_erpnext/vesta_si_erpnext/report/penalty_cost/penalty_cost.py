@@ -24,6 +24,12 @@ def execute(filters=None):
 			"width" :200
 		},
 		{
+			"fieldname" : "posting_date",
+			"label" : "Posting Date",
+			"fieldtype" : "Date",
+			"width" :150
+		},
+		{
 			"fieldname" : "supplier",
 			"label" : "Supplier",
 			"fieldtype" : "Link",
@@ -47,6 +53,13 @@ def execute(filters=None):
 			"label" : "Amount",
 			"fieldtype" : "Currency",
 			"width" :150
+		},
+		{
+			"fieldname" : "expense_account",
+			"label" : "Expense Head",
+			"fieldtype" : "Link",
+			"options" : "Account",
+			"width" :200
 		}
 	]
 	return columns, data, None, chart
@@ -54,11 +67,18 @@ def execute(filters=None):
 
 
 def get_data(filters):
-	data = frappe.db.sql("""
+	condition = ''
+	if filters.get("from_date"):
+		condition += f" and pi.posting_date >= '{filters.get('from_date')}'"
+	if filters.get("to_date"):
+		condition += f" and pi.posting_date <= '{filters.get('to_date')}'"
+	if filters.get("expense_account"):
+		condition += f" and pii.expense_account = '{filters.get('expense_account')}'"
+	data = frappe.db.sql(f"""
 		Select pi.name, pi.workflow_state, pi.supplier, pi.supplier_name, pii.net_amount, pii.amount, pii.expense_account, pi.posting_date
 		From `tabPurchase Invoice` as pi
 		Left Join `tabPurchase Invoice Item` as pii ON pi.name = pii.parent
-		Where pi.docstatus = 1 and pii.expense_account in ('629301 - Reminder Fee & Penalty Cost (operational) - 9150', '824502 - Interest expense due to late payment - 9150')
+		Where pi.docstatus = 1 and pii.expense_account in ('629301 - Reminder Fee & Penalty Cost (operational) - 9150', '824502 - Interest expense due to late payment - 9150') {condition}
 	""", as_dict = 1)
 
 	january = []

@@ -4,6 +4,22 @@
 
 frappe.query_reports["Penalty Cost"] = {
 	"filters": [
-
+		{
+			"fieldname":"from_date",
+			"label": __("From Date"),
+			"fieldtype": "Date",
+			"width": "80"
+		},
+		{
+			"fieldname":"to_date",
+			"label": __("To Date"),
+			"fieldtype": "Date",
+		},
+		{
+			"fieldname" : "expense_account",
+			"label" : "Expense Head",
+			"fieldtype" : "Select",
+			"options" :["", "629301 - Reminder Fee & Penalty Cost (operational) - 9150", "824502 - Interest expense due to late payment - 9150"],
+		}
 	]
 };
