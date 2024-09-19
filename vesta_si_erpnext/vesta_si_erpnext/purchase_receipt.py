@@ -26,3 +26,16 @@ def before_validate(doc, method):
 def on_update(doc, method):
 	if doc.custom_apply_putaway_rule:
 		doc.db_set('apply_putaway_rule', 1)
+
+
+#sent notification to Andrew if PO assign to him
+def notification_to_assignee(self, method):
+	# pass
+	if self.items[0].get("purchase_order"):
+		doc = frappe.get_doc("Purchase Order", self.items[0].get("purchase_order"))
+		if name := frappe.db.exists("ToDo", {"reference_type" : "Purchase Order", "reference_name": doc.name, "status" : ["!=", "Cancelled"]}):
+			allocated_to = frappe.db.get_value("ToDo", name, "allocated_to")
+			if allocated_to == "andre.awad@skf.com":
+				notification_doc = frappe.get_doc("Notification", "Purchase Receipt notification")
+				notification_doc.send(doc)
+

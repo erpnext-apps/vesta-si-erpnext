@@ -118,9 +118,12 @@ doc_events = {
 		"on_update": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.on_update"
 	},
 	"Purchase Receipt": {
-		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.link_supplier_bag_to_batch",
+		"on_submit": [
+			"vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.link_supplier_bag_to_batch",
+			"vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.notification_to_assignee"
+		],
 		"before_validate": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.before_validate",
-		"on_update": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.on_update"
+		"on_update": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.on_update",
 	},
 	"Purchase Order":{
 		"validate":"vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_order.validate"
