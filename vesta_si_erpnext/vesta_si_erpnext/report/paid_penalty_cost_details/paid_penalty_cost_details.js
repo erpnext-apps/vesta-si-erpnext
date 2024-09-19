@@ -2,7 +2,7 @@
 // For license information, please see license.txt
 /* eslint-disable */
 
-frappe.query_reports["Penalty Cost"] = {
+frappe.query_reports["Paid Penalty Cost Details"] = {
 	"filters": [
 		{
 			"fieldname":"from_date",
