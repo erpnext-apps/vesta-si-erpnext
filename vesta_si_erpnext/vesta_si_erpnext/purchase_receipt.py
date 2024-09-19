@@ -37,5 +37,5 @@ def notification_to_assignee(self, method):
 			allocated_to = frappe.db.get_value("ToDo", name, "allocated_to")
 			if allocated_to == "andre.awad@skf.com":
 				notification_doc = frappe.get_doc("Notification", "Purchase Receipt notification")
-				notification_doc.send(doc)
+				notification_doc.send(self)
 
