@@ -15,7 +15,7 @@ def execute(filters=None):
 	data = list(data)
 	positive_outstanding = []
 	for row in data[1]:
-		if row.outstanding > 0 and row.age > 0:
+		if row.outstanding > 0 and row.age > 0 and row.voucher_type != "Journal Entry":
 			positive_outstanding.append(row)
 	
 	data[1] = positive_outstanding
