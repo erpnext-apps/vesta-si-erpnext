@@ -153,6 +153,11 @@ doc_events = {
 # ---------------
 
 scheduler_events = {
+	"cron": {
+		"0 0 3 * *":[
+			"vesta_si_erpnext.vesta_si_erpnext.auto_email_report.set_AP_report_notification_to_liji"
+		]
+	},
 	"daily": [
 		"vesta_si_erpnext.vesta_si_erpnext.auto_email_report.send_daily"
 	],
