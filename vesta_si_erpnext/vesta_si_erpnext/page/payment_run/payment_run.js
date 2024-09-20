@@ -41,6 +41,8 @@ frappe.pages['payment-run'].on_page_load = function(wrapper) {
         options: "Bank Account",
 		onchange: () => {
             getfindSelected()
+			togglecurrency(page)
+            frappe.payment_run.run(page);
         }
     });
 
