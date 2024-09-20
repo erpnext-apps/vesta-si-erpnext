@@ -30,7 +30,6 @@ def on_update(doc, method):
 
 #sent notification to Andrew if PO assign to him
 def notification_to_assignee(self, method):
-	# pass
 	if self.items[0].get("purchase_order"):
 		doc = frappe.get_doc("Purchase Order", self.items[0].get("purchase_order"))
 		if name := frappe.db.exists("ToDo", {"reference_type" : "Purchase Order", "reference_name": doc.name, "status" : ["!=", "Cancelled"]}):
