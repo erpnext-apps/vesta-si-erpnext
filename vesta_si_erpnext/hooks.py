@@ -118,7 +118,10 @@ doc_events = {
 		"on_update": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.on_update"
 	},
 	"Purchase Receipt": {
-		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.link_supplier_bag_to_batch",
+		"on_submit": [
+			"vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.link_supplier_bag_to_batch",
+			"vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.notification_to_assignee"
+		],
 		"before_validate": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.before_validate",
 		"on_update": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.on_update"
 	},
@@ -150,6 +153,11 @@ doc_events = {
 # ---------------
 
 scheduler_events = {
+	"cron": {
+		"0 0 3 * *":[
+			"vesta_si_erpnext.vesta_si_erpnext.auto_email_report.set_AP_report_notification_to_liji"
+		]
+	},
 	"daily": [
 		"vesta_si_erpnext.vesta_si_erpnext.auto_email_report.send_daily"
 	],

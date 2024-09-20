@@ -291,3 +291,8 @@ def update_field_types(columns):
             col.fieldtype = "Data"
             col.options = ""
     return columns
+
+
+#Every month of 3rd and 4th
+def set_AP_report_notification_to_liji():
+    send_now("AP positive Outstanding amount")    
