@@ -115,7 +115,7 @@ doc_events = {
 		"before_submit": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.before_submit_events",
 		"validate": ["vesta_si_erpnext.vesta_si_erpnext.stock_entry.set_quality_inspection",
 					"vesta_si_erpnext.vesta_si_erpnext.doc_events.stock_entry.validate_manufactured_row_material"],
-		"on_update": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.on_update"
+		"on_update": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.on_update",
 	},
 	"Purchase Receipt": {
 		"on_submit": [
