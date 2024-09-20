@@ -120,7 +120,13 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         formatted_date = formatted_date.replace(' ','-')
         payments = eval(payments)
         payments = list(filter(None, payments))
-        gen_payment_export_log(content, transaction_count, control_sum, payments, 'EUR')
+        if payment_type == "Cross Border Payments (USD)":
+            currency = "USD"
+        if payment_type == "Cross Border Payments (EUR)":
+            currency = "EUR"
+        if payment_type == "Cross Border Payments (OTHER)":
+            currency = None
+        gen_payment_export_log(content, transaction_count, control_sum, payments, currency)
         
         return { 'content': content, 'skipped': 0 , 'time':formatted_date}
     
@@ -706,7 +712,6 @@ def gen_payment_export_log(content, total_no_of_payments, total_paid_amount, pay
     doc = frappe.new_doc('Payment Export Log')
     doc.file_creation_time = now()
     doc.user =  frappe.session.user
-    doc.currency = currency 
     doc.total_paid_amount = total_paid_amount
     doc.total_no_of_payments = total_no_of_payments
     doc.content = content
@@ -724,7 +729,10 @@ def gen_payment_export_log(content, total_no_of_payments, total_paid_amount, pay
             'purchase_doc_no':pay_doc.references[0].reference_name,
             'account':pay_doc.paid_from
         })
-
+    if not currency:
+        doc.currency = frappe.db.get_value("Payment Entry", pay_doc.get('payment_entry'), "paid_to_account_currency")
+    else:
+        doc.currency = currency 
     doc.save()
     frappe.enqueue(
             submit_all_payment_entry, doc=doc, queue="long", enqueue_after_commit=True

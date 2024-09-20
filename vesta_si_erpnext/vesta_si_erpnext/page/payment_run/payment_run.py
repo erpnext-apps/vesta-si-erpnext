@@ -81,6 +81,7 @@ def get_purchase_invoice(orderby, payment_type, due_date=None, payable_account=N
 			currency = "USD"
 		if payment_type == "Cross Border Payments (OTHER)":
 			if not bank_account:
+				frappe.throw("Select a Bank Account")
 				invoices = []
 				return {"invoices" : invoices, 'currency':"SEK"}
 			doc = frappe.get_doc("Bank Account", bank_account)
