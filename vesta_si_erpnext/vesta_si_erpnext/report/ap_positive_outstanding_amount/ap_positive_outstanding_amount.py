@@ -15,23 +15,12 @@ def execute(filters=None):
 	data = list(data)
 	positive_outstanding = []
 
-	block_invoices = frappe.db.sql(f"""
-					Select name, workflow_state
-					From `tabPurchase Invoice` 
-					Where due_date < '{filters.get("report_date")}' and workflow_state = "Blocked"
-	""", as_dict=1)
-
 	unblock_invoices = frappe.db.sql(f"""
-						Select name , workflow_state, status
-						from `tabPurchase Invoice`
-						Where due_date < '{filters.get("report_date")}' and workflow_state != "Blocked"
-
+					Select name, workflow_state, status
+					From `tabPurchase Invoice` 
+					Where due_date <= '{filters.get("report_date")}' and workflow_state != 'Blocked'
 	""", as_dict=1)
 
-	block_map = {}
-
-	for row in block_invoices:
-		block_map[row.name] = row
 
 	unblock_map = {}
 
@@ -40,11 +29,11 @@ def execute(filters=None):
 
 
 	for row in data[1]:
-		if row.outstanding > 0 and row.age > 0 and row.voucher_type != "Journal Entry":
+		if row.outstanding > 0 and row.voucher_type != "Journal Entry" and row.workflow_state != "Blocked":
 			if unblock_map.get(row.voucher_no):
 				row.update({"workflow_state" : unblock_map.get(row.voucher_no).get("workflow_state"), "status" : unblock_map.get(row.voucher_no).get("status")})
-			if not block_map.get(row.voucher_no):
 				positive_outstanding.append(row)
+			
 	
 	data[1] = positive_outstanding
 
