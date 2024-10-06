@@ -249,7 +249,6 @@ def send_daily():
     if getdate().day in [15, last_day]:
         auto_email_report = frappe.get_doc("Auto Email Report", "Received Items To Be Billed - Vesta Si")
         try:
-            print("enter")
             auto_email_report.send()
         except Exception:
             auto_email_report.log_error(f"Failed to send {auto_email_report.name} Auto Email Report")
