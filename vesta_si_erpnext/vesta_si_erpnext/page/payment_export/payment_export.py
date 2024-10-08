@@ -309,6 +309,9 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
             payment_content += make_line("        <RmtInf>")
             for reference in payment_record.references:
                 payment_content += make_line("        <Strd>")
+                payment_content += make_line("        <CdtrRefInf>")
+                payment_content += make_line("               <Ref>{0}</Ref>".format(frappe.db.get_value(reference.reference_doctype , reference.reference_name , 'custom_ocr_number') if frappe.db.get_value(reference.reference_doctype , reference.reference_name , 'custom_ocr_number') else reference.reference_name))
+                payment_content += make_line("        </CdtrRefInf>")
                 payment_content += make_line("        <RfrdDocInf>")
                 payment_content += make_line("        <Tp>")
                 payment_content += make_line("        <CdOrPrtry>")
