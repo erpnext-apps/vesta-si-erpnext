@@ -95,7 +95,7 @@ def get_advance_entries(self):
 # 					get_link_to_form("Journal Entry",jv.name)
 # 				))
 
-def on_submit(self, method):
+def on_update(self, method):
 	if self.advances and self.outstanding_amount:
 		frappe.msgprint("The amount outstanding is <b>{0}</b>cd  Euro, resulting from the currency exchange variance between the Payment date and the Purchase Invoice date. Please proceed with creating a journal entry to offset this outstanding amount.".format(self.outstanding_amount))
 	
