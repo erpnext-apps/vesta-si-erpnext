@@ -1765,6 +1765,7 @@
    "is_virtual": 0,
    "label": "OCR Number",
    "length": 0,
+   "display_depends_on": "eval:doc.is_ocr_payment == 1;",
    "mandatory_depends_on": "eval:doc.is_ocr_payment == 1;",
    "modified": "2024-10-08 12:42:35.274582",
    "modified_by": "Administrator",
