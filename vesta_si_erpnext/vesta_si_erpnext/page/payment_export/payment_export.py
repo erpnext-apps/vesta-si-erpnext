@@ -319,6 +319,7 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
                     payment_content += make_line("                          <Cd>SCOR</Cd>")
                     payment_content += make_line("                      </CdOrPrtry>")
                     payment_content += make_line("                  </Tp>")
+                    payment_content += make_line("                  <Ref>{0}</Ref>".format(ocr_number))
                     payment_content += make_line("              </CdtrRefInf>")
                     payment_content += make_line("        </Strd>")
                 else:
