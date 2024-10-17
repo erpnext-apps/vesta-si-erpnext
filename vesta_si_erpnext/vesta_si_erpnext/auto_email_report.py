@@ -250,6 +250,7 @@ def send_daily():
         auto_email_report = frappe.get_doc("Auto Email Report", "Received Items To Be Billed - Vesta Si")
         try:
             auto_email_report.send()
+            frappe.db.commit()
         except Exception:
             auto_email_report.log_error(f"Failed to send {auto_email_report.name} Auto Email Report")
 
@@ -292,6 +293,7 @@ def update_field_types(columns):
     return columns
 
 
-#Every month of 3rd and 4th
+
 def set_AP_report_notification_to_liji():
-    send_now("AP positive Outstanding amount")    
+    if getdate().day in [3, 4]:
+        send_now("AP positive Outstanding amount")    
