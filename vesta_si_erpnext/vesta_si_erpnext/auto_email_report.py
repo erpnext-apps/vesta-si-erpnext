@@ -238,7 +238,7 @@ def send_now(name):
     auto_email_report.send()
 
 
-def send_daily():
+def liji_send_daily():
     """Check reports to be sent daily"""
     import calendar
     from datetime import datetime
