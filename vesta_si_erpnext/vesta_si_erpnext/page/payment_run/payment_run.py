@@ -61,7 +61,7 @@ def get_purchase_invoice(orderby, payment_type, due_date=None, payable_account=N
 				From `tabPurchase Invoice` as pi
 				Left Join `tabSupplier` as su On su.name = pi.supplier
 				left join `tabPayment Entry Reference` as per ON per.reference_name = pi.name and per.reference_doctype = "Purchase Invoice"
-				Where pi.docstatus = 1 and pi.outstanding_amount > 0  and pi.is_return = 0 and pi.due_date <= '{due_date}' {conditions}
+				Where per.docstatus != 2 and pi.docstatus = 1 and pi.outstanding_amount > 0  and pi.is_return = 0 and pi.due_date <= '{due_date}' {conditions}
 				Order By pi.due_date {orderby}
 		""",as_dict=1)
 
