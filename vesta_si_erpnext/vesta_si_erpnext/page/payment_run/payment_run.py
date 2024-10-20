@@ -64,7 +64,7 @@ def get_purchase_invoice(orderby, payment_type, due_date=None, payable_account=N
 				Where  pi.docstatus = 1 and pi.outstanding_amount > 0  and pi.is_return = 0 and pi.due_date <= '{due_date}' {conditions}
 				Order By pi.due_date {orderby}
 		""",as_dict=1)
-		frappe.throw(str(data))
+
 		invoices = []
 		for row in data:
 			if row.status in ['Unpaid','Overdue'] and not row.payment_entry:
