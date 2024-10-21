@@ -22,7 +22,7 @@ def validate(self, method):
             from erpnext.accounts.doctype.payment_entry.payment_entry import get_company_defaults
             r = get_company_defaults(self.company)
             difference_amount = flt(self.difference_amount, self.precision("difference_amount"))
-            if difference_amount > 1:
+            if difference_amount > 1 or difference_amount < -1:
                 account =  r.get('exchange_gain_loss_account')
             else:
                 account = r.get("write_off_account")
