@@ -50,6 +50,7 @@ frappe.ui.form.on('Payment Export Log', {
 						},
 						callback:(e)=>{
 							frm.refresh_field("logs")
+							cur_frm.refresh()
 						}
 					})
 				},
