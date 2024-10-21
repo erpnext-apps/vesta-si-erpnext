@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 import json
-from frappe.utils import get_link_to_form
+from frappe.utils import get_link_to_form, update_progress_bar
 
 class PaymentExportLog(Document):
 	def on_update(self):
@@ -14,6 +14,8 @@ class PaymentExportLog(Document):
 				flag = False
 		if flag:
 			self.db_set('status', "Submitted")
+	
+	
 
 
 @frappe.whitelist()
@@ -33,3 +35,24 @@ def submit_all_payment_entry(self : dict):
 	if flag:
 		frappe.msgprint("Payment Entry has been submitted succesfully")
 
+
+@frappe.whitelist()
+def cancelled_payment_entry(pe, pe_log):
+	payment_entry = json.loads(pe)
+
+	cancelled_payment_entry = []
+	count = 0
+	for row in payment_entry:
+		doc = frappe.get_doc("Payment Entry", row.get('payment_entry'))
+		try:
+			doc.cancel()
+			count += 1
+			frappe.db.set_value("Payment Transaction Log", row.get('log_ref'), 'status', doc.status)
+			cancelled_payment_entry.append(row)
+		except Exception as e:
+			frappe.log_error(e)
+	if cancelled_payment_entry:
+		msg = "Payment Entry has been cancelled. <br>"
+		for row in cancelled_payment_entry:			
+			msg += ", {0}".format(get_link_to_form("Payment Entry", row.get('payment_entry')))
+		frappe.msgprint(msg)
