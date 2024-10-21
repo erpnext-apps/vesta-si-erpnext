@@ -130,7 +130,8 @@ doc_events = {
 	},
 	"Payment Entry": {
 		"validate": "vesta_si_erpnext.vesta_si_erpnext.doc_events.payment_entry.validate",
-		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.doc_events.payment_entry.on_submit"
+		"on_submit": "vesta_si_erpnext.vesta_si_erpnext.doc_events.payment_entry.on_submit",
+		"on_cancel" : "vesta_si_erpnext.vesta_si_erpnext.doc_events.payment_entry.on_cancel"
 	},
 	"Purchase Invoice": {
 		"on_update_after_submit": "vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_invoice.set_due_date_after_submit",

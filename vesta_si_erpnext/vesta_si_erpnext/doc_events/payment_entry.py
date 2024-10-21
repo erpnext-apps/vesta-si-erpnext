@@ -106,3 +106,11 @@ def on_submit(self, method):
                 pel_doc = frappe.get_doc('Payment Export Log', data[0].parent)
                 pel_doc.status = "Submitted"
                 pel_doc.save()
+
+
+def on_cancel(self, method):
+    if self.payment_type == "Pay" and self.party_type == "Supplier":
+        for row in self.references:
+            if row.reference_doctype == "Purchase Invoice" and row.reference_name:
+                doc = frappe.get_doc("Purchase Invoice", row.reference_name)
+                frappe.db.set_value("Purchase Invoice", row.reference_name, "workflow_state", "Approved")
