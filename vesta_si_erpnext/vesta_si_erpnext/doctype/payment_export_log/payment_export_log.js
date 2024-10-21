@@ -23,29 +23,42 @@ frappe.ui.form.on('Payment Export Log', {
 		}
 		frm.add_custom_button(__('Cancel Payment Entry'), () => {
 			let selected_row = []
+			let msg = '<ul>'
 			frm.doc.logs.forEach(e => {
 				if(e.__checked && e.status == "Submitted"){
 					selected_row.push({"payment_entry" : e.payment_entry, "log_ref" : e.name})
+					msg += `<li>${e.payment_entry}</li>`
 				}
 			});
+			msg += '</ul>'
 			if (!selected_row.length){
-				frappe.throw("Please select at least one row.")
+				frappe.throw("Please select at least one row of submitted payment entry.")
 			}
 			let seconds_elapsed = 0
-			selected_row.forEach(e=>{
-				setup_progress_bar(selected_row, seconds_elapsed)
-			})
-			frm.call({
-				method : "cancelled_payment_entry",
-				args : {
-					"pe" : selected_row,
-					"pe_log" : frm.doc.name
+			
+			frappe.warn(`Are you sure you want to proceed to cancelled selected ${selected_row.length} Payment Entry?`,
+				msg,
+				() => {
+					selected_row.forEach(e=>{
+						setup_progress_bar(selected_row, seconds_elapsed)
+					})
+					frm.call({
+						method : "cancelled_payment_entry",
+						args : {
+							"pe" : selected_row,
+							"pe_log" : frm.doc.name
+						},
+						callback:(e)=>{
+							frm.refresh_field("logs")
+							cur_frm.refresh()
+						}
+					})
 				},
-				callback:(e)=>{
-					frm.refresh()
-				}
-			})
-		})
+				'Continue',
+				true // Sets dialog as minimizable
+			)
+			
+		}).addClass("btn btn-primary")
 	}
 });
 

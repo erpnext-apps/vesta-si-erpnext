@@ -39,7 +39,6 @@ def submit_all_payment_entry(self : dict):
 @frappe.whitelist()
 def cancelled_payment_entry(pe, pe_log):
 	payment_entry = json.loads(pe)
-
 	cancelled_payment_entry = []
 	count = 0
 	for row in payment_entry:
@@ -56,3 +55,11 @@ def cancelled_payment_entry(pe, pe_log):
 		for row in cancelled_payment_entry:			
 			msg += ", {0}".format(get_link_to_form("Payment Entry", row.get('payment_entry')))
 		frappe.msgprint(msg)
+	pe_doc = frappe.get_doc("Payment Export Log", pe_log)
+	flag_cancel = False
+	for row in pe_doc.logs:
+		if row.get('status') == "Submitted":
+			flag_cancel = True
+	if not flag_cancel:
+		frappe.db.set_value("Payment Export Log", pe_log, "status", "Cancelled")
+	return "Success"
