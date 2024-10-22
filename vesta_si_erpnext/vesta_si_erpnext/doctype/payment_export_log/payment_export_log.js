@@ -30,7 +30,7 @@ frappe.ui.form.on('Payment Export Log', {
 					msg += `<li>${e.payment_entry}</li>`
 				}
 			});
-			msg += '</ul>'
+			msg += '</ul><br><p>Would you like to cancel the Selected Payment entry?</p>'
 			if (!selected_row.length){
 				frappe.throw("Please select at least one row of submitted payment entry.")
 			}

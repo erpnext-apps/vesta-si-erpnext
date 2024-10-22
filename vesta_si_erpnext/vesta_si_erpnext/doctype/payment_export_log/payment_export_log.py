@@ -53,7 +53,7 @@ def cancelled_payment_entry(pe, pe_log):
 	if cancelled_payment_entry:
 		msg = "Payment Entry has been cancelled. <br>"
 		for row in cancelled_payment_entry:			
-			msg += ", {0}".format(get_link_to_form("Payment Entry", row.get('payment_entry')))
+			msg += "{0}, ".format(get_link_to_form("Payment Entry", row.get('payment_entry')))
 		frappe.msgprint(msg)
 	pe_doc = frappe.get_doc("Payment Export Log", pe_log)
 	flag_cancel = False
