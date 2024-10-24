@@ -146,6 +146,9 @@ doc_events = {
 	},
 	"Supplier":{
 		"validate":"vesta_si_erpnext.vesta_si_erpnext.doc_events.supplier.validate_iban"
+	},
+	"Tag Link" : {
+		"validate" : "vesta_si_erpnext.api.validate_tag_link"
 	}
 }
 
