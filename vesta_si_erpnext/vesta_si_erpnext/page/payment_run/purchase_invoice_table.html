@@ -29,14 +29,14 @@
             <td class="ontop onbottom" ><p>{{ row.currency }} {{ row.panding_amount }}</p></td>
             <td class="ontop onbottom" ><p>{{ row.due_date }}</p></td>
             {% else %}
-            <td class="ontop onbottom" style="background-color:rgb(208, 0, 42);"> </td>
-            <td class="ontop onbottom" style="background-color:rgb(208, 0, 42);"><p style="color: aliceblue;">{{ row.workflow_state }}</p></td>
-            <td class="ontop onbottom" style="background-color:rgb(208, 0, 42);"><p style="color: aliceblue;"><a href="/desk/Form/Purchase Invoice/{{ row.name }}" style="color: aliceblue;">{{ row.name }}</a></p></td>
-            <td class="ontop onbottom" width="20%" style="background-color:rgb(208, 0, 42);"><p style="color: aliceblue;"><a href="/desk/Form/Supplier/{{ row.supplier }}" style="color: aliceblue;">{{ row.supplier_name }}</a></p></td>
-            <td class="ontop onbottom" style="background-color:rgb(208, 0, 42);"><p style="color: aliceblue;">{{ row.bill_no }}</p></td>
-            <td class="ontop onbottom" style="background-color:rgb(208, 0, 42);"><p style="color: aliceblue;">{{ row.currency }} {{ row.grand_total }}</p></td>
-            <td class="ontop onbottom" style="background-color:rgb(208, 0, 42);"><p style="color: aliceblue;">{{ row.currency }} {{ row.panding_amount }}</p></td>
-            <td class="ontop onbottom" style="background-color:rgb(208, 0, 42);"><p style="color: aliceblue;">{{ row.due_date }}</p></td>
+            <td class="ontop onbottom" > </td>
+            <td class="ontop onbottom" ><p style="color: rgb(228, 6, 6);">{{ row.workflow_state }}</p></td>
+            <td class="ontop onbottom" ><p style="color: rgb(228, 6, 6);"><a href="/desk/Form/Purchase Invoice/{{ row.name }}" style="color: rgb(228, 6, 6);">{{ row.name }}</a></p></td>
+            <td class="ontop onbottom" width="20%" ><p style="color: rgb(228, 6, 6);"><a href="/desk/Form/Supplier/{{ row.supplier }}" style="color: rgb(228, 6, 6);">{{ row.supplier_name }}</a></p></td>
+            <td class="ontop onbottom" ><p style="color: rgb(228, 6, 6);">{{ row.bill_no }}</p></td>
+            <td class="ontop onbottom" ><p style="color: rgb(228, 6, 6);">{{ row.currency }} {{ row.grand_total }}</p></td>
+            <td class="ontop onbottom" ><p style="color: rgb(228, 6, 6);">{{ row.currency }} {{ row.panding_amount }}</p></td>
+            <td class="ontop onbottom" ><p style="color: rgb(228, 6, 6);">{{ row.due_date }}</p></td>
             {% endif %}
         </tr>
         {% endfor %}

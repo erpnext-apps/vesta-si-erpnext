@@ -19,6 +19,7 @@ from erpnext.accounts.doctype.sales_invoice.sales_invoice import (
 from erpnext.accounts.doctype.purchase_invoice.purchase_invoice import PurchaseInvoice
 
 class CustomPurchaseInvoice(PurchaseInvoice):
+	# Compare during the update
 	def set_status(self, update=False, status=None, update_modified=True):
 		if self.is_new():
 			if self.get("amended_from"):

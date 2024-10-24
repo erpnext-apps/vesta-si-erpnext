@@ -56,6 +56,7 @@ from erpnext.stock.get_item_details import (
 )
 from erpnext.utilities.transaction_base import TransactionBase
 
+# Compare During the update
 
 @frappe.whitelist()
 def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, child_docname="items"):
