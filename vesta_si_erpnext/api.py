@@ -269,3 +269,8 @@ def get_tax_template(doctype, txt, searchfield, start, page_len, filters):
 
 		taxes = _get_item_tax_template(args, taxes, for_validate=True)
 		return [(d,) for d in set(taxes)]
+
+
+def validate_tag_link(self, method):
+    if self.document_type == "Purchase Order" and frappe.session.user not in ["lijee.twinkle@skf.com"]:
+        frappe.throw("Only {0} can attach a tag on Purchase Order document".format(frappe.db.get_value("User", "lijee.twinkle@skf.com", 'full_name')))
