@@ -17,6 +17,7 @@ from frappe.utils import (
 )
 
 def validate(self, method):
+    ## remove After Update
     if self.party_type and self.payment_type == "Pay":
         if self.difference_amount:
             from erpnext.accounts.doctype.payment_entry.payment_entry import get_company_defaults
@@ -33,6 +34,7 @@ def validate(self, method):
                 "cost_center":r.get('cost_center')
             })
             self.difference_amount = 0
+    ## till this line
     currency_list = []    
     if self.party_type == "Supplier":
         for row in self.references:
