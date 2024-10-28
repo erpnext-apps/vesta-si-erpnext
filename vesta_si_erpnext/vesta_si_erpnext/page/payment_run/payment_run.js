@@ -53,6 +53,10 @@ frappe.pages['payment-run'].on_page_load = function(wrapper) {
 
 frappe.payment_run = {
 	make: (page) => {
+		page.add_inner_button(__("Go To Payment Export"), function () {
+            let base_url = frappe.urllib.get_base_url()
+            window.open(base_url+"/app/payment-export")
+        }).addClass("btn btn-primary");
 		var me = frappe.payment_run;
         me.page = page;
         me.body = $('<div></div>').appendTo(me.page.main);

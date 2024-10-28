@@ -38,7 +38,7 @@ frappe.ui.form.on('Payment Export Log', {
 			}
 			let seconds_elapsed = 0
 			
-			frappe.warn(`Are you sure you want to proceed to cancelled selected ${selected_row.length} Payment Entry?`,
+			frappe.warn(`Are you sure you want to proceed to cancel the below payment entries?`,
 				msg,
 				() => {
 					selected_row.forEach(e=>{
