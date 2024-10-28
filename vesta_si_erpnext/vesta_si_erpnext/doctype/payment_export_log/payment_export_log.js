@@ -32,13 +32,13 @@ frappe.ui.form.on('Payment Export Log', {
 					msg += `<li>${e.payment_entry}</li>`
 				}
 			});
-			msg += '</ul><br><p>Would you like to cancel the Selected Payment entry?</p>'
 			if (!selected_row.length){
 				frappe.throw("Please select at least one row of submitted payment entry.")
 			}
 			let seconds_elapsed = 0
 			
 			frappe.warn(`Proceed to cancel the below payment entries?`,
+				msg,
 				() => {
 					selected_row.forEach(e=>{
 						setup_progress_bar(selected_row, seconds_elapsed)
