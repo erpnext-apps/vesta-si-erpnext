@@ -38,8 +38,7 @@ frappe.ui.form.on('Payment Export Log', {
 			}
 			let seconds_elapsed = 0
 			
-			frappe.warn(`Are you sure you want to proceed to cancel the below payment entries?`,
-				msg,
+			frappe.warn(`Proceed to cancel the below payment entries?`,
 				() => {
 					selected_row.forEach(e=>{
 						setup_progress_bar(selected_row, seconds_elapsed)
