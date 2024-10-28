@@ -4,7 +4,6 @@
  "creation": "2024-04-02 17:17:46.883102",
  "default_view": "List",
  "doctype": "DocType",
- "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "payment_entry",
@@ -112,7 +111,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-11 11:17:29.936872",
+ "modified": "2024-10-28 08:29:48.538672",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "Payment Transaction Log",
