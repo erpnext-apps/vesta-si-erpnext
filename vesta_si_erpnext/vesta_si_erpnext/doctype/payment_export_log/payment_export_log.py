@@ -51,7 +51,7 @@ def cancelled_payment_entry(pe, pe_log):
 		except Exception as e:
 			frappe.log_error(e)
 	if cancelled_payment_entry:
-		msg = "Payment Entry has been cancelled. <br>"
+		msg = "Payment Entry has been cancelled. <br><br>"
 		for row in cancelled_payment_entry:			
 			msg += "{0}, ".format(get_link_to_form("Payment Entry", row.get('payment_entry')))
 		frappe.msgprint(msg)
