@@ -3,9 +3,15 @@
 
 frappe.ui.form.on('Payment Export Log', {
 	onload: function(frm) {
+		frm.get_field('logs').grid.cannot_delete_rows = true;
+		frm.get_field('logs').grid.cannot_delete_all_rows = true;
 		frm.get_field('logs').grid.cannot_add_rows = true;
+
 	},
 	refresh: frm => {
+		frm.get_field('logs').grid.cannot_delete_rows = true;
+		frm.get_field('logs').grid.cannot_delete_all_rows = true;
+		frm.get_field('logs').grid.cannot_add_rows = true;
 		if(frm.doc.status != 'Submitted' && !frm.doc.__unsaved){
 			frm.add_custom_button(__("Submit Payment Entry"),
 			function () {
