@@ -51,7 +51,7 @@ def validate(self, method):
 		frappe.msgprint(message)
 	
 	set_exchange_rate(self, method)
-    self.validate()
+	self.validate()
 
 def get_advance_entries(self):
 	res = self.get_advance_entries(
@@ -106,6 +106,6 @@ from erpnext.setup.utils import get_exchange_rate
 
 
 def set_exchange_rate(self,method):
-    default_currency = frappe.db.get_value('Company', self.company, "default_currency")
-    exchange_rate = get_exchange_rate(self.currency, default_currency, transaction_date = self.posting_date, args=None)
-    self.conversion_rate = exchange_rate
+	default_currency = frappe.db.get_value('Company', self.company, "default_currency")
+	exchange_rate = get_exchange_rate(self.currency, default_currency, transaction_date = self.posting_date, args=None)
+	self.conversion_rate = exchange_rate
