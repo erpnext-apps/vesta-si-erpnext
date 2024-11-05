@@ -55,6 +55,7 @@ def get_purchase_invoice(orderby, payment_type, due_date=None, payable_account=N
 				pi.currency,
 				su.custom_payment_type,
 				pi.status,
+				per.docstatus as pe_docstatus,
 				per.parent as payment_entry,
 				per.total_amount,
 				per.outstanding_amount
@@ -70,9 +71,19 @@ def get_purchase_invoice(orderby, payment_type, due_date=None, payable_account=N
 			if row.status in ['Unpaid','Overdue'] and not row.payment_entry:
 				if payment_type == row.custom_payment_type:
 					invoices.append(row)
+					continue
+					
+			if row.status in ['Unpaid','Overdue']:
+				if row.payment_entry and row.pe_docstatus and row.panding_amount >= 1:
+					if payment_type == row.custom_payment_type:
+						invoices.append(row)
+						continue
+
 			if row.status == "Partly Paid":
 				if payment_type == row.custom_payment_type:
 					invoices.append(row)
+					continue
+
 		if payment_type in ["SEPA (EUR)", "Cross Border Payments (EUR)"]:
 			currency = "EUR"
 		if payment_type == "Domestic (Swedish) Payments (SEK)":
