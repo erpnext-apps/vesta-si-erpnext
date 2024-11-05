@@ -49,6 +49,9 @@ def validate(self, method):
 		message += "</table>"
 		
 		frappe.msgprint(message)
+	
+	set_exchange_rate(self, method)
+    self.validate()
 
 def get_advance_entries(self):
 	res = self.get_advance_entries(
@@ -99,3 +102,10 @@ def get_advance_entries(self):
 # 	if self.advances and self.outstanding_amount:
 # 		frappe.msgprint("The amount outstanding is <b>{0}</b>cd  Euro, resulting from the currency exchange variance between the Payment date and the Purchase Invoice date. Please proceed with creating a journal entry to offset this outstanding amount.".format(self.outstanding_amount))
 	
+from erpnext.setup.utils import get_exchange_rate
+
+
+def set_exchange_rate(self,method):
+    default_currency = frappe.db.get_value('Company', self.company, "default_currency")
+    exchange_rate = get_exchange_rate(self.currency, default_currency, transaction_date = self.posting_date, args=None)
+    self.conversion_rate = exchange_rate

@@ -247,7 +247,7 @@ def liji_send_daily():
     current_day = calendar.day_name[now_datetime().weekday()]
 
     last_day = calendar.monthrange(getdate().year, getdate().month)[1]
-    if getdate().day in [15, last_day, 1]:
+    if getdate().day in [15, last_day]:
         auto_email_report = frappe.get_doc("Auto Email Report", "Received Items To Be Billed - Vesta Si")
         try:
             auto_email_report.send()
