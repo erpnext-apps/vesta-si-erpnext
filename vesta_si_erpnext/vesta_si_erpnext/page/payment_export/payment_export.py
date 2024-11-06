@@ -743,8 +743,8 @@ def gen_payment_export_log(content, total_no_of_payments, total_paid_amount, pay
             'document_type':pay_doc.references[0].reference_doctype,
             'purchase_doc_no':pay_doc.references[0].reference_name,
             'account':pay_doc.paid_from,
-            'due_date' : frappe.db.get_value(pay_doc.references[0].reference_doctype, pay_doc.references[0].reference_name, 'due_date'),
-            'delay' : (getdate() - frappe.db.get_value(pay_doc.references[0].reference_doctype, pay_doc.references[0].reference_name, 'due_date')).days
+            'due_date' : frappe.db.get_value(pay_doc.references[0].reference_doctype, pay_doc.references[0].reference_name, 'due_date') if pay_doc.references[0].reference_doctype != "Purchase Order" else '',
+            'delay' : (getdate() - frappe.db.get_value(pay_doc.references[0].reference_doctype, pay_doc.references[0].reference_name, 'due_date')).days if pay_doc.references[0].reference_doctype != "Purchase Order" else 0
         })
     if not currency:
         doc.currency = frappe.db.get_value("Payment Entry", pay_doc.get('payment_entry'), "paid_to_account_currency")
