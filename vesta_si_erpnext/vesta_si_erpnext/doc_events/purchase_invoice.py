@@ -50,8 +50,8 @@ def validate(self, method):
 		
 		frappe.msgprint(message)
 	
-	# set_exchange_rate(self, method)
-	# self.validate()
+	set_exchange_rate(self, method)
+	self.validate()
 
 def get_advance_entries(self):
 	res = self.get_advance_entries(
