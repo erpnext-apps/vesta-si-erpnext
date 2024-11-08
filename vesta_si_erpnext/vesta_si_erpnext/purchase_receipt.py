@@ -4,6 +4,11 @@
 from __future__ import unicode_literals
 import frappe, erpnext
 
+
+def validate(self, method):
+	set_exchange_rate(self)
+	self.validate()
+
 def link_supplier_bag_to_batch(doc, method=None):
 	for item in doc.items:
 		if item.get("supplier_bag_no") and item.get("batch_no"):
@@ -38,3 +43,11 @@ def notification_to_assignee(self, method):
 				notification_doc = frappe.get_doc("Notification", "Purchase Receipt notification")
 				notification_doc.send(self)
 
+
+from erpnext.setup.utils import get_exchange_rate
+
+
+def set_exchange_rate(self):
+	default_currency = frappe.db.get_value('Company', self.company, "default_currency")
+	exchange_rate = get_exchange_rate(self.currency, default_currency, transaction_date = self.posting_date, args=None)
+	self.conversion_rate = exchange_rate
