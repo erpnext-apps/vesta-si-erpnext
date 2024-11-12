@@ -32,7 +32,8 @@ def get_data(filters):
 			ptl.document_type,
 			ptl.purchase_doc_no,
 			ptl.due_date,
-			ptl.delay
+			ptl.delay,
+			pel.creation
 			From `tabPayment Export Log` as pel
 			Left Join `tabPayment Transaction Log` as ptl ON ptl.parent = pel.name
 			where 1 = 1 and ptl.status != "Cancelled" {cond}
@@ -44,6 +45,21 @@ def get_data(filters):
 	month_wise_data, month_year = get_month_year_list(filters.get("from_date"), filters.get("to_date"), month_wise_data)
 
 	for row in data:
+		if not row.delay:
+			if row.document_type:
+				if row.document_type != "Purchase Order":
+					due_date = frappe.db.get_value("Purchase Invoice" , row.purchase_doc_no, "due_date")
+					delay = (getdate(row.creation) - getdate(due_date)).days
+					row.update({ "delay" : delay })
+			else:
+				pe = frappe.get_doc("Payment Entry", row.payment_entry)
+				if pe.references[0].reference_doctype == "Purchase Invoice":
+					due_date = frappe.db.get_value("Purchase Invoice", pe.references[0].reference_name, "due_date")
+					row.update({"purchase_doc_no" : pe.references[0].reference_name})
+					row.update({"due_date" : due_date})
+					delay = (getdate(row.creation) - getdate(due_date)).days
+					row.update({ "delay" : delay })
+
 		if not filters.get("delay_payment"):
 			if flt(row.delay) <= 0:
 				month_wise_data.update({getdate(row.file_creation_time).strftime("%B_%Y") : month_wise_data.get(str(getdate(row.file_creation_time).strftime("%B_%Y"))) + 1})
