@@ -2,15 +2,8 @@
 // For license information, please see license.txt
 /* eslint-disable */
 
-frappe.query_reports["Monthly Purchase Payment Analysis"] = {
+frappe.query_reports["Purchase Invoice Delay payment Report"] = {
 	"filters": [
-		{
-			fieldname:"payment_export_log",
-			label: __("Payment Export Log"),
-			fieldtype: "Link",
-			options : "Payment Export Log",
-			reqd: 0
-		},
 		{
 			fieldname:"from_date",
 			label: __("From Date"),
