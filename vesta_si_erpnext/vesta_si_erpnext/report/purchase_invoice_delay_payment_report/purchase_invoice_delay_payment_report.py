@@ -39,7 +39,7 @@ def get_data_from_pe(filters):
 	on_time_row = []
 	delay_payment_row = []
 	for row in data:
-		delay = (row.due_date - row.posting_date).days
+		delay = (row.posting_date - row.due_date).days
 		row.update({"delay" : delay})
 		if filters.get("chart_type") == "On Time Chart":
 			if flt(delay) <= 0:
@@ -69,6 +69,12 @@ def get_data_from_pe(filters):
 			"fieldtype" : "Link",
 			"options" : "Payment Entry",
 			"width" : 170
+		},
+		{
+			"label" : "PE Status",
+			"fieldname" : "status",
+			"fieldtype" : "Data",
+			"width" : 150
 		},
 		{
 			"label" : "PE Posting Date",
