@@ -21,8 +21,6 @@ def get_data(filters):
 		cond += f" and pel.file_creation_time <= '{filters.get('to_date')}'"
 	if filters.get("payment_export_log"):
 		cond += f" and pel.name = '{filters.get('payment_export_log')}'"
-	if filters.get("delay_payment"):
-		cond += f" and ptl.delay > 0"
 
 	data = frappe.db.sql(f"""
 			Select pel.name, 
@@ -60,11 +58,12 @@ def get_data(filters):
 					delay = (getdate(row.creation) - getdate(due_date)).days
 					row.update({ "delay" : delay })
 
-		if not filters.get("delay_payment"):
+		if filters.get("chart_type") == "On Time Chart":
 			if flt(row.delay) <= 0:
 				month_wise_data.update({getdate(row.file_creation_time).strftime("%B_%Y") : month_wise_data.get(str(getdate(row.file_creation_time).strftime("%B_%Y"))) + 1})
-		else:
-			month_wise_data.update({getdate(row.file_creation_time).strftime("%B_%Y") : month_wise_data.get(str(getdate(row.file_creation_time).strftime("%B_%Y"))) + 1})
+		if filters.get("chart_type") == "Delay Chart":
+			if flt(row.delay) > 0:
+				month_wise_data.update({getdate(row.file_creation_time).strftime("%B_%Y") : month_wise_data.get(str(getdate(row.file_creation_time).strftime("%B_%Y"))) + 1})
 		
 		if row.name not in removed:
 			day = get_day(str(getdate(row.file_creation_time)))
