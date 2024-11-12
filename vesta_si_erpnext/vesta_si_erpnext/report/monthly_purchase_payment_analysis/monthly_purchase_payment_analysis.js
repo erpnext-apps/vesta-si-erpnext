@@ -29,8 +29,8 @@ frappe.query_reports["Monthly Purchase Payment Analysis"] = {
 			fieldname : "chart_type",
 			label : "Chart Type",
 			fieldtype : "Select",
-			options : ["On Time Chart", "Delay Chart"],
-			default : "On Time Chart"
+			options : ["On Time Payment", "Delayed Payment"],
+			default : "On Time Payment"
 		}
 	]
 };
