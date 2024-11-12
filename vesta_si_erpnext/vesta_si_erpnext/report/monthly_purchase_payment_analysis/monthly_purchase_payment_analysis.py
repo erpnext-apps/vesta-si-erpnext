@@ -58,10 +58,10 @@ def get_data(filters):
 					delay = (getdate(row.creation) - getdate(due_date)).days
 					row.update({ "delay" : delay })
 
-		if filters.get("chart_type") == "On Time Chart":
+		if filters.get("chart_type") == "On Time Payment":
 			if flt(row.delay) <= 0:
 				month_wise_data.update({getdate(row.file_creation_time).strftime("%B_%Y") : month_wise_data.get(str(getdate(row.file_creation_time).strftime("%B_%Y"))) + 1})
-		if filters.get("chart_type") == "Delay Chart":
+		if filters.get("chart_type") == "Delayed Payment":
 			if flt(row.delay) > 0:
 				month_wise_data.update({getdate(row.file_creation_time).strftime("%B_%Y") : month_wise_data.get(str(getdate(row.file_creation_time).strftime("%B_%Y"))) + 1})
 		
