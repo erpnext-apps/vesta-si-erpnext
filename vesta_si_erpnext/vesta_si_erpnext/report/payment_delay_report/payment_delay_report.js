@@ -2,7 +2,7 @@
 // For license information, please see license.txt
 /* eslint-disable */
 
-frappe.query_reports["Purchase Invoice Delay payment Report"] = {
+frappe.query_reports["Payment Delay Report"] = {
 	"filters": [
 		{
 			fieldname:"from_date",
