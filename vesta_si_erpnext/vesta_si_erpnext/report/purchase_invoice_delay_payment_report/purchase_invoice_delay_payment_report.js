@@ -23,7 +23,7 @@ frappe.query_reports["Purchase Invoice Delay payment Report"] = {
 			label : "Chart Type",
 			fieldtype : "Select",
 			options : ["On Time Payments", "Delayed Payments"],
-			default : "On Time Paymentss"
+			default : "On Time Payments"
 		}
 	]
 };
