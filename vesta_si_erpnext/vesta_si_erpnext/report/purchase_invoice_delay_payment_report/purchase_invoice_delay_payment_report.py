@@ -127,7 +127,7 @@ def prepare_chart(month_year, value, filters):
 			"labels": month_year,
 			"datasets": [
 				{
-					"name": _("Number of delay Payments" if filters.get("chart_type") == "On Time Payments" else "Number of on time payments"),
+					"name": _("Number of on time payments" if filters.get("chart_type") == "On Time Payments" else "Number of delay Payments"),
 					"chartType": "bar",
 					"values": value,
 					'colors': ['#743ee2' if filters.get("chart_type") == "On Time Payments" else '#F683AE' ],
