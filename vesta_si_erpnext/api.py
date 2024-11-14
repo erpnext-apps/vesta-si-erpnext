@@ -95,7 +95,7 @@ def get_total_penalty_cost_remitted_to_suppliers(filters):
     if filters.get('company'):
         cond += f" and pi.company = '{filters.get('company')}'"
     if filters.get('expense_account'):
-        cond += f" and pii.expense_account = '{filters.get('expense_account')}'"
+        cond += f" and pii.expense_account in ( '{filters.get('expense_account')}', '824502 - Interest expense due to late payment - 9150', '824501 - Interest expense on taxes and charges - 9150' )"
     
     cond += f" and pi.posting_date >= '{from_date}'"
 
