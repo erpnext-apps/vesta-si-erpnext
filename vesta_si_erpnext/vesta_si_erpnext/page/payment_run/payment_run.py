@@ -116,7 +116,7 @@ def get_invoices(invoices, payment_type, bank_account=None):
 	invoices = list(filter(None, invoices))
 	settings = frappe.get_doc("Payment Run Setting")
 	for row in settings.payment_account:
-		if row.currency == currency and not bank_account:
+		if row.currency == currency and payment_type == "Cross Border Payments (OTHER)":
 			account_paid_from = row.account_paid_from
 			break
 	Error = []
