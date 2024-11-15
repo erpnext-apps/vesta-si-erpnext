@@ -10,8 +10,7 @@ from frappe.utils import getdate, flt
 
 def execute(filters=None):
 	columns, data = [], []
-	columns , data = get_version_data(filters)
-	
+	columns , data  = get_version_data(filters)
 	return columns, data
 
 
@@ -123,13 +122,33 @@ def get_version_data(filters):
 			"days_to_Tenth_approve": "<b>Average : {0}</b>".format(round(days_to_Tenth_approve/len(data))),
 	}
 	
-	if data:
-		daat = data.insert(0, average_row)
-
-	columns = get_columns(state_list, state_counter)
 	
-	return columns , data
+	columns = get_columns(state_list, state_counter)
+	if data:
+		data.insert(0, average_row)
 
+	return columns , data 
+
+def get_chart_data(label , value1, value2):
+	return {
+			
+			"data": {
+					'labels': label,
+					'datasets': [
+						{
+							'name': 'Month wise number of delay invoices',
+							'values': value1,
+							'chartType': 'bar',
+						},
+						{
+							'name': 'Month wise total delay days',
+							'values': value2,
+							'chartType': 'bar',
+						}
+					]
+				},
+				"type": "bar",
+			}
 	
 def get_columns(state_list, state_counter):
 	columns = [
