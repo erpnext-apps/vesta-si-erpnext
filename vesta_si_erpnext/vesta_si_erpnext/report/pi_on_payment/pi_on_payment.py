@@ -41,11 +41,11 @@ def get_data_from_pe(filters):
 	for row in data:
 		delay = (row.posting_date - row.due_date).days
 		row.update({"delay" : delay})
-		if filters.get("chart_type") == "On Time Payments":
+		if filters.get("chart_type") == "Payment On Times":
 			if flt(delay) <= 0:
 				month_wise_data.update({getdate(row.posting_date).strftime("%B_%Y") : month_wise_data.get(str(getdate(row.posting_date).strftime("%B_%Y"))) + 1})
 				on_time_row.append(row)
-		if filters.get("chart_type") == "Delayed Payments":
+		if filters.get("chart_type") == "Payments On delay":
 			if flt(row.delay) > 0:
 				month_wise_data.update({getdate(row.posting_date).strftime("%B_%Y") : month_wise_data.get(str(getdate(row.posting_date).strftime("%B_%Y"))) + 1})
 				delay_payment_row.append(row)
@@ -96,10 +96,10 @@ def get_data_from_pe(filters):
 		}
 
 	]
-	if filters.get("chart_type") == "On Time Payments":
+	if filters.get("chart_type") == "Payment On Times":
 		return on_time_row, columns , chart
 
-	if filters.get("chart_type") == "Delayed Payments":
+	if filters.get("chart_type") == "Payments On delay":
 		return delay_payment_row, columns, chart
 
 from datetime import datetime, timedelta
@@ -127,15 +127,15 @@ def prepare_chart(month_year, value, filters):
 			"labels": month_year,
 			"datasets": [
 				{
-					"name": _("Number of on time payments" if filters.get("chart_type") == "On Time Payments" else "Number of delay Payments"),
+					"name": _("Number of Payment On Times" if filters.get("chart_type") == "Payment On Times" else "Number of delay Payments"),
 					"chartType": "bar",
 					"values": value,
-					'colors': ['#743ee2' if filters.get("chart_type") == "On Time Payments" else '#F683AE' ],
+					'colors': ['#743ee2' if filters.get("chart_type") == "Payment On Times" else '#F683AE' ],
 				}
 			],
 		},
 		"type": "bar",
 		"height": 500,
-		'colors': ['#743ee2' if filters.get("chart_type") == "On Time Payments" else '#F683AE'],
+		'colors': ['#743ee2' if filters.get("chart_type") == "Payment On Times" else '#F683AE'],
 	}
 	return chart
