@@ -22,8 +22,8 @@ frappe.query_reports["PI on Payment"] = {
 			fieldname : "chart_type",
 			label : "Chart Type",
 			fieldtype : "Select",
-			options : ["On Time Payments", "Delayed Payments"],
-			default : "On Time Payments"
+			options : ["Payment On Time", "Payments On Delay"],
+			default : "Payment On Time"
 		}
 	]
 };
