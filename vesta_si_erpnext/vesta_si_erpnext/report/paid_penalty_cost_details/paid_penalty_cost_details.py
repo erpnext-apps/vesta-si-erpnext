@@ -227,7 +227,7 @@ def get_data(filters):
 				"september",
 				"october",
 				"november",
-				"december"]
+				"december" ]
 	
 	value1 = [
 		january_total_629301,
