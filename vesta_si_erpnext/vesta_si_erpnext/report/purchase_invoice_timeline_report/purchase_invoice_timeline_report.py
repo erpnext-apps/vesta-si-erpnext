@@ -10,8 +10,8 @@ from frappe.utils import getdate, flt
 
 def execute(filters=None):
 	columns, data = [], []
-	columns , data , chart = get_version_data(filters)
-	return columns, data , None , chart
+	columns , data  = get_version_data(filters)
+	return columns, data
 
 
 def get_version_data(filters):
@@ -124,129 +124,10 @@ def get_version_data(filters):
 	
 	
 	columns = get_columns(state_list, state_counter)
-	
-	january_row = []
-	february_row = []
-	march_row = []
-	april_row = []
-	may_row = [] 
-	june_row = []
-	july_row = []
-	august_row = []
-	september_row = []
-	october_row = []
-	november_row = []
-	december_row = []
+	if data:
+		data.insert(0, average_row)
 
-	january = 0
-	february = 0
-	march = 0
-	april = 0
-	may = 0 
-	june = 0
-	july = 0
-	august = 0
-	september = 0
-	october = 0
-	november = 0
-	december = 0
-
-	for row in data:
-		frappe.msgprint(str(row))
-		if getdate(row.get('creation_date')).month == 1:
-			january_row.append(row)
-			january += flt(row.get('proce_days')) or 0
-			continue
-		if getdate(row.get('creation_date')).month == 2:
-			february_row.append(row)
-			february += row.get('proce_days') or 0
-			continue
-		if getdate(row.get('creation_date')).month == 3:
-			march_row.append(row)
-			march += row.get('proce_days') or 0
-			continue
-		if getdate(row.get('creation_date')).month == 4:
-			april_row.append(row)
-			april += row.get('proce_days') or 0
-			continue
-		if getdate(row.get('creation_date')).month == 5:
-			may_row.append(row)
-			may += row.get('proce_days') or 0
-			continue
-		if getdate(row.get('creation_date')).month == 6:
-			june_row.append(row)
-			june += row.get('proce_days') or 0
-			continue
-		if getdate(row.get('creation_date')).month == 7:
-			july_row.append(row)
-			july += row.get('proce_days') or 0
-			continue
-		if getdate(row.get('creation_date')).month == 8:
-			august_row.append(row)
-			august += row.get('proce_days') or 0
-			continue
-		if getdate(row.get('creation_date')).month == 9:
-			september_row.append(row)
-			september += row.get('proce_days') or 0
-			continue
-		if getdate(row.get('creation_date')).month == 10:
-			october_row.append(row)
-			october += row.get('proce_days') or 0
-		if getdate(row.get('creation_date')).month == 11:
-			november_row.append(row)
-			november += row.get('proce_days') or 0
-			continue
-		if getdate(row.get('creation_date')).month == 12:
-			december_row.append(row)
-			december += row.get('proce_days') or 0
-			continue
-
-	label = [
-		"january",
-		"february",
-		"march",
-		"april",
-		"may" ,
-		"june",
-		"july",
-		"august",
-		"september",
-		"october",
-		"november",
-		"december"
-	]
-	value1 = [
-		len(january_row),
-		len(february_row),
-		len(march_row),
-		len(april_row),
-		len(may_row) ,
-		len(june_row),
-		len(july_row),
-		len(august_row),
-		len(september_row),
-		len(october_row),
-		len(november_row),
-		len(december_row)
-	]
-
-	value2 = [
-		january_row,
-		february_row,
-		march_row,
-		april_row,
-		may_row,
-		june_row,
-		july_row,
-		august_row,
-		september_row,
-		october_row,
-		november_row,
-		december_row
-	]
-
-	chart = get_chart_data(label, value1, value2)
-	return columns , data , chart
+	return columns , data 
 
 def get_chart_data(label , value1, value2):
 	return {
