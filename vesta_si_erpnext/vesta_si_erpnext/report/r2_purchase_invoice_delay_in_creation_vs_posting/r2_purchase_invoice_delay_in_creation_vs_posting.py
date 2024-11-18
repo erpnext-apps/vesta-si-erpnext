@@ -30,7 +30,7 @@ def execute(filters=None):
 		{
 			"fieldname" : "proce_days_posting",
 			"fieldtype" : "Int",
-			"label" : "Total Days for Process",
+			"label" : "Delay In Posting",
 			"width" : 200
 		},
 		{
@@ -153,47 +153,47 @@ def execute(filters=None):
 
 	monthly_data = [
 			{'month' : 'January', "proce_days" : january_proce_days , "proce_days_posting" : january_proce_days_posting, "processing_days": january_processing_days , 
-			"creation_percentage" : round((january_proce_days / january_proce_days_posting) * 100, 2)  if january_proce_days_posting else 0,
+			"creation_percentage" : round((january_proce_days / (january_proce_days + january_proce_days_posting)) * 100, 2)  if january_proce_days_posting else 0,
 			"posting_percentage" : round(january_processing_days / january_proce_days_posting * 100, 2)  if january_proce_days_posting else 0
 			}, 
 			{'month' : 'February', "proce_days" : february_proce_days, "proce_days_posting": february_proce_days_posting , "processing_days": february_processing_days , 
-			"creation_percentage" : round(february_proce_days / february_proce_days_posting * 100, 2)  if february_proce_days_posting else 0 ,
+			"creation_percentage" : round(february_proce_days / (february_proce_days+february_proce_days_posting) * 100, 2)  if february_proce_days_posting else 0 ,
 			"posting_percentage" : round(february_processing_days / february_proce_days_posting * 100, 2)  if february_proce_days_posting else 0
 			}, 
 			{'month' : 'March', "proce_days" : march_proce_days, "proce_days_posting":  march_proce_days_posting, "processing_days": march_processing_days , 
-			"creation_percentage" : round(march_proce_days /march_proce_days_posting * 100, 2)  if march_proce_days_posting else 0,
+			"creation_percentage" : round((march_proce_days / (march_proce_days_posting + march_proce_days)) * 100, 2)  if march_proce_days_posting else 0,
 			"posting_percentage" : round(march_processing_days / march_proce_days_posting * 100, 2)  if march_proce_days_posting else 0
 			}, 
 			{'month' : 'April', "proce_days" : april_proce_days, "proce_days_posting":  april_proce_days_posting, "processing_days": april_processing_days , 
-			"creation_percentage" : round(april_proce_days/ april_proce_days_posting * 100, 2)  if april_proce_days_posting else 0,
+			"creation_percentage" : round(april_proce_days / (april_proce_days + april_proce_days_posting) * 100, 2)  if april_proce_days_posting else 0,
 			"posting_percentage" : round(april_processing_days / april_proce_days_posting * 100, 2)  if april_proce_days_posting else 0
 			}, 
 			{'month' : 'May', "proce_days" : may_proce_days, "proce_days_posting":  may_proce_days_posting, "processing_days": may_processing_days , 
-			"creation_percentage" : round(may_proce_days/may_proce_days_posting * 100, 2)  if may_proce_days_posting else 0,
+			"creation_percentage" : round(may_proce_days / (may_proce_days + may_proce_days_posting) * 100, 2)  if may_proce_days_posting else 0,
 			"posting_percentage" : round(may_processing_days / may_proce_days_posting * 100, 2)  if may_proce_days_posting else 0
 			}, 
 			{'month' : 'June', "proce_days" : june_proce_days, "proce_days_posting":  june_proce_days_posting, "processing_days": june_processing_days , 
-			"creation_percentage" : round(june_proce_days/june_proce_days_posting * 100, 2)  if june_proce_days_posting else 0 ,
+			"creation_percentage" : round(june_proce_days / (june_proce_days + june_proce_days_posting) * 100, 2)  if june_proce_days_posting else 0 ,
 			"posting_percentage" : round(june_processing_days / june_proce_days_posting * 100, 2)  if june_proce_days_posting else 0
 			}, 
 			{'month' : 'July', "proce_days" : july_proce_days, "proce_days_posting": july_proce_days_posting , "processing_days": july_processing_days , 
-			"creation_percentage" : round(july_proce_days/july_proce_days_posting * 100, 2)  if july_proce_days_posting else 0,
+			"creation_percentage" : round(july_proce_days / (july_proce_days + july_proce_days_posting) * 100, 2)  if july_proce_days_posting else 0,
 			"posting_percentage" : round(july_processing_days / july_proce_days_posting * 100, 2)  if july_proce_days_posting else 0
 			}, 
 			{'month' : 'August', "proce_days" : august_proce_days, "proce_days_posting": august_proce_days_posting , "processing_days": august_processing_days , 
-			"creation_percentage" : round(august_proce_days/august_proce_days_posting * 100, 2)  if august_proce_days_posting else 0,
+			"creation_percentage" : round(august_proce_days/(august_proce_days + august_proce_days_posting) * 100, 2)  if august_proce_days_posting else 0,
 			"posting_percentage" : round(august_processing_days / august_proce_days_posting * 100, 2)  if august_proce_days_posting else 0
 			}, 
 			{'month' : 'September', "proce_days" : september_proce_days, "proce_days_posting": september_proce_days_posting , "processing_days": september_processing_days , 
-			"creation_percentage" : round(september_proce_days/september_proce_days_posting * 100, 2)  if september_proce_days_posting else 0,
+			"creation_percentage" : round((september_proce_days/(september_proce_days + september_proce_days_posting)) * 100, 2)  if september_proce_days_posting else 0,
 			"posting_percentage" : round(september_processing_days / september_proce_days_posting * 100, 2)  if september_proce_days_posting else 0
 			}, 
 			{'month' : "October", "proce_days" : october_proce_days, "proce_days_posting": october_proce_days_posting , "processing_days": october_processing_days , 
-			"creation_percentage" : round(october_proce_days/october_proce_days_posting * 100, 2)  if october_proce_days_posting else 0,
+			"creation_percentage" : round((october_proce_days/(october_proce_days_posting + october_proce_days)) * 100, 2)  if october_proce_days_posting else 0,
 			"posting_percentage" : round(october_processing_days / october_proce_days_posting * 100, 2)  if october_proce_days_posting else 0
 			}, 
 			{'month' : "November", "proce_days" : november_proce_days, "proce_days_posting": november_proce_days_posting , "processing_days": november_processing_days , 
-			"creation_percentage" : round(november_proce_days/november_proce_days_posting * 100, 2)  if november_proce_days_posting else 0,
+			"creation_percentage" : round((november_proce_days/(november_proce_days+november_proce_days_posting) * 100, 2)  if november_proce_days_posting else 0,
 			"posting_percentage" : round(november_processing_days / november_proce_days_posting * 100, 2)  if november_proce_days_posting else 0
 			}, 
 			{'month' : "December", "proce_days" : december_proce_days, "proce_days_posting": december_proce_days_posting, "processing_days":  december_processing_days , 
