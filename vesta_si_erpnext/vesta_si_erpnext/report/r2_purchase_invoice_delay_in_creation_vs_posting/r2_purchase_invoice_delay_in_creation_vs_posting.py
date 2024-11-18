@@ -77,7 +77,7 @@ def execute(filters=None):
 	december_proce_days, december_proce_days_posting, december_processing_days= 0, 0, 0
 
 	for row in data:
-		if flt(row.get('proce_days')) < 0:
+		if flt(row.get('processing_days')) < 0:
 			if getdate(row.get('posting_date')).month == 1:
 				january_row.append(row)
 				january_proce_days += flt(row.get('proce_days'))
