@@ -20,8 +20,8 @@ def get_purchase_data(filters):
 		cond += f" and pi.posting_date <= '{filters.get('to_date')}'"
 
 	data = frappe.db.sql(f"""
-				Select po.name as purchase_order, pi.conversion_rate as pi_conversion_rate, pi.currency,
-				po.transaction_date as po_date, pi.posting_date as pi_date, pi.name as purchase_invoice,
+				Select po.name as purchase_order, pi.conversion_rate as pi_conversion_rate, pi.currency, pi.grand_total,
+				po.transaction_date as po_date, pi.posting_date as pi_date, pi.name as purchase_invoice,pi.base_grand_total,
 				po.conversion_rate as po_exchange_rate 
 				From `tabPurchase Order` as po
 				Left Join `tabPurchase Invoice Item` as pii ON pii.purchase_order = po.name
@@ -29,22 +29,23 @@ def get_purchase_data(filters):
 				where po.docstatus = 1 and po.status = 'Completed' and po.currency != 'SEK' and pi.docstatus = 1 {cond}
 			""", as_dict = 1)
 	pi_data = frappe.db.sql(f"""
-				Select pe.name, paid_from_account_currency, per.reference_name, per.reference_doctype, pe.source_exchange_rate
+				Select pe.name as payment_entry, paid_from_account_currency, per.reference_name, per.reference_doctype, pe.source_exchange_rate as pe_exchange_rate,
+				per.allocated_amount, ped.amount, ped.account
 				From `tabPayment Entry` as pe
 				Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
-				Where pe.docstatus = 1 and pe.payment_type = 'Pay' and per.reference_doctype = 'Purchase Invoice'
+				Left Join  `tabPayment Entry Deduction` as ped ON ped.parent = pe.name
+				Where pe.docstatus = 1 and pe.payment_type = 'Pay' and per.reference_doctype = 'Purchase Invoice' and pe.paid_to_account_currency != 'SEK'
 	""", as_dict=1)
 	
 	pi_map_data = {}
 	for row in pi_data:
 		pi_map_data[row.reference_name] = row
 
-
 	for row in data:
 		exch_data = fetch_exchange_rate(row.currency, "SEK", row.pi_date)
 		row.update({"exchange_rate_on_posting" : exch_data.get("rates").get("SEK")})
-		if pi_map_data.get('purchase_invoice'):
-			row.update(pi_map_data.get('purchase_invoice'))
+		if pi_map_data.get(row.purchase_invoice):
+			row.update(pi_map_data.get(row.purchase_invoice))
 	
 	return data
 
@@ -60,7 +61,7 @@ def get_columns(filters):
 		{
 			"fieldname" : "po_exchange_rate",
 			"fieldtype" : "Float",
-			"label" : "PO Conversion Rate",
+			"label" : "PO Exchange Rate",
 			"width" : 150
 		},
 		{
@@ -87,9 +88,55 @@ def get_columns(filters):
 		{
 			"fieldname" : "exchange_rate_on_posting",
 			"fieldtype" : "Float",
-			"label" : "PI Conversion Rate(Posting Date)",
+			"label" : "PI Exchange Rate(Posting Date)",
 			"width" : 150
 		},
+		{
+			"fieldname" : "grand_total",
+			"fieldtype" : "Currency",
+			"label" : "PI Total Amount",
+			"options": "currency",
+			"width" : 150
+		},
+		{
+			"fieldname" : "base_grand_total",
+			"fieldtype" : "Currency",
+			"label" : "PI Total Amount(SEK)",
+			"width" : 150
+		},
+		{
+			"fieldname" : "pe_exchange_rate",
+			"fieldtype" : "Float",
+			"label" : "PE Exchange Rate",
+			"width" : 150
+		},
+		{
+			"fieldname" : "allocated_amount",
+			"fieldtype" : "Currency",
+			"label" : "PE Allocated Amount",
+			"options": "currency",
+			"width" : 150
+		},
+		{
+			"fieldname" : "payment_entry",
+			"fieldtype" : "Link",
+			"label" : "Payment Entry",
+			"options" : "Payment Entry",
+			"width" : 150	
+		},
+		{
+			"fieldname" : "amount",
+			"fieldtype" : "Currency",
+			"label" : "Payment Deductions or Loss",
+			"width" : 150
+		},
+		{
+			"fieldname" : "account",
+			"fieldtype" : "Link",
+			"label" : "Exchange Gain or Loss Account",
+			"options" : "Account",
+			"width" : 150
+		}
 		
 	]
 	return columns
@@ -114,7 +161,7 @@ def fetch_exchange_rate(base_currency, target_currency, date):
         return {'error': str(e)}
 
 # Example usage
-result = fetch_exchange_rate(base_currency="EUR", target_currency="SEK", date="2022-09-08")
+result = fetch_exchange_rate(base_currency="EUR", target_currency="SEK", date=None)
 print(result)
 
 	
