@@ -46,6 +46,10 @@ doctype_js = {
 
 # Home Pages
 # ----------
+from erpnext.selling.report.item_wise_sales_history import item_wise_sales_history 
+from vesta_si_erpnext.overrides.item_wise_sales_history import execute as iwsh_vesta_execute
+item_wise_sales_history.execute = iwsh_vesta_execute
+
 
 # application home page (will override Website Settings)
 # home_page = "login"
