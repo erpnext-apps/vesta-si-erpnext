@@ -3,6 +3,7 @@
 
 import frappe
 import requests
+from frappe.utils import flt
 
 
 def execute(filters=None):
@@ -20,14 +21,16 @@ def get_purchase_data(filters):
 		cond += f" and pi.posting_date <= '{filters.get('to_date')}'"
 
 	data = frappe.db.sql(f"""
-				Select po.name as purchase_order, pi.conversion_rate as pi_conversion_rate, pi.currency, pi.grand_total,
+				Select po.name as purchase_order, pi.conversion_rate as pi_conversion_rate, pi.currency, pi.grand_total, 
 				po.transaction_date as po_date, pi.posting_date as pi_date, pi.name as purchase_invoice,pi.base_grand_total,
 				po.conversion_rate as po_exchange_rate 
 				From `tabPurchase Order` as po
 				Left Join `tabPurchase Invoice Item` as pii ON pii.purchase_order = po.name
 				Left Join `tabPurchase Invoice` as pi ON pi.name = pii.parent
 				where po.docstatus = 1 and po.status = 'Completed' and po.currency != 'SEK' and pi.docstatus = 1 {cond}
+				Group By pi.name
 			""", as_dict = 1)
+
 	pi_data = frappe.db.sql(f"""
 				Select pe.name as payment_entry, paid_from_account_currency, per.reference_name, per.reference_doctype, pe.source_exchange_rate as pe_exchange_rate,
 				per.allocated_amount, ped.amount, ped.account
@@ -43,7 +46,7 @@ def get_purchase_data(filters):
 
 	for row in data:
 		exch_data = fetch_exchange_rate(row.currency, "SEK", row.pi_date)
-		row.update({"exchange_rate_on_posting" : exch_data.get("rates").get("SEK")})
+		row.update({"exchange_rate_on_posting" : exch_data.get("rates").get("SEK"), "different_in_exchange_rate" :flt(row.pi_conversion_rate) - flt(exch_data.get("rates").get("SEK")) })
 		if pi_map_data.get(row.purchase_invoice):
 			row.update(pi_map_data.get(row.purchase_invoice))
 	
@@ -86,10 +89,22 @@ def get_columns(filters):
 			"width" : 150
 		},
 		{
+			"fieldname" : "pi_conversion_rate",
+			"fieldtype" : "Float",
+			"label" : "PI Exchange Rate",
+			"width" : 150
+		},
+		{
 			"fieldname" : "exchange_rate_on_posting",
 			"fieldtype" : "Float",
 			"label" : "PI Exchange Rate(Posting Date)",
-			"width" : 150
+			"width" : 200
+		},
+		{
+			"fieldname" : "different_in_exchange_rate",
+			"fieldtype" : "Float",
+			"label" : "Different in Exchange Rate",
+			"width" : 200
 		},
 		{
 			"fieldname" : "grand_total",
