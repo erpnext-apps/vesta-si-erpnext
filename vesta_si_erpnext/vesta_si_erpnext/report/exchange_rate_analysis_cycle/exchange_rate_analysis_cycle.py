@@ -27,10 +27,9 @@ def get_purchase_data(filters):
 				From `tabPurchase Order` as po
 				Left Join `tabPurchase Invoice Item` as pii ON pii.purchase_order = po.name
 				Left Join `tabPurchase Invoice` as pi ON pi.name = pii.parent
-				where po.docstatus = 1 and po.status = 'Completed' and po.currency != 'SEK' and pi.docstatus = 1 {cond}
+				where po.docstatus = 1 and po.currency != 'SEK' and pi.docstatus = 1 {cond}
 				Group By pi.name
 			""", as_dict = 1)
-
 	pi_data = frappe.db.sql(f"""
 				Select pe.name as payment_entry, paid_from_account_currency, per.reference_name, per.reference_doctype, pe.source_exchange_rate as pe_exchange_rate,
 				per.allocated_amount, ped.amount, ped.account
@@ -45,7 +44,10 @@ def get_purchase_data(filters):
 		pi_map_data[row.reference_name] = row
 
 	for row in data:
-		exch_data = fetch_exchange_rate(row.currency, "SEK", row.pi_date)
+		base_currency = row.currency
+		target_currency = "SEK"
+		date=row.pi_date
+		exch_data = fetch_exchange_rate(base_currency, target_currency, date)
 		row.update({"exchange_rate_on_posting" : exch_data.get("rates").get("SEK"), "different_in_exchange_rate" :flt(row.pi_conversion_rate) - flt(exch_data.get("rates").get("SEK")) })
 		if pi_map_data.get(row.purchase_invoice):
 			row.update(pi_map_data.get(row.purchase_invoice))
@@ -174,10 +176,6 @@ def fetch_exchange_rate(base_currency, target_currency, date):
         }
     except requests.exceptions.RequestException as e:
         return {'error': str(e)}
-
-# Example usage
-result = fetch_exchange_rate(base_currency="EUR", target_currency="SEK", date=None)
-print(result)
 
 	
 
