@@ -162,6 +162,7 @@ def get_data(filters):
 			"uom": record.get("uom"),
 			"rate": record.get("base_rate"),
             "rate_currency": record.get("rate"),
+			"currency": record.get("currency"),
 			"amount": record.get("base_amount"),
 			"sales_order": record.get("name"),
 			"transaction_date": record.get("transaction_date"),
