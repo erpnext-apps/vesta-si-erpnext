@@ -21,15 +21,14 @@ def get_purchase_data(filters):
 		cond += f" and pi.posting_date <= '{filters.get('to_date')}'"
 
 	data = frappe.db.sql(f"""
-				Select po.name as purchase_order, pi.conversion_rate as pi_conversion_rate, pi.currency, pi.grand_total, 
-				po.transaction_date as po_date, pi.posting_date as pi_date, pi.name as purchase_invoice,pi.base_grand_total,
-				po.conversion_rate as po_exchange_rate 
-				From `tabPurchase Order` as po
-				Left Join `tabPurchase Invoice Item` as pii ON pii.purchase_order = po.name
-				Left Join `tabPurchase Invoice` as pi ON pi.name = pii.parent
-				where po.docstatus = 1 and po.currency != 'SEK' and pi.docstatus = 1 and pi.status = 'Paid' {cond}
+				Select  pi.conversion_rate as pi_conversion_rate, pi.currency, pi.grand_total, pi.status,
+				pi.posting_date as pi_date, pi.name as purchase_invoice,pi.base_grand_total
+				from `tabPurchase Invoice` as pi 
+				Left Join `tabPurchase Invoice Item` as pii  ON pi.name = pii.parent
+				where pi.currency != 'SEK' {cond}
 				Group By pi.name
 			""", as_dict = 1)
+
 	pi_data = frappe.db.sql(f"""
 				Select pe.name as payment_entry, paid_from_account_currency, per.reference_name, per.reference_doctype, pe.source_exchange_rate as pe_exchange_rate,
 				per.allocated_amount, ped.amount, ped.account
@@ -56,17 +55,13 @@ def get_purchase_data(filters):
 
 def get_columns(filters):
 	columns = [
+		
+		
 		{
-			"fieldname" : "purchase_order",
+			"fieldname" : "purchase_invoice",
 			"fieldtype" : "Link",
-			"label" : "Purchase Order",
-			"options" : "Purchase Order",
-			"width" : 150
-		},
-		{
-			"fieldname" : "po_exchange_rate",
-			"fieldtype" : "Float",
-			"label" : "PO Exchange Rate",
+			"label" : "Purchase Invoice",
+			"options" : "Purchase Invoice",
 			"width" : 150
 		},
 		{
@@ -74,13 +69,6 @@ def get_columns(filters):
 			"fieldtype" : "Link",
 			"label" : "Currency",
 			"options" : "Currency",
-			"width" : 150
-		},
-		{
-			"fieldname" : "purchase_invoice",
-			"fieldtype" : "Link",
-			"label" : "Purchase Invoice",
-			"options" : "Purchase Invoice",
 			"width" : 150
 		},
 		{
