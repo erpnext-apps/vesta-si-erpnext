@@ -36,7 +36,13 @@ def get_purchase_invoice_no(due_date):
     message += "<tr><td></td><td><b>Total</b></td><td align='center'><b>{0}</b></td></tr></table>".format(total_payment)
     message += "<br><br><p>Thanks & Regards</p>"
 
-    frappe.sendmail(recipients = ["viral@fosserp.com", "vignesh@fosserp.com"],
+    notify_list = []
+    user_list = frappe.db.get_list("User", pluck="name")
+    for row in user_list:
+        if "PE Notify(For XML)" in frappe.get_role(row):
+            notify_list.append(row)
+
+    frappe.sendmail(recipients = notify_list,
 			subject = 'Due Payment Process Detail',
 			message = message)
 
