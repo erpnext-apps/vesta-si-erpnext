@@ -68,6 +68,12 @@ def get_columns(filters):
 			"width" : 150
 		},
 		{
+			"fieldname" : "status",
+			"fieldtype" : "Data",
+			"label" : "Status",
+			"width" : 150
+		},
+		{
 			"fieldname" : "currency",
 			"fieldtype" : "Link",
 			"label" : "Currency",
