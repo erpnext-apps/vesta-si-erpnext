@@ -27,9 +27,10 @@ def get_purchase_data(filters):
 				From `tabPurchase Order` as po
 				Left Join `tabPurchase Invoice Item` as pii ON pii.purchase_order = po.name
 				Left Join `tabPurchase Invoice` as pi ON pi.name = pii.parent
-				where po.docstatus = 1 and po.currency != 'SEK' and pi.docstatus = 1 and pi.status = 'Paid' {cond}
+				where po.docstatus = 1 and po.currency != 'SEK' and pi.docstatus = 1 {cond}
 				Group By pi.name
 			""", as_dict = 1)
+			
 	pi_data = frappe.db.sql(f"""
 				Select pe.name as payment_entry, paid_from_account_currency, per.reference_name, per.reference_doctype, pe.source_exchange_rate as pe_exchange_rate,
 				per.allocated_amount, ped.amount, ped.account
