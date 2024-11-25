@@ -7,7 +7,7 @@ def get_purchase_invoice_no(due_date):
                 From `tabPurchase Invoice` as pi
                 Left Join `tabSupplier` as su ON su.name = pi.supplier
                 Where pi.workflow_state in ('Approved','Approved by CEO','Partly Paid','Payment Ordered') and pi.status in ('Partly Paid','Unpaid','Overdue')
-                and due_date < '{due_date}'
+                and due_date <= '{due_date}'
                 Group By su.custom_payment_type
             """, as_dict=1)
     message = "<p>Hello P2P Team,</p><br>"
