@@ -19,6 +19,9 @@ def get_purchase_data(filters):
 		cond += f" and pi.posting_date >= '{filters.get('from_date')}'"
 	if filters.get("to_date"):
 		cond += f" and pi.posting_date <= '{filters.get('to_date')}'"
+	if filters.get("status"):
+		cond += " and pi.status in {} ".format(
+                "(" + ", ".join([f'"{l}"' for l in filters.get("status")]) + ")")
 
 	data = frappe.db.sql(f"""
 				Select  pi.conversion_rate as pi_conversion_rate, pi.currency, pi.grand_total, pi.status,
@@ -36,7 +39,7 @@ def get_purchase_data(filters):
 				Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
 				Left Join  `tabPayment Entry Deduction` as ped ON ped.parent = pe.name
 				Where pe.docstatus = 1 and pe.payment_type = 'Pay' and per.reference_doctype = 'Purchase Invoice' and pe.paid_to_account_currency != 'SEK'
-	""", as_dict=1)
+			""", as_dict=1)
 	
 	pi_map_data = {}
 	for row in pi_data:
@@ -62,6 +65,12 @@ def get_columns(filters):
 			"fieldtype" : "Link",
 			"label" : "Purchase Invoice",
 			"options" : "Purchase Invoice",
+			"width" : 150
+		},
+		{
+			"fieldname" : "status",
+			"fieldtype" : "Data",
+			"label" : "Status",
 			"width" : 150
 		},
 		{
