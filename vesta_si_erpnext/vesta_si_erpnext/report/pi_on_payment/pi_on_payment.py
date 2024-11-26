@@ -38,9 +38,40 @@ def get_data_from_pe(filters):
 	month_wise_data, month_year = get_month_year_list(filters.get("from_date"), filters.get("to_date"), month_wise_data)
 	on_time_row = []
 	delay_payment_row = []
+
+	range1 = 0
+	range2 = 0
+	range3 = 0
+	range4 = 0
+	range5 = 0
+	on_time = 0
+
+	if not filters.get("range1"):
+		filters.upadte({ "range1" : 30 })
+	if not filters.get("range2"):
+		filters.upadte({ "range2" : 60 })
+	if not filters.get("range3"):
+		filters.upadte({ "range3" : 90 })
+	if not filters.get("range4"):
+		filters.upadte({ "range4" : 120 })
+
+
 	for row in data:
 		delay = (row.posting_date - row.due_date).days
 		row.update({"delay" : delay})
+		if flt(row.delay) <= 0:
+			on_time += 1
+		if 0 < row.delay <= flt(filters.get('range1')) :
+			range1 += 1
+		if flt(filters.get('range1')) < flt(row.delay) <= flt(filters.get('range2')):
+			range2 += 1
+		if flt(filters.get('range2')) < flt(row.delay) <= flt(filters.get('range3')):
+			range3 += 1
+		if flt(filters.get('range3')) < flt(row.delay) <= flt(filters.get('range4')):
+			range4 += 1
+		if flt(filters.get('range4')) < flt(row.delay):
+			range5 += 1
+		
 		if filters.get("chart_type") == "Payment On Time":
 			if flt(delay) <= 0:
 				month_wise_data.update({getdate(row.posting_date).strftime("%B_%Y") : month_wise_data.get(str(getdate(row.posting_date).strftime("%B_%Y"))) + 1})
@@ -53,8 +84,8 @@ def get_data_from_pe(filters):
 	for row in month_year:
 		value.append(month_wise_data.get(row))
 
-
-	chart = prepare_chart(month_year, value, filters)
+	chart = prepare_chart(on_time, range1, range2, range3, range4, range5)
+	
 	columns  = [
 		{
 			"label" : "Purchase Invoice",
@@ -120,22 +151,15 @@ def get_month_year_list(start_date_str, end_date_str, month_wise_data):
 	
 	return month_wise_data, month	
 
-def prepare_chart(month_year, value, filters):
+def prepare_chart(on_time, range1, range2, range3, range4, range5):
 	
-	chart = {
+	
+	charts = {
 		"data": {
-			"labels": month_year,
-			"datasets": [
-				{
-					"name": _("Number of Payment On Time" if filters.get("chart_type") == "Payment On Time" else "Number of delay Payments"),
-					"chartType": "bar",
-					"values": value,
-					'colors': ['#743ee2' if filters.get("chart_type") == "Payment On Time" else '#F683AE' ],
-				}
-			],
+			"labels": ["On Time", "Range 1", "Range 2", "Range 3", "Range 4", "Range 5"],
+			"datasets": [{"name": "Delayed", "values": [on_time, range1, range2, range3, range4, range5]}],
 		},
-		"type": "bar",
-		"height": 500,
-		'colors': ['#743ee2' if filters.get("chart_type") == "Payment On Time" else '#F683AE'],
+		"type": "percentage",
+		"colors": ["#84D5BA", "#CB4B5F"],
 	}
-	return chart
+	return charts
