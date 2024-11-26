@@ -24,6 +24,30 @@ frappe.query_reports["PI on Payment"] = {
 			fieldtype : "Select",
 			options : ["Payment On Time", "Payments On Delay"],
 			default : "Payment On Time"
+		},
+		{
+			fieldname : "range1",
+			label : "Ageing 1",
+			fieldtype : "Data",
+			default : 30
+		},
+		{
+			fieldname : "range2",
+			label : "Ageing 2",
+			fieldtype : "Data",
+			default : 60
+		},
+		{
+			fieldname : "range3",
+			label : "Ageing 3",
+			fieldtype : "Data",
+			default : 90
+		},
+		{
+			fieldname : "range4",
+			label : "Ageing 4",
+			fieldtype : "Data",
+			default : 120
 		}
 	]
 };
