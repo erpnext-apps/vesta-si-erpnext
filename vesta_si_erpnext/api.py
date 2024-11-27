@@ -274,3 +274,24 @@ def get_tax_template(doctype, txt, searchfield, start, page_len, filters):
 # def validate_tag_link(self, method):
 #     if self.document_type == "Purchase Order" and frappe.session.user not in ["lijee.twinkle@skf.com"]:
 #         frappe.throw("Only {0} can attach a tag on Purchase Order document".format(frappe.db.get_value("User", "lijee.twinkle@skf.com", 'full_name')))
+
+#Cron every 1st of the month
+
+
+def get_purchase_receipt():
+    from frappe.utils import add_days, today
+    from vesta_si_erpnext.vesta_si_erpnext.report.received_items_to_be_billed___vesta_si.received_items_to_be_billed___vesta_si import execute
+    account_list = frappe.db.get_list("Account", {"account_type" : "Stock Received But Not Billed"}, pluck="name")
+    pr = [] 
+    for account in account_list:
+        pr += execute( filters = { "to_date" : add_days(today(), -1), "account" :  account} )[1]
+
+    number_of_pr_to_billed = len(pr)
+    doc = frappe.get_doc("GRIR Purchase Receipts to be Billed", "GRIR Purchase Receipts to be Billed")
+    doc.append("grir_to_bill", {
+        "date" : today(),
+        "month" : getdate().strftime("%B"),
+        "purchase_receipts_to_be_billed" : len(pr)
+    })
+    doc.save()
+    frappe.db.commit()

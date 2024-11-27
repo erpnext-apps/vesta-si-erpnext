@@ -167,6 +167,9 @@ scheduler_events = {
 		"vesta_si_erpnext.vesta_si_erpnext.auto_email_report.set_AP_report_notification_to_liji",
 		"vesta_si_erpnext.vesta_si_erpnext.doc_events.send_notification_of_xml.send_email_"
 	],
+	"cron": {
+        "0 0 1 * *" : "vesta_si_erpnext.api.get_purchase_receipt"
+    },
 }
 
 # Testing
