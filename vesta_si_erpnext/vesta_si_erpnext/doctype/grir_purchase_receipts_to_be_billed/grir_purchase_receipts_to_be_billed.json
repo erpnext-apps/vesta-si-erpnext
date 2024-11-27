@@ -1,0 +1,43 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-27 11:53:25.107122",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "grir_to_bill"
+ ],
+ "fields": [
+  {
+   "fieldname": "grir_to_bill",
+   "fieldtype": "Table",
+   "label": "GRIR to Bill",
+   "options": "GRIR To Bill"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-11-27 11:53:33.552059",
+ "modified_by": "Administrator",
+ "module": "Vesta Si Erpnext",
+ "name": "GRIR Purchase Receipts to be Billed",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
