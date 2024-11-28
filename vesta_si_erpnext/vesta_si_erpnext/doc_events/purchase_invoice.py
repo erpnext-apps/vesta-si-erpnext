@@ -49,9 +49,9 @@ def validate(self, method):
 		message += "</table>"
 		
 		frappe.msgprint(message)
-	
-	set_exchange_rate(self, method)
-	self.validate()
+	if not self.is_retrun:
+		set_exchange_rate(self, method)
+		self.validate()
 
 def get_advance_entries(self):
 	res = self.get_advance_entries(
