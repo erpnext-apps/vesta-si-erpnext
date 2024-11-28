@@ -256,7 +256,7 @@ def get_chart_data(data):
 		if item_key not in item_wise_sales_map:
 			item_wise_sales_map[item_key] = 0
 
-		item_wise_sales_map[item_key] = flt(item_wise_sales_map[item_key]) + flt(row.get("amount"))
+		item_wise_sales_map[item_key] = flt(item_wise_sales_map[item_key]) + flt(row.get("base_amount"))
 
 	item_wise_sales_map = {
 		item: value for item, value in (sorted(item_wise_sales_map.items(), key=lambda i: i[1], reverse=True))
