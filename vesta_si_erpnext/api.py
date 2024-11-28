@@ -287,11 +287,28 @@ def get_purchase_receipt():
         pr += execute( filters = { "to_date" : add_days(today(), -1), "account" :  account} )[1]
 
     number_of_pr_to_billed = len(pr)
-    doc = frappe.get_doc("GRIR Purchase Receipts to be Billed", "GRIR Purchase Receipts to be Billed")
-    doc.append("grir_to_bill", {
-        "date" : today(),
-        "month" : getdate().strftime("%B"),
-        "purchase_receipts_to_be_billed" : len(pr)
-    })
-    doc.save()
-    frappe.db.commit()
+    from erpnext.accounts.utils import get_fiscal_year
+    current_year = get_fiscal_year(nowdate(),as_dict =1)
+    if doc_name := frappe.db.exists("GRIR Purchase Receipts to be Billed", current_year.name):
+        doc = frappe.get_doc("GRIR Purchase Receipts to be Billed", doc_name)
+        doc.append("grir_to_bill", {
+            "date" : today(),
+            "month" : getdate().strftime("%B"),
+            "purchase_receipts_to_be_billed" : len(pr)
+        })
+        doc.save()
+        frappe.db.commit()
+    else:
+        doc = frappe.get_doc({
+            "doctype" : "GRIR Purchase Receipts to be Billed",
+            "fiscal_year" : current_year.name,
+            "grir_to_bill" : [
+                {
+                    "date" : today(),
+                    "month" : getdate().strftime("%B"),
+                    "purchase_receipts_to_be_billed" : len(pr)
+                }
+            ]
+        })
+        doc.insert()
+        frappe.db.commit()
