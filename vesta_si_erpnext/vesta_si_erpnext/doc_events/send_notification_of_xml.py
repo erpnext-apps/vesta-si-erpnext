@@ -39,7 +39,7 @@ def get_purchase_invoice_no(due_date):
     notify_list = []
     user_list = frappe.db.get_list("User", pluck="name")
     for row in user_list:
-        if "PE Notify(For XML)" in frappe.get_role(row):
+        if "PE Notify(For XML)" in frappe.get_roles(row):
             notify_list.append(row)
 
     frappe.sendmail(recipients = notify_list,
