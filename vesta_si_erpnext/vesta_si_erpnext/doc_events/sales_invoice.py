@@ -33,7 +33,7 @@ def check_account_frozzen_date(self, method):
 from erpnext.setup.utils import get_exchange_rate
 
 def validate(self, method):
-    if not self.is_retrun:
+    if not self.is_return:
         set_exchange_rate(self, method)
         self.validate()
 
