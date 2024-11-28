@@ -47,13 +47,13 @@ def get_data_from_pe(filters):
 	on_time = 0
 
 	if not filters.get("range1"):
-		filters.upadte({ "range1" : 30 })
+		filters.update({ "range1" : 30 })
 	if not filters.get("range2"):
-		filters.upadte({ "range2" : 60 })
+		filters.update({ "range2" : 60 })
 	if not filters.get("range3"):
-		filters.upadte({ "range3" : 90 })
+		filters.update({ "range3" : 90 })
 	if not filters.get("range4"):
-		filters.upadte({ "range4" : 120 })
+		filters.update({ "range4" : 120 })
 
 
 	for row in data:
