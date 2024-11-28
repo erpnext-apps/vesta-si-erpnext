@@ -6,7 +6,7 @@ import frappe, erpnext
 
 
 def validate(self, method):
-	if not self.is_retrun:
+	if not self.is_return:
 		set_exchange_rate(self)
 		self.validate()
 

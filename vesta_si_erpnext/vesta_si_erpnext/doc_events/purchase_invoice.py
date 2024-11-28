@@ -49,7 +49,7 @@ def validate(self, method):
 		message += "</table>"
 		
 		frappe.msgprint(message)
-	if not self.is_retrun:
+	if not self.is_return:
 		set_exchange_rate(self, method)
 		self.validate()
 
