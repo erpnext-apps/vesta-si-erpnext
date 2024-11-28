@@ -1,15 +1,24 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2024-11-27 11:53:25.107122",
+ "autoname": "field:fiscal_year",
+ "creation": "2024-11-28 05:54:26.760173",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "fiscal_year",
   "grir_to_bill"
  ],
  "fields": [
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "label": "Fiscal Year",
+   "options": "Fiscal Year",
+   "unique": 1
+  },
   {
    "fieldname": "grir_to_bill",
    "fieldtype": "Table",
@@ -18,12 +27,12 @@
   }
  ],
  "index_web_pages_for_search": 1,
- "issingle": 1,
  "links": [],
- "modified": "2024-11-27 11:53:33.552059",
+ "modified": "2024-11-28 05:54:45.987056",
  "modified_by": "Administrator",
  "module": "Vesta Si Erpnext",
  "name": "GRIR Purchase Receipts to be Billed",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
