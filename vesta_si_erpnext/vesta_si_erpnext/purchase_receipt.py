@@ -6,8 +6,9 @@ import frappe, erpnext
 
 
 def validate(self, method):
-	set_exchange_rate(self)
-	self.validate()
+	if not self.is_retrun:
+		set_exchange_rate(self)
+		self.validate()
 
 def link_supplier_bag_to_batch(doc, method=None):
 	for item in doc.items:
