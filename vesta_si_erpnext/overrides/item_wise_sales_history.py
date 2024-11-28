@@ -42,7 +42,7 @@ def get_columns(filters):
 		{"label": _("Quantity"), "fieldtype": "Float", "fieldname": "quantity", "width": 150},
 		{"label": _("UOM"), "fieldtype": "Link", "fieldname": "uom", "options": "UOM", "width": 100},
 		{
-			"label": _("Rate"),
+			"label": _("Base Rate"),
 			"fieldname": "rate",
 			"fieldtype": "Currency",
 			"width": 120,
@@ -59,6 +59,12 @@ def get_columns(filters):
 			"fieldname": "currency",
 			"fieldtype": "Link",
 			"options": "Currency",
+			"width": 120,
+		},
+		{
+			"label": _("Base Amount"),
+			"fieldname": "base_amount",
+			"fieldtype": "Currency",
 			"width": 120,
 		},
 		{
@@ -120,7 +126,6 @@ def get_columns(filters):
 			"label": _("Billed Amount"),
 			"fieldtype": "Currency",
 			"fieldname": "billed_amount",
-			"options": "currency",
 			"width": 120,
 		},
 		{
@@ -129,14 +134,7 @@ def get_columns(filters):
 			"fieldname": "company",
 			"options": "Company",
 			"width": 100,
-		},
-		{
-			"label": _("Currency"),
-			"fieldtype": "Link",
-			"fieldname": "currency",
-			"options": "Currency",
-			"hidden": 1,
-		},
+		}
 	]
 
 
@@ -163,7 +161,8 @@ def get_data(filters):
 			"rate": record.get("base_rate"),
             "rate_currency": record.get("rate"),
 			"currency": record.get("currency"),
-			"amount": record.get("base_amount"),
+			"base_amount": record.get("base_amount"),
+			"amount": record.get("amount"),
 			"sales_order": record.get("name"),
 			"transaction_date": record.get("transaction_date"),
 			"customer": record.get("customer"),
@@ -175,7 +174,6 @@ def get_data(filters):
 			"billed_amount": flt(record.get("billed_amt")),
 			"company": record.get("company"),
 		}
-		row["currency"] = frappe.get_cached_value("Company", row["company"], "default_currency")
 		data.append(row)
 
 	return data
@@ -222,6 +220,7 @@ def get_sales_order_details(company_list, filters):
 			db_so_item.base_rate,
             db_so_item.rate,
 			db_so_item.base_amount,
+			db_so_item.amount,
 			db_so_item.delivered_qty,
 			(db_so_item.billed_amt * db_so.conversion_rate).as_("billed_amt"),
 		)
