@@ -2,6 +2,8 @@ import frappe
 from frappe import _
 
 def validate_iban(self,method):
+    validate_currency_and_payment_type(self)
+    
     """
     Algorithm: https://en.wikipedia.org/wiki/International_Bank_Account_Number#Validating_the_IBAN
     """
@@ -29,3 +31,17 @@ def validate_iban(self,method):
 
     if to_check % 97 != 1:
         frappe.throw(_("IBAN is not valid"))
+    
+
+def validate_currency_and_payment_type(self):
+    if self.custom_payment_type == 'Cross Border Payments (OTHER)':
+        return
+    if  self.default_currency == "SEK" and self.custom_payment_type != "Domestic (Swedish) Payments (SEK)":
+        frappe.throw(f"If the selected billing currency is <b>'{self.default_currency}'</b>, the payment type must be <b>'Domestic (Swedish) Payments (SEK).</b>'")
+
+    if  self.default_currency == "EUR" and self.custom_payment_type not in  ['SEPA (EUR)', 'Cross Border Payments (EUR)']:
+        frappe.throw(f"If the selected billing currency is <b>'{self.default_currency}'</b>, the payment type must be <b>'SEPA (EUR)'</b> or <b>'Cross Border Payments (EUR)'</b>")
+    
+    if self.default_currency == "USD" and self.custom_payment_type != 'Cross Border Payments (USD)':
+        frappe.throw(f"If the selected billing currency is <b>'{self.default_currency}'</b>, the payment type must be <b>'Cross Border Payments (USD)'</b>")
+        
