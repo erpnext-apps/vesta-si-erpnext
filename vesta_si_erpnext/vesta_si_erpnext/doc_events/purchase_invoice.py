@@ -69,13 +69,13 @@ def get_advance_entries(self):
 def validate_currency(self):
 	payment_type = frappe.db.get_value("Supplier", self.supplier, "custom_payment_type")
 	if payment_type == 'Domestic (Swedish) Payments (SEK)':
-		invoice_currency == "SEK"
+		invoice_currency = "SEK"
 	if payment_type == 'SEPA (EUR)':
-		invoice_currency == "EUR"
+		invoice_currency = "EUR"
 	if payment_type == 'Cross Border Payments (USD)':
-		invoice_currency == "USD"
+		invoice_currency = "USD"
 	if payment_type == "Cross Border Payments (EUR)":
-		invoice_currency == "EUR"
+		invoice_currency = "EUR"
 	if payment_type in ['Domestic (Swedish) Payments (SEK)', 'SEPA (EUR)', 'Cross Border Payments (USD)', 'Cross Border Payments (EUR)']:
 		message = f"Supplier Payment Type is <b>{payment_type}</b>, Invoice should be in <b>{invoice_currency}</b>.<br>   Or   <br>Kindly create a new supplier with billing currency <b>'{self.currency}'</b>."
 		frappe.throw(message)
