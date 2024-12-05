@@ -68,6 +68,15 @@ def get_purchase_invoice(orderby, payment_type, due_date=None, payable_account=N
 
 		invoices = []
 		for row in data:
+			if row.custom_payment_type == "Domestic (Swedish) Payments (SEK)" and row.currency != "SEK":
+				continue
+			if row.custom_payment_type == "SEPA (EUR)" and row.currency != "EUR":
+				continue
+			if row.custom_payment_type == "Cross Border Payments (USD)" and row.currency != "USD":
+				continue
+			if row.custom_payment_type == "Cross Border Payments (EUR)" and row.currency != "EUR":
+				continue
+
 			if row.status in ['Unpaid','Overdue'] and not row.payment_entry:
 				if payment_type == row.custom_payment_type:
 					invoices.append(row)
