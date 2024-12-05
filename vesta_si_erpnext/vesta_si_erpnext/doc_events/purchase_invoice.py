@@ -54,6 +54,8 @@ def validate(self, method):
 	if not self.is_return:
 		set_exchange_rate(self, method)
 		self.validate()
+	
+	validate_currency(self) #Do not deploy
 
 def get_advance_entries(self):
 	res = self.get_advance_entries(
@@ -63,7 +65,7 @@ def get_advance_entries(self):
 		if not len(self.advances):
 			frappe.throw("Advance payments available against supplier <b>{0}</b> <br> Enable <b>'Set Advances and Allocate (FIFO)'</b> or click on the <b>'Get Advances Paid'</b> button under the payments section.".format(self.supplier))
 
-#validate the currency based on supplier payment type
+#validate the currency based on supplier payment type (Do Not Deploy)
 def validate_currency(self):
 	payment_type = frappe.db.get_value("Supplier", self.supplier, "custom_payment_type")
 	if payment_type == 'Domestic (Swedish) Payments (SEK)':
