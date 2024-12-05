@@ -45,7 +45,7 @@ def validate_currency_and_payment_type(self):
     if self.default_currency == "USD" and self.custom_payment_type != 'Cross Border Payments (USD)':
         frappe.throw(f"If the selected billing currency is <b>'{self.default_currency}'</b>, the payment type must be <b>'Cross Border Payments (USD)'</b>")
 
-    on_change_of_payment_type(self)
+    on_change_of_payment_type(self) #Do not Deployee
 
 
 def on_change_of_payment_type(self):
