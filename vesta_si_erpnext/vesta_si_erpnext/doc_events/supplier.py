@@ -44,4 +44,17 @@ def validate_currency_and_payment_type(self):
     
     if self.default_currency == "USD" and self.custom_payment_type != 'Cross Border Payments (USD)':
         frappe.throw(f"If the selected billing currency is <b>'{self.default_currency}'</b>, the payment type must be <b>'Cross Border Payments (USD)'</b>")
+
+    on_change_of_payment_type(self)
+
+
+def on_change_of_payment_type(self):
+    old_doc = self.get_doc_before_save()
+
+    if old_doc.custom_payment_type != self.custom_payment_type:
+        gl_entry = frappe.db.get_list("GL Entry", { "party" : self.name, "is_cancelled" : 0 }, "name")
+        if gl_entry:
+            frappe.throw("Supplier is link with transactions, kindly create a new supplier for different currency or different payment type")
+    
+
         
