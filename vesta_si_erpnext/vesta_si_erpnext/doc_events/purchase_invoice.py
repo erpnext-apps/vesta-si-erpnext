@@ -68,17 +68,27 @@ def get_advance_entries(self):
 #validate the currency based on supplier payment type (Do Not Deploy)
 def validate_currency(self):
 	payment_type = frappe.db.get_value("Supplier", self.supplier, "custom_payment_type")
+	flags = False
 	if payment_type == 'Domestic (Swedish) Payments (SEK)':
 		invoice_currency = "SEK"
+		if invoice_currency != self.currency:
+			flags = True
 	if payment_type == 'SEPA (EUR)':
 		invoice_currency = "EUR"
+		if invoice_currency != self.currency:
+			flags = True
 	if payment_type == 'Cross Border Payments (USD)':
 		invoice_currency = "USD"
+		if invoice_currency != self.currency:
+			flags = True
 	if payment_type == "Cross Border Payments (EUR)":
 		invoice_currency = "EUR"
+		if invoice_currency != self.currency:
+			flags = True
 	if payment_type in ['Domestic (Swedish) Payments (SEK)', 'SEPA (EUR)', 'Cross Border Payments (USD)', 'Cross Border Payments (EUR)']:
-		message = f"Supplier Payment Type is <b>{payment_type}</b>, Invoice should be in <b>{invoice_currency}</b>.<br>   Or   <br>Kindly create a new supplier with billing currency <b>'{self.currency}'</b>."
-		frappe.throw(message)
+		if flags:
+			message = f"Supplier Payment Type is <b>{payment_type}</b>, Invoice should be in <b>{invoice_currency}</b>.<br>   Or   <br>Kindly create a new supplier with billing currency <b>'{self.currency}'</b>."
+			frappe.throw(message)
 	
 	
 from erpnext.setup.utils import get_exchange_rate
