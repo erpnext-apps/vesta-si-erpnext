@@ -2,7 +2,7 @@ import frappe
 from frappe import _
 
 def validate_iban(self,method):
-    validate_currency_and_payment_type(self)
+    # validate_currency_and_payment_type(self)
     
     """
     Algorithm: https://en.wikipedia.org/wiki/International_Bank_Account_Number#Validating_the_IBAN
