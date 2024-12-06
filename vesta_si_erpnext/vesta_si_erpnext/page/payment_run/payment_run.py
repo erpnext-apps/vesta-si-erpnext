@@ -215,7 +215,7 @@ def get_payment_entry(
 	pe.paid_from_account_currency = (
 		doc.currency
 	)
-	pe.paid_to_account_currency = frappe.db.set_value("Account", pe.paid_to, "account_currency")
+	pe.paid_to_account_currency = frappe.db.get_value("Account", pe.paid_to, "account_currency")
 	pe.paid_amount = paid_amount
 	pe.received_amount = received_amount
 	pe.letter_head = doc.get("letter_head")
