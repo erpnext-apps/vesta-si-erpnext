@@ -48,8 +48,9 @@ def get_purchase_invoice_no(due_date):
 
   
     frappe.sendmail(recipients = notify_list,
-			subject = subject
-			message = message)
+			subject = subject,
+			message = message
+            )
 
 
 # trigger email on monday and thursday
