@@ -1,5 +1,5 @@
 import frappe
-from frappe.utils import flt
+from frappe.utils import flt, today, getdate, add_days
 
 def get_purchase_invoice_no(due_date):
     data = frappe.db.sql(f"""
@@ -11,7 +11,9 @@ def get_purchase_invoice_no(due_date):
                 Group By su.custom_payment_type
             """, as_dict=1)
     message = "<p>Hello P2P Team,</p><br>"
-    message += "<p>As of today, {0}, the following purchase invoices are now overdue. Please process the payment through the upcoming ⁠payment run <a href = '{1}/app/payment-run'>Payment Run(click here)</a></p>".format(frappe.utils.formatdate(due_date, "dd MMMM, YYYY"), frappe.utils.get_url())
+    message += "<p>Good day!</p><br>"
+    message += "<p>I hope this message finds you well.</p><br>"
+    message += "<p>As of {0}, we need to process the invoice that is due by {1}. Please initiate the payment run by <a href = '{2}/app/payment-run'>clicking here</a></p>".format(frappe.utils.formatdate(today, "dd MMMM, YYYY"),frappe.utils.formatdate(due_date, "dd MMMM, YYYY"), frappe.utils.get_url())
 
     message += """
     <table width = "100%" border= 1 style="border-collapse: collapse;" >
@@ -42,12 +44,16 @@ def get_purchase_invoice_no(due_date):
         if "PE Notify(For XML)" in frappe.get_roles(row) and row != "Administrator":
             notify_list.append(row)
 
-    frappe.sendmail(recipients = notify_list,
-			subject = 'Due Payment Process Detail',
-			message = message)
+    subject = f"Action require 'Obetalda leverantörsfakturor' | Due By { getdate().strftime('%A') } { today() } | Processing till { getdate(add_days(today(), 2)).strftime('%A') } {str(getdate(add_days(today(), 2)))} "
+
+    print(subject)
+    print(message)
+    # frappe.sendmail(recipients = notify_list,
+	# 		subject = subject
+	# 		message = message)
 
 
-#trigger email on monday and thursday
+# trigger email on monday and thursday
 
 def send_email_():
     from frappe.utils import getdate, add_days, today
@@ -61,4 +67,4 @@ def send_email_():
         get_purchase_invoice_no(due_date)
 
 
-    
+# from vesta_si_erpnext.vesta_si_erpnext.doc_events.send_notification_of_xml import get_purchase_invoice_no
