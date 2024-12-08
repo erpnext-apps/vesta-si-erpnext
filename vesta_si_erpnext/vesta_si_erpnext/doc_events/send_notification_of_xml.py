@@ -46,11 +46,10 @@ def get_purchase_invoice_no(due_date):
 
     subject = f"Action require 'Obetalda leverantörsfakturor' | Due By { getdate().strftime('%A') } { today() } | Processing till { getdate(add_days(today(), 2)).strftime('%A') } {str(getdate(add_days(today(), 2)))} "
 
-    print(subject)
-    print(message)
-    # frappe.sendmail(recipients = notify_list,
-	# 		subject = subject
-	# 		message = message)
+  
+    frappe.sendmail(recipients = notify_list,
+			subject = subject
+			message = message)
 
 
 # trigger email on monday and thursday
