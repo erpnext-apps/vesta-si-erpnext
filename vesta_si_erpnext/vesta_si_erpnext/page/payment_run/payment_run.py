@@ -40,7 +40,7 @@ def get_purchase_invoice(orderby, payment_type, due_date=None, payable_account=N
 	excluded_state = [ row.workflow_state for row in settings.exclude_approval_state ]
 	conditions = " and pi.workflow_state not in {} ".format(
                 "(" + ", ".join([f'"{l}"' for l in excluded_state]) + ")")
-	
+
 	if due_date:    
 		data = frappe.db.sql(f"""
 				Select 

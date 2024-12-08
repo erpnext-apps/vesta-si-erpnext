@@ -549,7 +549,7 @@ def get_primary_address(target_name, target_type="Customer"):
     except:
         return None
 
-def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , payment_type):
+def genrate_file_for_sepa( payments, payment_export_settings, posting_date, payment_type):
     payments = eval(payments)
     # remove empty items in case there should be any (bigfix for issue #2)
     payments = list(filter(None, payments))
