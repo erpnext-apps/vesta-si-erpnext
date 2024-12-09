@@ -16,3 +16,4 @@ def get_automation_of_payment_entry():
             if not d.workflow_state == "Blocked":
                 invoices.append(d.name)
         get_invoices(str(invoices), row)
+# from vesta_si_erpnext.vesta_si_erpnext.doc_events.payment_entry_automation import get_automation_of_payment_entry
