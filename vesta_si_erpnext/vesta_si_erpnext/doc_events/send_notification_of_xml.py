@@ -36,7 +36,7 @@ def get_purchase_invoice_no(due_date):
             </tr>
         """.format(row.custom_payment_type, row.number_of_invoice, d)
     message += "<tr><td></td><td><b>Total</b></td><td align='center'><b>{0}</b></td></tr></table>".format(total_payment)
-    message += "<br><br><p>Thanks & Regards</p>"
+    message += "<br><p>This is a system-generated message based on our purchase invoice data.</p><br><p>Thanks & Regards</p>"
 
     notify_list = []
     user_list = frappe.db.get_list("User", pluck="name")
