@@ -15,7 +15,8 @@ frappe.query_reports["R2 Purchase Invoice Delay in Creation Vs Posting"] = {
 			"fieldname":"to_date",
 			"label": __("To Date"),
 			"fieldtype": "Date",
-			"default": frappe.defaults.get_user_default("year_end_date")
+			"default": frappe.defaults.get_user_default("year_end_date"),
+			"width": "80"
 		}
 	]
 };
