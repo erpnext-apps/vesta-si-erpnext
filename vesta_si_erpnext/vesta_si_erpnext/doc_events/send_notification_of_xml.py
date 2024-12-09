@@ -13,7 +13,7 @@ def get_purchase_invoice_no(due_date):
     message = "<p>Hello P2P Team,</p><br>"
     message += "<p>Good day!</p><br>"
     message += "<p>I hope this message finds you well.</p><br>"
-    message += "<p>As of {0}, we need to process the invoice that is due by {1}. Please initiate the payment run by <a href = '{2}/app/payment-run'>clicking here</a></p>".format(frappe.utils.formatdate(today, "dd MMMM, YYYY"),frappe.utils.formatdate(due_date, "dd MMMM, YYYY"), frappe.utils.get_url())
+    message += "<p>As of {0}, we need to process the invoice that is due by {1}. Please initiate the payment run by <a href = '{2}/app/payment-run'>clicking here</a></p>".format(frappe.utils.formatdate(str(getdate()), "dd MMMM, YYYY"),frappe.utils.formatdate(due_date, "dd MMMM, YYYY"), frappe.utils.get_url())
 
     message += """
     <table width = "100%" border= 1 style="border-collapse: collapse;" >
