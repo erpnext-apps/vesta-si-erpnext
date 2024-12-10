@@ -13,7 +13,7 @@ frappe.dashboards.chart_sources["Range Vs Month"] = {
 			label: __("Fiscal Year"),
 			fieldtype: "Link",
 			options: "Fiscal Year",
-			default: frappe.sys_defaults.fiscal_year
+			default: frappe.sys_defaults.fiscal_year // change after update
         },
         {
 			fieldname:"from_date",
