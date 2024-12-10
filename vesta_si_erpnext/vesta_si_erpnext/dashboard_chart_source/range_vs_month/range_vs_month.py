@@ -1,6 +1,6 @@
 import frappe
 import json
-from frappe.utils import getdate
+from frappe.utils import getdate, flt
 from vesta_si_erpnext.vesta_si_erpnext.report.purchase_invoice_timeline_report.purchase_invoice_timeline_report import execute
 
 @frappe.whitelist()
