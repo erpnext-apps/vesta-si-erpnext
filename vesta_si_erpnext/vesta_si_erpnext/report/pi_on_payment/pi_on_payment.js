@@ -28,25 +28,25 @@ frappe.query_reports["PI on Payment"] = {
 		{
 			fieldname : "range1",
 			label : "Ageing 1",
-			fieldtype : "Data",
+			fieldtype : "Int",
 			default : 30
 		},
 		{
 			fieldname : "range2",
 			label : "Ageing 2",
-			fieldtype : "Data",
+			fieldtype : "Int",
 			default : 60
 		},
 		{
 			fieldname : "range3",
 			label : "Ageing 3",
-			fieldtype : "Data",
+			fieldtype : "Int",
 			default : 90
 		},
 		{
 			fieldname : "range4",
 			label : "Ageing 4",
-			fieldtype : "Data",
+			fieldtype : "Int",
 			default : 120
 		}
 	]
