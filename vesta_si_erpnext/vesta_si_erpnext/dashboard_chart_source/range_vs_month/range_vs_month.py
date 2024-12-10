@@ -82,7 +82,7 @@ def get_data(filters=None):
                 if filters.get("range1") +1 <= row.get("proce_days") <= filters.get("range2"):
                     chart_data_map["January"][1] = chart_data_map["January"][1] + 1
                 if filters.get("range2") +1 <= row.get("proce_days") <= filters.get("range3"):
-                chart_data_map["January"][2] = chart_data_map["January"][2] + 1
+                    chart_data_map["January"][2] = chart_data_map["January"][2] + 1
                 if filters.get("range3") +1 <= row.get("proce_days") <= filters.get("range4"):
                     chart_data_map["January"][3] = chart_data_map["January"][3] + 1
                 if filters.get("range4") +1 <= row.get("proce_days"):
@@ -94,7 +94,7 @@ def get_data(filters=None):
                 if filters.get("range1") +1 <= row.get("proce_days") <= filters.get("range2"):
                     chart_data_map["February"][1] = chart_data_map["February"][1] + 1
                 if filters.get("range2") +1 <= row.get("proce_days") <= filters.get("range3"):
-                chart_data_map["February"][2] = chart_data_map["February"][2] + 1
+                    chart_data_map["February"][2] = chart_data_map["February"][2] + 1
                 if filters.get("range3") +1 <= row.get("proce_days") <= filters.get("range4"):
                     chart_data_map["February"][3] = chart_data_map["February"][3] + 1
                 if filters.get("range4") +1 <= row.get("proce_days"):
@@ -106,7 +106,7 @@ def get_data(filters=None):
                 if filters.get("range1") +1 <= row.get("proce_days") <= filters.get("range2"):
                     chart_data_map["March"][1] = chart_data_map["March"][1] + 1
                 if filters.get("range2") +1 <= row.get("proce_days") <= filters.get("range3"):
-                chart_data_map["March"][2] = chart_data_map["March"][2] + 1
+                    chart_data_map["March"][2] = chart_data_map["March"][2] + 1
                 if filters.get("range3") +1 <= row.get("proce_days") <= filters.get("range4"):
                     chart_data_map["March"][3] = chart_data_map["March"][3] + 1
                 if filters.get("range4") +1 <= row.get("proce_days"):
@@ -118,7 +118,7 @@ def get_data(filters=None):
                 if filters.get("range1") +1 <= row.get("proce_days") <= filters.get("range2"):
                     chart_data_map["April"][1] = chart_data_map["April"][1] + 1
                 if filters.get("range2") +1 <= row.get("proce_days") <= filters.get("range3"):
-                chart_data_map["April"][2] = chart_data_map["April"][2] + 1
+                    chart_data_map["April"][2] = chart_data_map["April"][2] + 1
                 if filters.get("range3") +1 <= row.get("proce_days") <= filters.get("range4"):
                     chart_data_map["April"][3] = chart_data_map["April"][3] + 1
                 if filters.get("range4") +1 <= row.get("proce_days"):
@@ -130,7 +130,7 @@ def get_data(filters=None):
                 if filters.get("range1") +1 <= row.get("proce_days") <= filters.get("range2"):
                     chart_data_map["May"][1] = chart_data_map["May"][1] + 1
                 if filters.get("range2") +1 <= row.get("proce_days") <= filters.get("range3"):
-                chart_data_map["May"][2] = chart_data_map["May"][2] + 1
+                    chart_data_map["May"][2] = chart_data_map["May"][2] + 1
                 if filters.get("range3") +1 <= row.get("proce_days") <= filters.get("range4"):
                     chart_data_map["May"][3] = chart_data_map["May"][3] + 1
                 if filters.get("range4") +1 <= row.get("proce_days"):
@@ -142,7 +142,7 @@ def get_data(filters=None):
                 if filters.get("range1") +1 <= row.get("proce_days") <= filters.get("range2"):
                     chart_data_map["June"][1] = chart_data_map["June"][1] + 1
                 if filters.get("range2") +1 <= row.get("proce_days") <= filters.get("range3"):
-                chart_data_map["June"][2] = chart_data_map["June"][2] + 1
+                    chart_data_map["June"][2] = chart_data_map["June"][2] + 1
                 if filters.get("range3") +1 <= row.get("proce_days") <= filters.get("range4"):
                     chart_data_map["June"][3] = chart_data_map["June"][3] + 1
                 if filters.get("range4") +1 <= row.get("proce_days"):
@@ -154,7 +154,7 @@ def get_data(filters=None):
                 if filters.get("range1") +1 <= row.get("proce_days") <= filters.get("range2"):
                     chart_data_map["July"][1] = chart_data_map["July"][1] + 1
                 if filters.get("range2") +1 <= row.get("proce_days") <= filters.get("range3"):
-                chart_data_map["July"][2] = chart_data_map["July"][2] + 1
+                    chart_data_map["July"][2] = chart_data_map["July"][2] + 1
                 if filters.get("range3") +1 <= row.get("proce_days") <= filters.get("range4"):
                     chart_data_map["July"][3] = chart_data_map["July"][3] + 1
                 if filters.get("range4") +1 <= row.get("proce_days"):
@@ -166,7 +166,7 @@ def get_data(filters=None):
                 if filters.get("range1") +1 <= row.get("proce_days") <= filters.get("range2"):
                     chart_data_map["August"][1] = chart_data_map["August"][1] + 1
                 if filters.get("range2") +1 <= row.get("proce_days") <= filters.get("range3"):
-                chart_data_map["August"][2] = chart_data_map["August"][2] + 1
+                    chart_data_map["August"][2] = chart_data_map["August"][2] + 1
                 if filters.get("range3") +1 <= row.get("proce_days") <= filters.get("range4"):
                     chart_data_map["August"][3] = chart_data_map["August"][3] + 1
                 if filters.get("range4") +1 <= row.get("proce_days"):
@@ -178,7 +178,7 @@ def get_data(filters=None):
                 if filters.get("range1") +1 <= row.get("proce_days") <= filters.get("range2"):
                     chart_data_map["September"][1] = chart_data_map["September"][1] + 1
                 if filters.get("range2") +1 <= row.get("proce_days") <= filters.get("range3"):
-                chart_data_map["September"][2] = chart_data_map["September"][2] + 1
+                    chart_data_map["September"][2] = chart_data_map["September"][2] + 1
                 if filters.get("range3") +1 <= row.get("proce_days") <= filters.get("range4"):
                     chart_data_map["September"][3] = chart_data_map["September"][3] + 1
                 if filters.get("range4") +1 <= row.get("proce_days"):
@@ -190,7 +190,7 @@ def get_data(filters=None):
                 if filters.get("range1") +1 <= row.get("proce_days") <= filters.get("range2"):
                     chart_data_map["October"][1] = chart_data_map["October"][1] + 1
                 if filters.get("range2") +1 <= row.get("proce_days") <= filters.get("range3"):
-                chart_data_map["October"][2] = chart_data_map["October"][2] + 1
+                    chart_data_map["October"][2] = chart_data_map["October"][2] + 1
                 if filters.get("range3") +1 <= row.get("proce_days") <= filters.get("range4"):
                     chart_data_map["October"][3] = chart_data_map["October"][3] + 1
                 if filters.get("range4") +1 <= row.get("proce_days"):
@@ -202,7 +202,7 @@ def get_data(filters=None):
                 if filters.get("range1") +1 <= row.get("proce_days") <= filters.get("range2"):
                     chart_data_map["November"][1] = chart_data_map["November"][1] + 1
                 if filters.get("range2") +1 <= row.get("proce_days") <= filters.get("range3"):
-                chart_data_map["November"][2] = chart_data_map["November"][2] + 1
+                    chart_data_map["November"][2] = chart_data_map["November"][2] + 1
                 if filters.get("range3") +1 <= row.get("proce_days") <= filters.get("range4"):
                     chart_data_map["November"][3] = chart_data_map["November"][3] + 1
                 if filters.get("range4") +1 <= row.get("proce_days"):
@@ -214,7 +214,7 @@ def get_data(filters=None):
                 if filters.get("range1") +1 <= row.get("proce_days") <= filters.get("range2"):
                     chart_data_map["December"][1] = chart_data_map["December"][1] + 1
                 if filters.get("range2") +1 <= row.get("proce_days") <= filters.get("range3"):
-                chart_data_map["December"][2] = chart_data_map["December"][2] + 1
+                    chart_data_map["December"][2] = chart_data_map["December"][2] + 1
                 if filters.get("range3") +1 <= row.get("proce_days") <= filters.get("range4"):
                     chart_data_map["December"][3] = chart_data_map["December"][3] + 1
                 if filters.get("range4") +1 <= row.get("proce_days"):
