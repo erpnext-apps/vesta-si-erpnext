@@ -9,6 +9,13 @@ frappe.dashboards.chart_sources["Range Vs Month"] = {
 			default: frappe.defaults.get_user_default("Company")
 		},
         {
+            fieldname: "fiscal_year",
+			label: __("Fiscal Year"),
+			fieldtype: "Link",
+			options: "Fiscal Year",
+			default: frappe.sys_defaults.fiscal_year
+        },
+        {
 			fieldname:"from_date",
 			label: __("From Date"),
 			fieldtype: "Date",
