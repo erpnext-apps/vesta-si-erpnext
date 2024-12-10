@@ -1,0 +1,13 @@
+{
+ "creation": "2024-12-10 11:21:22.781021",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart Source",
+ "idx": 0,
+ "modified": "2024-12-10 11:21:22.781021",
+ "modified_by": "Administrator",
+ "module": "Vesta Si Erpnext",
+ "name": "Month Vs Delay",
+ "owner": "Administrator",
+ "source_name": "Month Vs Delay",
+ "timeseries": 0
+}

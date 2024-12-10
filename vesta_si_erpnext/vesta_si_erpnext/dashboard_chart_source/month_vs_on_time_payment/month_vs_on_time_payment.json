@@ -1,0 +1,13 @@
+{
+ "creation": "2024-12-10 10:57:22.708540",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart Source",
+ "idx": 0,
+ "modified": "2024-12-10 11:02:30.656438",
+ "modified_by": "Administrator",
+ "module": "Vesta Si Erpnext",
+ "name": "Month Vs On Time Payment",
+ "owner": "Administrator",
+ "source_name": "Month Vs On Time Payment",
+ "timeseries": 0
+}
