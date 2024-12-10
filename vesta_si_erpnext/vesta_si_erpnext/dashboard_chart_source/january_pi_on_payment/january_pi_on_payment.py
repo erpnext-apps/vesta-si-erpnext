@@ -1,11 +1,13 @@
 import frappe
 import json
+from datetime import datetime
+
 
 @frappe.whitelist()
 def get_data(filters=None):
     filters = json.loads(filters)
     from vesta_si_erpnext.vesta_si_erpnext.report.pi_on_payment.pi_on_payment import execute
-    fiscal_year = filters.get("fiscal_year")
+    fiscal_year = int(filters.get("fiscal_year"))
     start_date, end_date = get_january_dates(fiscal_year)
     filters.update({"from_date" : str(getdate(start_date)), "to_date" : str(getdate(end_date))})
     columns, data, A, charts = execute(filters)
