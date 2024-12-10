@@ -6,6 +6,14 @@ from vesta_si_erpnext.vesta_si_erpnext.report.purchase_invoice_timeline_report.p
 @frappe.whitelist()
 def get_data(filters=None):
     filters = json.loads(filters)
+    if filters.get("fiscal_year"):
+        doc = frappe.get_doc("Fiscal Year", filters.get("fiscal_year"))
+        year_start_date = doc.year_start_date
+        year_end_date = doc.year_end_date
+        filters.update({
+            "from_date" : year_start_date,
+            "to_date" : year_end_date
+        })
     columns, data = execute(filters)
 
     # Generate range labels
