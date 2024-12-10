@@ -13,7 +13,7 @@ frappe.dashboards.chart_sources["January PI On Payment"] = {
 			label: __("Fiscal Year"),
 			fieldtype: "Link",
 			options: "Fiscal Year",
-			default: erpnext.utils.get_fiscal_year(frappe.datetime.get_today())
+			default: frappe.sys_defaults.fiscal_year
         },
 		{
 			fieldname : "chart_type",
