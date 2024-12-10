@@ -7,6 +7,14 @@ from frappe import _
 
 
 def execute(filters=None):
+	if not filters.get("range1"):
+		frappe.throw("Ageing 1 can not be Zero ot null")
+	if not filters.get("range2"):
+		frappe.throw("Ageing 2 can not be Zero ot null")
+	if not filters.get("range3"):
+		frappe.throw("Ageing 3 can not be Zero ot null")
+	if not filters.get("range4"):
+		frappe.throw("Ageing 4 can not be Zero ot null")
 	columns, data = [], []
 	data, columns, chart = get_data_from_pe(filters)
 	return columns, data, None, chart
@@ -83,8 +91,25 @@ def get_data_from_pe(filters):
 	value = []
 	for row in month_year:
 		value.append(month_wise_data.get(row))
+	
+	labels = ["On Time"]
+	if filters.get("range1"):
+		label1 = "{0} to {1}".format(0, filters.get("range1"))
+		labels.append(label1)
+	if filters.get("range2") and filters.get("range1"):
+		label2 = "{0} to {1}".format(int(flt(filters.get("range1"))+1), filters.get("range2"))
+		labels.append(label2)
+	if filters.get("range3") and filters.get("range2"):
+		label3 = "{0} to {1}".format(int(flt(filters.get("range2"))+1), filters.get("range3"))
+		labels.append(label3)
+	if filters.get("range4") and filters.get("range3"):
+		label4 = "{0} to {1}".format(int(flt(filters.get("range3"))+1), filters.get("range4"))
+		labels.append(label4)
+	if filters.get("range5"):
+		label5 = "Greater than {0}".format(filters.get("range5"))
+		labels.append(label5)
 
-	chart = prepare_chart(on_time, range1, range2, range3, range4, range5)
+	chart = prepare_chart(on_time, range1, range2, range3, range4, range5, labels)
 	
 	columns  = [
 		{
@@ -151,12 +176,12 @@ def get_month_year_list(start_date_str, end_date_str, month_wise_data):
 	
 	return month_wise_data, month	
 
-def prepare_chart(on_time, range1, range2, range3, range4, range5):
+def prepare_chart(on_time, range1, range2, range3, range4, range5, labels):
 	
 	
 	charts = {
 		"data": {
-			"labels": ["On Time", "Range 1", "Range 2", "Range 3", "Range 4", "Range 5"],
+			"labels": labels,
 			"datasets": [{"name": "Delayed", "values": [on_time, range1, range2, range3, range4, range5]}],
 		},
 		"type": "percentage",
