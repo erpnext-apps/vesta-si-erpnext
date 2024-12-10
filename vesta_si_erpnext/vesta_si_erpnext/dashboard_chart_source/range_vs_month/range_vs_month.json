@@ -1,0 +1,13 @@
+{
+ "creation": "2024-12-10 13:46:11.632281",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart Source",
+ "idx": 0,
+ "modified": "2024-12-10 16:37:56.445704",
+ "modified_by": "Administrator",
+ "module": "Vesta Si Erpnext",
+ "name": "Range Vs Month",
+ "owner": "Administrator",
+ "source_name": "Range Vs Month",
+ "timeseries": 0
+}
