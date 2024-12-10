@@ -220,7 +220,18 @@ def get_data(filters=None):
 
 
     return {
-        "labels" : ["January"],
+        "labels" : ["January" ,
+                    "February" ,
+                    "March" ,
+                    "April" ,
+                    "May" ,
+                    "June" ,
+                    "July" ,
+                    "August" , 
+                    "September" , 
+                    "October" ,
+                    "November" ,
+                    "December" ],
         "datasets" : [
             {
                 'name': label1,
