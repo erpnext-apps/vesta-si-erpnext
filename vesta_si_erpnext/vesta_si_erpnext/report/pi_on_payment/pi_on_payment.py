@@ -105,8 +105,8 @@ def get_data_from_pe(filters):
 	if filters.get("range4") and filters.get("range3"):
 		label4 = "{0} to {1}".format(int(flt(filters.get("range3"))+1), filters.get("range4"))
 		labels.append(label4)
-	if filters.get("range5"):
-		label5 = "Greater than {0}".format(filters.get("range5"))
+	if filters.get("range4"):
+		label5 = "Greater than {0}".format(filters.get("range4"))
 		labels.append(label5)
 
 	chart = prepare_chart(on_time, range1, range2, range3, range4, range5, labels)
