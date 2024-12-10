@@ -75,7 +75,7 @@ def get_data(filters=None):
     
 
     for row in data:
-        if row.get("proce_days") >= 1:
+        if flt(row.get("proce_days")) >= 1:
             if getdate(row.get('posting_date')).strftime("%B") == "January":
                 if 0 <= row.get("proce_days") <= filters.get("range1"):
                     chart_data_map["January"][0] = chart_data_map["January"][0] + 1
