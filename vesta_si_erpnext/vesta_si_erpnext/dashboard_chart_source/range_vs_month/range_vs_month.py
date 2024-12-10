@@ -228,15 +228,15 @@ def get_data(filters=None):
             },
             {
                 'name': label2,
-                'values': [ chart_data_map["January"][2], chart_data_map["February"][2], chart_data_map["March"][2], chart_data_map["April"][2], chart_data_map["May"][2] chart_data_map["June"][2], chart_data_map["July"][2], chart_data_map["August"][2], chart_data_map["September"][2], chart_data_map["Octomber"][2], chart_data_map["November"][2], chart_data_map["December"][2]],
+                'values': [ chart_data_map["January"][2], chart_data_map["February"][2], chart_data_map["March"][2], chart_data_map["April"][2], chart_data_map["May"][2], chart_data_map["June"][2], chart_data_map["July"][2], chart_data_map["August"][2], chart_data_map["September"][2], chart_data_map["Octomber"][2], chart_data_map["November"][2], chart_data_map["December"][2]],
             },
             {
                 'name': label3,
-                'values': [chart_data_map["January"][3], chart_data_map["February"][3], chart_data_map["March"][3], chart_data_map["April"][3], chart_data_map["May"][3] chart_data_map["June"][3], chart_data_map["July"][3], chart_data_map["August"][3], chart_data_map["September"][3], chart_data_map["Octomber"][3], chart_data_map["November"][3], chart_data_map["December"][3]],
+                'values': [chart_data_map["January"][3], chart_data_map["February"][3], chart_data_map["March"][3], chart_data_map["April"][3], chart_data_map["May"][3], chart_data_map["June"][3], chart_data_map["July"][3], chart_data_map["August"][3], chart_data_map["September"][3], chart_data_map["Octomber"][3], chart_data_map["November"][3], chart_data_map["December"][3]],
             },
             {
                 'name': label4,
-                'values': [chart_data_map["January"][4], chart_data_map["February"][4], chart_data_map["March"][4], chart_data_map["April"][4], chart_data_map["May"][4] chart_data_map["June"][4], chart_data_map["July"][4], chart_data_map["August"][4], chart_data_map["September"][4], chart_data_map["Octomber"][4], chart_data_map["November"][4], chart_data_map["December"][4]],
+                'values': [chart_data_map["January"][4], chart_data_map["February"][4], chart_data_map["March"][4], chart_data_map["April"][4], chart_data_map["May"][4], chart_data_map["June"][4], chart_data_map["July"][4], chart_data_map["August"][4], chart_data_map["September"][4], chart_data_map["Octomber"][4], chart_data_map["November"][4], chart_data_map["December"][4]],
             },
             {
                 'name': label5,
