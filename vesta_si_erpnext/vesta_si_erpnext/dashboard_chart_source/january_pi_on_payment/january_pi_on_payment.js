@@ -45,6 +45,23 @@ frappe.dashboards.chart_sources["January PI On Payment"] = {
 			label : "Ageing 4",
 			fieldtype : "Int",
 			default : 120
+		},
+		{
+			fieldname : "month",
+			label : "Month",
+			fieldtype : "Select",
+			options : ["January",
+				"February",
+				"March",
+				"April",
+				"May",
+				"June",
+				"July",
+				"August",
+				"September",
+				"October",
+				"November",
+				"December"]
 		}
 	]
 };
