@@ -68,7 +68,7 @@ def get_data(filters=None):
 
     for row in labels:
         for d in range(0,5):
-            chart_data_map[row] = []
+            chart_data_map[row] = {}
             chart_data_map[row][d] = 0
 
     
