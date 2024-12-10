@@ -77,82 +77,105 @@ def execute(filters=None):
 	december_proce_days, december_proce_days_posting, december_processing_days= 0, 0, 0
 
 	for row in data:
-		if flt(row.get('processing_days')) >= 1:
-			if getdate(row.get('posting_date')).month == 1:
-				january_row.append(row)
+		if getdate(row.get('posting_date')).month == 1:
+			january_row.append(row)
+			if flt(row.get('proce_days')) >= 1:	
 				january_proce_days += flt(row.get('proce_days'))
-				january_proce_days_posting += flt(row.get('proce_days_posting'))
+			january_proce_days_posting += flt(row.get('proce_days_posting'))
+			if flt(row.get('processing_days')) >= 1:
 				january_processing_days += flt(row.get('processing_days'))
-				continue
-			if getdate(row.get('posting_date')).month == 2:
-				february_row.append(row)
+			continue
+		if getdate(row.get('posting_date')).month == 2:
+			february_row.append(row)
+			if flt(row.get('proce_days')) >= 1:	
 				february_proce_days += flt(row.get('proce_days'))
-				february_proce_days_posting += flt(row.get('proce_days_posting'))
+			february_proce_days_posting += flt(row.get('proce_days_posting'))
+			if flt(row.get('processing_days')) >= 1:	
 				february_processing_days += flt(row.get('processing_days'))
-				continue
-			if getdate(row.get('posting_date')).month == 3:
-				march_row.append(row)
+			continue
+		if getdate(row.get('posting_date')).month == 3:
+			march_row.append(row)
+			if flt(row.get('proce_days')) >= 1:	
 				march_proce_days += flt(row.get('proce_days'))
-				march_proce_days_posting += flt(row.get('proce_days_posting'))
+			march_proce_days_posting += flt(row.get('proce_days_posting'))
+			if flt(row.get('processing_days')) >= 1:	
 				march_processing_days += flt(row.get('processing_days'))
-				continue
-			if getdate(row.get('posting_date')).month == 4:
-				april_row.append(row)
+			continue
+		if getdate(row.get('posting_date')).month == 4:
+			april_row.append(row)
+			if flt(row.get('proce_days')) >= 1:	
 				april_proce_days += flt(row.get('proce_days'))
-				april_proce_days_posting += flt(row.get('proce_days_posting'))
+			april_proce_days_posting += flt(row.get('proce_days_posting'))
+			if flt(row.get('processing_days')) >= 1:	
 				april_processing_days += flt(row.get('processing_days'))
-				continue
-			if getdate(row.get('posting_date')).month == 5:
-				may_row.append(row)
+			continue
+		if getdate(row.get('posting_date')).month == 5:
+			may_row.append(row)
+			if flt(row.get('proce_days')) >= 1:	
 				may_proce_days += flt(row.get('proce_days'))
-				may_proce_days_posting += flt(row.get('proce_days_posting'))
+			may_proce_days_posting += flt(row.get('proce_days_posting'))
+			if flt(row.get('processing_days')) >= 1:	
 				may_processing_days += flt(row.get('processing_days'))
-				continue
-			if getdate(row.get('posting_date')).month == 6:
-				june_row.append(row)
+			continue
+		if getdate(row.get('posting_date')).month == 6:
+			june_row.append(row)
+			if flt(row.get('proce_days')) >= 1:	
 				june_proce_days += flt(row.get('proce_days'))
-				june_proce_days_posting += flt(row.get('proce_days_posting'))
+			june_proce_days_posting += flt(row.get('proce_days_posting'))
+			if flt(row.get('processing_days')) >= 1:	
 				june_processing_days += flt(row.get('processing_days'))
-				continue
-			if getdate(row.get('posting_date')).month == 7:
-				july_row.append(row)
+			continue
+		if getdate(row.get('posting_date')).month == 7:
+			july_row.append(row)
+			if flt(row.get('proce_days')) >= 1:	
 				july_proce_days += flt(row.get('proce_days'))
-				july_proce_days_posting += flt(row.get('proce_days_posting'))
+			july_proce_days_posting += flt(row.get('proce_days_posting'))
+			if flt(row.get('processing_days')) >= 1:	
 				july_processing_days += flt(row.get('processing_days'))
-				continue
-			if getdate(row.get('posting_date')).month == 8:
-				august_row.append(row)
+			continue
+		if getdate(row.get('posting_date')).month == 8:
+			august_row.append(row)
+			if flt(row.get('proce_days')) >= 1:	
 				august_proce_days += flt(row.get('proce_days'))
-				august_proce_days_posting += flt(row.get('proce_days_posting'))
+			august_proce_days_posting += flt(row.get('proce_days_posting'))
+			if flt(row.get('processing_days')) >= 1:	
 				august_processing_days += flt(row.get('processing_days'))
-				continue
-			if getdate(row.get('posting_date')).month == 9:
-				september_row.append(row)
+			continue
+		if getdate(row.get('posting_date')).month == 9:
+			september_row.append(row)
+			if flt(row.get('proce_days')) >= 1:	
 				september_proce_days += flt(row.get('proce_days'))
-				september_proce_days_posting += flt(row.get('proce_days_posting'))
+			september_proce_days_posting += flt(row.get('proce_days_posting'))
+			if flt(row.get('processing_days')) >= 1:	
 				september_processing_days += flt(row.get('processing_days'))
-				continue
-			if getdate(row.get('posting_date')).month == 10:
-				october_row.append(row)
+			continue
+		if getdate(row.get('posting_date')).month == 10:
+			october_row.append(row)
+			if flt(row.get('proce_days')) >= 1:	
 				october_proce_days += flt(row.get('proce_days'))
-				october_proce_days_posting += flt(row.get('proce_days_posting'))
+			october_proce_days_posting += flt(row.get('proce_days_posting'))
+			if flt(row.get('processing_days')) >= 1:	
 				october_processing_days += flt(row.get('processing_days'))
-				continue
-			if getdate(row.get('posting_date')).month == 11:
-				november_row.append(row)
+			continue
+		if getdate(row.get('posting_date')).month == 11:
+			november_row.append(row)
+			if flt(row.get('proce_days')) >= 1:	
 				november_proce_days += flt(row.get('proce_days'))
-				november_proce_days_posting += flt(row.get('proce_days_posting'))
+			november_proce_days_posting += flt(row.get('proce_days_posting'))
+			if flt(row.get('processing_days')) >= 1:	
 				november_processing_days += flt(row.get('processing_days'))
-				continue
-			if getdate(row.get('posting_date')).month == 12:
-				december_row.append(row)
+			continue
+		if getdate(row.get('posting_date')).month == 12:
+			december_row.append(row)
+			if flt(row.get('proce_days')) >= 1:	
 				december_proce_days += flt(row.get('proce_days'))
-				december_proce_days_posting += flt(row.get('proce_days_posting'))
+			december_proce_days_posting += flt(row.get('proce_days_posting'))
+			if flt(row.get('processing_days')) >= 1:	
 				december_processing_days += flt(row.get('processing_days'))
-				continue
+			continue
 
 	monthly_data = [
-			{'month' : 'January', "proce_days" : january_proce_days , "proce_days_posting" : january_proce_days_posting, "processing_days": january_processing_days , 
+			{'month' : 'January', "proce_days" : january_proce_days , "proce_days_posting" : january_proce_days_posting, "processing_days": january_processing_days,
 			"creation_percentage" : round((january_proce_days / january_proce_days_posting) * 100, 2)  if january_proce_days_posting else 0,
 			"posting_percentage" : round(january_processing_days / january_proce_days_posting * 100, 2)  if january_proce_days_posting else 0
 			}, 
