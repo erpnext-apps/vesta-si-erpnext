@@ -251,7 +251,7 @@ def get_data(filters=None):
             },
             {
                 'name': label5,
-                'values': [chart_data_map["January"][5], chart_data_map["February"][5], chart_data_map["March"][5], chart_data_map["April"][5], chart_data_map["May"][5] chart_data_map["June"][5], chart_data_map["July"][5], chart_data_map["August"][5], chart_data_map["September"][5], chart_data_map["Octomber"][5], chart_data_map["November"][5], chart_data_map["December"][5]],
+                'values': [chart_data_map["January"][5], chart_data_map["February"][5], chart_data_map["March"][5], chart_data_map["April"][5], chart_data_map["May"][5], chart_data_map["June"][5], chart_data_map["July"][5], chart_data_map["August"][5], chart_data_map["September"][5], chart_data_map["Octomber"][5], chart_data_map["November"][5], chart_data_map["December"][5]],
             }
         ]
     }
