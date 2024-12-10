@@ -235,7 +235,7 @@ def get_data(filters=None):
         "datasets" : [
             {
                 'name': label1,
-                'values': [ chart_data_map["January"][1], chart_data_map["February"][1], chart_data_map["March"][1], chart_data_map["April"][1], chart_data_map["May"][1] chart_data_map["June"][1], chart_data_map["July"][1], chart_data_map["August"][1], chart_data_map["September"][1], chart_data_map["Octomber"][1], chart_data_map["November"][1], chart_data_map["December"][1]],
+                'values': [ chart_data_map["January"][1], chart_data_map["February"][1], chart_data_map["March"][1], chart_data_map["April"][1], chart_data_map["May"][1], chart_data_map["June"][1], chart_data_map["July"][1], chart_data_map["August"][1], chart_data_map["September"][1], chart_data_map["Octomber"][1], chart_data_map["November"][1], chart_data_map["December"][1]],
             },
             {
                 'name': label2,
