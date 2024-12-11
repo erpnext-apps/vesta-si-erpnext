@@ -69,7 +69,7 @@ def get_data(filters=None):
     for row in labels:
         chart_data_map[row] = {}
         for d in range(0,5):
-            chart_data_map[row][d] = 0
+            chart_data_map[row][str(d)] = 0
 
     
     
