@@ -8,7 +8,6 @@ from vesta_si_erpnext.vesta_si_erpnext.doc_events.sftp_transfer import Sftp
 # # Create an instance of the Sftp class
 @frappe.whitelist()
 def get_payment_entry(payments, payment_export_settings, posting_date, payment_type, bank_account = None):
-    # frappe.throw(str(payments))
     sftp = frappe.get_doc("SFTP Credential")
     hostname = sftp.hostname
     username = sftp.username
@@ -62,9 +61,6 @@ def get_payment_entry(payments, payment_export_settings, posting_date, payment_t
             port=port
         )
         sftp_instance.sftp_upload()
-
-
-
 
 
 def get_payment_export_settings():
