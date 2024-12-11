@@ -22,7 +22,7 @@ def get_data(filters=None):
         label2 = "{0} - {1}".format(filters.get("range1") + 1, filters.get("range2"))
     if filters.get("range3"):
         label3 = "{0} - {1}".format(filters.get("range2") + 1, filters.get("range3"))
-    if filters.get("range3"):
+    if filters.get("range4"):
         label4 = "{0} - {1}".format(filters.get("range3") + 1, filters.get("range4"))
     if filters.get("range4"):
         label5 = "{0} - {1}".format("Above", filters.get("range4"))

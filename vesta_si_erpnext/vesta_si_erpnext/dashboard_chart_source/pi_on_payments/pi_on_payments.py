@@ -5,6 +5,58 @@ import frappe
 from frappe.utils import getdate, flt
 from frappe import _
 
+@frappe.whitelist()
+def prepare_chart(filters =None):
+    filters = json.loads(filters)
+    if filters.get("fiscal_year"):
+        doc = frappe.get_doc("Fiscal Year", filters.get("fiscal_year"))
+        year_start_date = doc.year_start_date
+        year_end_date = doc.year_end_date
+        filters.update({
+            "from_date" : year_start_date,
+            "to_date" : year_end_date
+        })
+    
+    data = execute(filters)
+
+    if filters.get("range1"):
+        label1 = "{0} - {1}".format(0, filters.get("range1"))
+    if filters.get("range2"):
+        label2 = "{0} - {1}".format(filters.get("range1") + 1, filters.get("range1"))
+    if filters.get("range3"):
+        label3 = "{0} - {1}".format(filters.get("range2") + 1, filters.get("range3"))
+    if filters.get("range3"):
+        label4 = "{0} - {1}".format(filters.get("range2") + 1, filters.get("range3"))
+    if filters.get("range4"):
+        label4 = "{0} - {1}".format(filters.get("range3") + 1, filters.get("range4"))
+    if filters.get("range4"):
+        label5 = "{0} - {1}".format("Above", filters.get("range4"))
+
+    labels = [
+        "January" ,
+        "February" ,
+        "March" ,
+        "April" ,
+        "May" ,
+        "June" ,
+        "July" ,
+        "August" , 
+        "September" , 
+        "October" ,
+        "November" ,
+        "December" 
+    ]
+    chart_data_map = {}
+    for row in labels:
+        chart_data_map[row] = {}
+        for d in range(0,5):
+            chart_data_map[row][str(d)] = 0
+
+    for row in data:
+        delay = (row.posting_date - row.due_date).days
+		row.update({ "delay" : delay })
+        if getdate(row.get('posting_date')).strftime("%B") == "January":
+
 
 def execute(filters=None):
 	if not filters.get("range1"):
@@ -15,9 +67,10 @@ def execute(filters=None):
 		frappe.throw("Ageing 3 can not be Zero ot null")
 	if not filters.get("range4"):
 		frappe.throw("Ageing 4 can not be Zero ot null")
-	columns, data = [], []
-	data, columns, chart = get_data_from_pe(filters)
-	return columns, data, None, chart
+	data = []
+	data = get_data_from_pe(filters)
+    
+	return data
 
 
 def get_data_from_pe(filters):
@@ -66,7 +119,7 @@ def get_data_from_pe(filters):
 
 	for row in data:
 		delay = (row.posting_date - row.due_date).days
-		row.update({ "delay" : delay })
+		row.update({"delay" : delay})
 		if flt(row.delay) <= 0:
 			on_time += 1
 		if 0 < row.delay <= flt(filters.get('range1')) :
@@ -80,83 +133,12 @@ def get_data_from_pe(filters):
 		if flt(filters.get('range4')) < flt(row.delay):
 			range5 += 1
 		
-		if filters.get("chart_type") == "Payment On Time":
-			if flt(delay) <= 0:
-				month_wise_data.update({getdate(row.posting_date).strftime("%B_%Y") : month_wise_data.get(str(getdate(row.posting_date).strftime("%B_%Y"))) + 1})
-				on_time_row.append(row)
-		if filters.get("chart_type") == "Payments On Delay":
-			if flt(row.delay) > 0:
-				month_wise_data.update({getdate(row.posting_date).strftime("%B_%Y") : month_wise_data.get(str(getdate(row.posting_date).strftime("%B_%Y"))) + 1})
-				delay_payment_row.append(row)
-	value = []
-	for row in month_year:
-		value.append(month_wise_data.get(row))
+        month_wise_data.update({getdate(row.posting_date).strftime("%B_%Y") : month_wise_data.get(str(getdate(row.posting_date).strftime("%B_%Y"))) + 1})
+        on_time_row.append(row)
+		
 	
-	labels = ["On Time"]
-	if filters.get("range1"):
-		label1 = "{0} to {1}".format(0, filters.get("range1"))
-		labels.append(label1)
-	if filters.get("range2") and filters.get("range1"):
-		label2 = "{0} to {1}".format(int(flt(filters.get("range1"))+1), filters.get("range2"))
-		labels.append(label2)
-	if filters.get("range3") and filters.get("range2"):
-		label3 = "{0} to {1}".format(int(flt(filters.get("range2"))+1), filters.get("range3"))
-		labels.append(label3)
-	if filters.get("range4") and filters.get("range3"):
-		label4 = "{0} to {1}".format(int(flt(filters.get("range3"))+1), filters.get("range4"))
-		labels.append(label4)
-	if filters.get("range4"):
-		label5 = "Greater than {0}".format(filters.get("range4"))
-		labels.append(label5)
-
-	chart = prepare_chart(on_time, range1, range2, range3, range4, range5, labels)
-	
-	columns  = [
-		{
-			"label" : "Purchase Invoice",
-			"fieldname" : "purchase_invoice",
-			"fieldtype" : "Link",
-			"options" : "Purchase Invoice",
-			"width" : 170
-		},
-		{
-			"label" : "Payment Entry",
-			"fieldname" : "payment_entry",
-			"fieldtype" : "Link",
-			"options" : "Payment Entry",
-			"width" : 170
-		},
-		{
-			"label" : "PE Status",
-			"fieldname" : "status",
-			"fieldtype" : "Data",
-			"width" : 150
-		},
-		{
-			"label" : "PE Posting Date",
-			"fieldname" : "posting_date",
-			"fieldtype" : "Date",
-			"width" : 150
-		},
-		{
-			"label" : "Due date",
-			"fieldname" : "due_date",
-			"fieldtype" : "Date",
-			"width" : 150
-		},
-		{
-			"label" : "Delay",
-			"fieldname" : "delay",
-			"fieldtype" : "Data",
-			"width" : 150
-		}
-
-	]
-	if filters.get("chart_type") == "Payment On Time":
-		return on_time_row, columns , chart
-
-	if filters.get("chart_type") == "Payments On Delay":
-		return delay_payment_row, columns, chart
+		
+    return on_time_row, 
 
 from datetime import datetime, timedelta
 
@@ -176,15 +158,12 @@ def get_month_year_list(start_date_str, end_date_str, month_wise_data):
 	
 	return month_wise_data, month	
 
-def prepare_chart(on_time, range1, range2, range3, range4, range5, labels):
-	
-	
-	charts = {
-		"data": {
-			"labels": labels,
-			"datasets": [{"name": "Delayed", "values": [on_time, range1, range2, range3, range4, range5]}],
-		},
-		"type": "percentage",
-		"colors": ["#84D5BA", "#CB4B5F"],
-	}
-	return charts
+
+
+def get_month_dates(year, month):
+    # Start date is the 1st of the given month and year
+    start_date = datetime(year, month, 1)
+    # End date is the last day of the given month
+    last_day = calendar.monthrange(year, month)[1]
+    end_date = datetime(year, month, last_day)
+    return start_date, end_date
