@@ -76,29 +76,3 @@ class Sftp:
         ssh.close()
 
         print(f"File {self.local_file} uploaded successfully to {self.remote_path}")
-        # except Exception as e:
-        #     print(f"Error: {e}")
-
-
-# # Example values for initialization
-hostname = "52.157.97.77"
-username = "cm-skftest-12"
-password = "*EklmvpLlzV!.xKt7rTsd7Mh"
-local_file = "/home/frappe/frappe-bench/KGS - COA.xlsx"  # Replace with your local file path
-remote_path = "/in/payments/"     # Replace with your remote path
-port = 22
-
-# # Create an instance of the Sftp class
-sftp_instance = Sftp(
-    hostname=hostname,
-    username=username,
-    local_file=local_file,
-    remote_path=remote_path,
-    password=password,
-    port=port
-)
-
-sftp_instance.sftp_upload()
-
-#from vesta_si_erpnext.vesta_si_erpnext.doc_events.sftp_transfer import Sftp
-# You can now use this instance for further SFTP operations (assuming methods are implemented).

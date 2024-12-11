@@ -64,13 +64,13 @@ frappe.payment_export = {
                 
                 // generate payment file
                 frappe.call({
-                    method: 'vesta_si_erpnext.vesta_si_erpnext.page.payment_export.payment_export.generate_payment_file',
+                    method: "vesta_si_erpnext.vesta_si_erpnext.page.payment_export.payment_export.generate_payment_file",
                     args: { 
-                        'payments': payments,
+                        "payments": payments,
                         "payment_export_settings": page.payment_export_settings_field.get_value(),
                         "posting_date": page.posting_date_field.get_value(),
-                        'payment_type': page.payment_type_field.get_value(),
-                        'bank_account': page.bank_account_field.get_value()
+                        "payment_type": page.payment_type_field.get_value(),
+                        "bank_account": page.bank_account_field.get_value()
                        
                     },
                     callback: function(r) {

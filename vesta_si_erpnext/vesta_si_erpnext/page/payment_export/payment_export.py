@@ -354,7 +354,11 @@ def generate_payment_file(payments ,payment_export_settings , posting_date , pay
         content = content.replace(transaction_count_identifier, "{0}".format(transaction_count))
         content = content.replace(control_sum_identifier, "{:.2f}".format(control_sum))
         gen_payment_export_log(content, transaction_count, control_sum, payments, 'SEK')
-        return { 'content': content, 'skipped': skipped }
+        current_time = now()
+        original_date = datetime.strptime(str(current_time), '%Y-%m-%d %H:%M:%S.%f')
+        formatted_date = original_date.strftime('%Y-%m-%d %H-%M-%S')
+        formatted_date = formatted_date.replace(' ','-')
+        return { 'content': content, 'skipped': skipped , "time" :  formatted_date}
     except IndexError:
         frappe.msgprint( _("Please select at least one payment."), _("Information") )
         return
@@ -549,7 +553,7 @@ def get_primary_address(target_name, target_type="Customer"):
     except:
         return None
 
-def genrate_file_for_sepa( payments ,payment_export_settings , posting_date , payment_type):
+def genrate_file_for_sepa( payments, payment_export_settings, posting_date, payment_type):
     payments = eval(payments)
     # remove empty items in case there should be any (bigfix for issue #2)
     payments = list(filter(None, payments))
