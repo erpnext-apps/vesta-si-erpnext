@@ -46,7 +46,7 @@ def get_payment_entry():
             new_file.attached_to_name = pel
             new_file.save()
             frappe.db.commit()
-            main_path = "/home/ubuntu/frappe-bench/sites/vesta/public/"
+            main_path = "/home/ubuntu/frappe-bench/sites/erpnext-skf-9150.frappe.cloud/public/"
             file_url = get_attechment_paths(pel)
             local_file = main_path + file_url
             remote_path = "/in/payments/" 
