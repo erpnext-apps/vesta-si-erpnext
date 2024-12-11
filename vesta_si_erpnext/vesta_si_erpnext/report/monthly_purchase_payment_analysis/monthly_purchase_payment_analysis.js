@@ -15,14 +15,14 @@ frappe.query_reports["Monthly Purchase Payment Analysis"] = {
 			fieldname:"from_date",
 			label: __("From Date"),
 			fieldtype: "Date",
-			default: frappe.datetime.add_months(frappe.datetime.month_start(), -1),
+			default: frappe.defaults.get_user_default("year_start_date"),
 			reqd: 1
 		},
 		{
 			fieldname:"to_date",
 			label: __("To Date"),
 			fieldtype: "Date",
-			default: frappe.datetime.add_days(frappe.datetime.month_start(),-1),
+			default: frappe.defaults.get_user_default("year_end_date"),
 			reqd: 1
 		},
 		{
