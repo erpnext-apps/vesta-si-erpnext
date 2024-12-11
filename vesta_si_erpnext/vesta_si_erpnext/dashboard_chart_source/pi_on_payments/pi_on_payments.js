@@ -1,5 +1,5 @@
-frappe.dashboards.chart_sources["Pi On Payments"] = {
-	method: "vesta_si_erpnext.vesta_si_erpnext.dashboard_chart_source.pi_on_payments.pi_on_payments.get_data",
+frappe.dashboards.chart_sources["PI On Payments"] = {
+	method: "vesta_si_erpnext.vesta_si_erpnext.dashboard_chart_source.pi_on_payments.pi_on_payments.prepare_chart",
 	filters: [
 		{
 			fieldname: "company",
