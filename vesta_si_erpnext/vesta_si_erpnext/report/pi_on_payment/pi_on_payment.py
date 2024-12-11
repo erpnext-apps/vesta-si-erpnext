@@ -66,7 +66,7 @@ def get_data_from_pe(filters):
 
 	for row in data:
 		delay = (row.posting_date - row.due_date).days
-		row.update({"delay" : delay})
+		row.update({ "delay" : delay })
 		if flt(row.delay) <= 0:
 			on_time += 1
 		if 0 < row.delay <= flt(filters.get('range1')) :

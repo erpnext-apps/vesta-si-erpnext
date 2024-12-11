@@ -1,0 +1,13 @@
+{
+ "creation": "2024-12-11 09:55:56.683335",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart Source",
+ "idx": 0,
+ "modified": "2024-12-11 09:55:56.683335",
+ "modified_by": "Administrator",
+ "module": "Vesta Si Erpnext",
+ "name": "PI On Payments",
+ "owner": "Administrator",
+ "source_name": "PI On Payments",
+ "timeseries": 0
+}

@@ -19,11 +19,9 @@ def get_data(filters=None):
     if filters.get("range1"):
         label1 = "{0} - {1}".format(0, filters.get("range1"))
     if filters.get("range2"):
-        label2 = "{0} - {1}".format(filters.get("range1") + 1, filters.get("range1"))
+        label2 = "{0} - {1}".format(filters.get("range1") + 1, filters.get("range2"))
     if filters.get("range3"):
         label3 = "{0} - {1}".format(filters.get("range2") + 1, filters.get("range3"))
-    if filters.get("range3"):
-        label4 = "{0} - {1}".format(filters.get("range2") + 1, filters.get("range3"))
     if filters.get("range4"):
         label4 = "{0} - {1}".format(filters.get("range3") + 1, filters.get("range4"))
     if filters.get("range4"):
@@ -254,8 +252,10 @@ def get_data(filters=None):
             {
                 'name': label5,
                 'values': [chart_data_map["January"]["4"], chart_data_map["February"]["4"], chart_data_map["March"]["4"], chart_data_map["April"]["4"], chart_data_map["May"]["4"], chart_data_map["June"]["4"], chart_data_map["July"]["4"], chart_data_map["August"]["4"], chart_data_map["September"]["4"], chart_data_map["October"]["4"], chart_data_map["November"]["4"], chart_data_map["December"]["4"]],
+                'color' : "#0F69FA",
+                'type': 'line',
             }
-        ]
+        ],
     }
             
 
