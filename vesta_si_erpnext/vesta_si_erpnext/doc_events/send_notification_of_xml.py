@@ -44,7 +44,10 @@ def get_purchase_invoice_no(due_date):
         if "PE Notify(For XML)" in frappe.get_roles(row) and row != "Administrator":
             notify_list.append(row)
 
-    subject = f"Action required 'Obetalda leverantörsfakturor' | Due By { getdate().strftime('%A') } { today() } | Processing till { getdate(add_days(today(), 2)).strftime('%A') } {str(getdate(add_days(today(), 2)))} "
+    if getdate().strftime('%A') == "Monday":
+        subject = f"Action required 'Obetalda leverantörsfakturor' | Due By { getdate().strftime('%A') } { today() } | Processing till { getdate(add_days(today(), 2)).strftime('%A') } {str(getdate(add_days(today(), 2)))}."
+    if getdate().strftime('%A') == "Thursday":
+        subject = f"Action required 'Obetalda leverantörsfakturor' | Due By { getdate().strftime('%A') } { today() } | Processing till { getdate(add_days(today(), 2)).strftime('%A') } {str(getdate(add_days(today(), 3)))}."
 
   
     frappe.sendmail(recipients = notify_list,
@@ -63,7 +66,7 @@ def send_email_():
         due_date = add_days(today(), 2)
         get_purchase_invoice_no(due_date)
     if currenct_day == "Thursday":
-        due_date = add_days(today(), 2)
+        due_date = add_days(today(), 3)
         get_purchase_invoice_no(due_date)
 
 
