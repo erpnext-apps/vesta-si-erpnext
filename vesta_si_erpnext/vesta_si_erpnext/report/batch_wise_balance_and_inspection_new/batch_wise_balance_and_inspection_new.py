@@ -106,6 +106,8 @@ def get_stock_ledger_entries(filters, params):
 				s.voucher_no, s.is_cancelled, s.docstatus, s.company
 			FROM
 				`tabStock Ledger Entry` s
+			Where
+				s.is_cancelled = 0
 			GROUP BY
 				s.batch_no, s.item_code, s.warehouse
 				) as s
