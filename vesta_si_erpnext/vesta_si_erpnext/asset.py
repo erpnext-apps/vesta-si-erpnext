@@ -293,6 +293,8 @@ class CustomAsset(Asset):
 		)
 		has_pro_rata = self.check_is_pro_rata(finance_book)
 		if has_pro_rata:
+
+			
 			number_of_pending_depreciations += 1
 
 		has_wdv_or_dd_non_yearly_pro_rata = False
