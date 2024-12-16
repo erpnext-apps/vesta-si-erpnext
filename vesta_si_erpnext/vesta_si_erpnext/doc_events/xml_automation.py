@@ -49,7 +49,7 @@ def get_payment_entry(payments, payment_export_settings, posting_date, payment_t
         new_file.save()
         frappe.db.commit()
         if sftp.enabled:
-            main_path = "/home/ubuntu/frappe-bench/sites/{0}/public/".format(url)
+            main_path = "/home/ubuntu/frappe-bench/sites/{0}/public".format(url)
             file_url = get_attechment_paths(pel)
             local_file = main_path + file_url
             remote_path = "/in/payments/" 
