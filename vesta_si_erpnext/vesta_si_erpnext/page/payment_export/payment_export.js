@@ -104,8 +104,8 @@ frappe.payment_export = {
             
         });
         page.add_inner_button(__("Transfer To Nomentia"), function () {
+            page.remove_inner_button("Transfer To Nomentia");
             page.main.find(".btn-create-file").addClass("hide");
-            page.main.find(".table").addClass("hide");
             page.main.find(".btn-refresh").removeClass("hide");
             var me = frappe.payment_export;
             
@@ -130,8 +130,7 @@ frappe.payment_export = {
     
                     }
                 })
-            }
-            page.main.find(".payment-table").empty();
+            }   
         }).addClass("btn btn-primary");
 
         this.page.main.find(".btn-refresh").on('click', function() {
