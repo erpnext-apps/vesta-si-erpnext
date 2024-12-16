@@ -32,7 +32,7 @@ def get_payment_entry(payments, payment_export_settings, posting_date, payment_t
         xml_content = generate_payment_file(payments, payment_export_settings, posting_date, payment_type, bank_account)
         content = xml_content.get("content")
         url = get_url().replace("https://", '')
-        file_name = "{1}/public/files/payments{0}.xml".format(now(), url)
+        file_name = "{1}/private/files/payments{0}.xml".format(now(), url)
         try:
             with open(file_name, "w", encoding="utf-8") as file:
                 file.write(content)
@@ -43,13 +43,14 @@ def get_payment_entry(payments, payment_export_settings, posting_date, payment_t
         pel = frappe.db.get_list("Payment Export Log", pluck="name")[0]
 
         new_file = frappe.new_doc("File")
-        new_file.file_url = file_name.replace(f"{url}/public", '')
+        new_file.file_url = file_name.replace(f"{url}", '')
         new_file.attached_to_doctype = "Payment Export Log"
         new_file.attached_to_name = pel
+        new_file.is_private = 1
         new_file.save()
         frappe.db.commit()
         if sftp.enabled:
-            main_path = "/home/ubuntu/frappe-bench/sites/{0}/public".format(url)
+            main_path = "/home/frappe/frappe-bench/sites/{0}".format(url)
             file_url = get_attechment_paths(pel)
             local_file = main_path + file_url
             remote_path = "/in/payments/" 
