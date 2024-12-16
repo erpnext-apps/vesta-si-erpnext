@@ -36,7 +36,6 @@ def get_payment_entry(payments, payment_export_settings, posting_date, payment_t
         try:
             with open(file_name, "w", encoding="utf-8") as file:
                 file.write(content)
-            frappe.msgprint(f"XML file '{file_name}' generated successfully!")
         except Exception as e:
             frappe.msgprint(f"An error occurred: {e}")
         
@@ -62,7 +61,12 @@ def get_payment_entry(payments, payment_export_settings, posting_date, payment_t
                 password=password,
                 port=port
             )
-            sftp_instance.sftp_upload()
+            try:
+                sftp_instance.sftp_upload()
+                message = "XML file transferred to Nomentia.<br>The payment entry has been submitted automatically."
+                frappe.msgprint(message)
+            except Exception as e:
+                frappe.msgprint(f"An error occurred: {e}")
 
 
 def get_payment_export_settings():
