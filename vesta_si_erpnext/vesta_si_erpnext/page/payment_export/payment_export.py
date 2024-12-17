@@ -16,7 +16,7 @@ from openpyxl import Workbook
 
 @frappe.whitelist()
 def get_payments(payment_type, payment_export_settings):
-    payments = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype,
+    payments = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype, pe.paid_from_account_currency,
                                 per.reference_name, pe.received_amount
                                 From `tabPayment Entry` as pe 
                                 Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
@@ -27,7 +27,7 @@ def get_payments(payment_type, payment_export_settings):
     allow_after_submit = frappe.db.get_value("Payment Export Settings", payment_export_settings, "include_payment_in_xml_after_submit")
     
     if allow_after_submit:
-        submitted_entry = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype,
+        submitted_entry = frappe.db.sql(""" Select pe.name, pe.posting_date, pe.paid_amount, pe.party, pe.party_name, pe.paid_from, pe.paid_to_account_currency, per.reference_doctype, pe.paid_from_account_currency,
                                     per.reference_name, pe.received_amount
                                     From `tabPayment Entry` as pe 
                                     Left Join `tabPayment Entry Reference` as per ON per.parent = pe.name
@@ -63,32 +63,40 @@ def get_payments(payment_type, payment_export_settings):
         if not creditor_info:
             continue
         if payment_type == "Domestic (Swedish) Payments (SEK)":
+            if row.paid_from_account_currency != "SEK":
+                continue
             if ((frappe.db.get_value("Supplier", row.party , 'plus_giro_number') or 
                 frappe.db.get_value("Supplier", row.party , 'bank_giro_number')) and
                 frappe.db.get_value("Supplier", row.party , 'custom_payment_type') == 'Domestic (Swedish) Payments (SEK)'):
                 _payments.append(row)
                 list_of_amount.append(row.paid_amount)
         if payment_type == "SEPA (EUR)" and frappe.db.get_value('Supplier', row.party, 'custom_payment_type') == 'SEPA (EUR)':
-                flag = False
-                for d in row.reference_name:
-                    currency = frappe.db.get_value(row.reference_doctype, d, 'currency')
-                    if currency == "EUR":
-                        flag = True
-                if flag:
-                    _payments.append(row)
-                    list_of_amount.append(row.paid_amount)
+            if row.paid_from_account_currency  != "EUR":
+                continue
+            flag = False
+            for d in row.reference_name:
+                currency = frappe.db.get_value(row.reference_doctype, d, 'currency')
+                if currency == "EUR":
+                    flag = True
+            if flag:
+                _payments.append(row)
+                list_of_amount.append(row.paid_amount)
         if payment_type == "Cross Border Payments (USD)" and frappe.db.get_value('Supplier', row.party, 'custom_payment_type') == 'Cross Border Payments (USD)':
-                row.update({"paid_amount":row.received_amount})
-                _payments.append(row)
-                list_of_amount.append(row.received_amount)
+            if row.paid_from_account_currency  != "USD":
+                continue
+            row.update({"paid_amount":row.received_amount})
+            _payments.append(row)
+            list_of_amount.append(row.received_amount)
         if payment_type == "Cross Border Payments (EUR)" and frappe.db.get_value('Supplier', row.party, 'custom_payment_type') == 'Cross Border Payments (EUR)':
-                row.update({"paid_amount":row.received_amount})
-                _payments.append(row)
-                list_of_amount.append(row.received_amount)
+            if row.paid_from_account_currency  != "EUR":
+                continue
+            row.update({"paid_amount":row.received_amount})
+            _payments.append(row)
+            list_of_amount.append(row.received_amount)
         if payment_type == "Cross Border Payments (OTHER)" and frappe.db.get_value('Supplier', row.party, 'custom_payment_type') == 'Cross Border Payments (OTHER)':
-                row.update({"paid_amount":row.received_amount})
-                _payments.append(row)
-                list_of_amount.append(row.received_amount)
+            row.update({"paid_amount":row.received_amount})
+            _payments.append(row)
+            list_of_amount.append(row.received_amount)
     
     return { 'payments': _payments, "total_paid_amount" : sum(list_of_amount)}
 
