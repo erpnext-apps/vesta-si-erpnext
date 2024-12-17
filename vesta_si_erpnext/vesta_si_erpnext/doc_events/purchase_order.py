@@ -1,8 +1,10 @@
 import frappe
 from frappe.utils import now
 from datetime import datetime
+from vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_invoice import validate_currency
 
 def validate(self , method):
+    validate_currency(self)
     if not self.custom_level_1_approval_pending and self.workflow_state =="Level 1 Approval Pending":
         self.custom_level_1_approval_pending = now()
     if not self.custom_level_2_approval_pending and self.workflow_state == "Level 2 Approval Pending":
