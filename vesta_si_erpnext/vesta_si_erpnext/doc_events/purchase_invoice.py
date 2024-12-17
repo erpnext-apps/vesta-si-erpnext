@@ -55,7 +55,7 @@ def validate(self, method):
 		set_exchange_rate(self, method)
 		self.validate()
 	
-	# validate_currency(self) #Do not deploy
+	validate_currency(self) #Do not deploy
 
 def get_advance_entries(self):
 	res = self.get_advance_entries(
