@@ -53,7 +53,6 @@ def on_change_of_payment_type(self):
         old_doc = self.get_doc_before_save()
 
         if old_doc.custom_payment_type != self.custom_payment_type:
-            frappe.msgprint(str("gl_entry"))
             gl_entry = frappe.db.get_list("Purchase Invoice", { "supplier" : self.name, "docstatus" : 1 }, "name")
             if gl_entry:
                 frappe.throw("Supplier is link with transactions, kindly create a new supplier for different currency or different payment type")
