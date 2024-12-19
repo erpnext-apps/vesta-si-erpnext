@@ -47,7 +47,7 @@ def get_purchase_invoice_no(due_date):
     if getdate().strftime('%A') == "Monday":
         subject = f"Action required 'Obetalda leverantörsfakturor' | Due By { getdate().strftime('%A') } { today() } | Processing till { getdate(add_days(today(), 2)).strftime('%A') } {str(getdate(add_days(today(), 2)))}."
     if getdate().strftime('%A') == "Thursday":
-        subject = f"Action required 'Obetalda leverantörsfakturor' | Due By { getdate().strftime('%A') } { today() } | Processing till { getdate(add_days(today(), 2)).strftime('%A') } {str(getdate(add_days(today(), 3)))}."
+        subject = f"Action required 'Obetalda leverantörsfakturor' | Due By { getdate().strftime('%A') } { today() } | Processing till { getdate(add_days(today(), 3)).strftime('%A') } {str(getdate(add_days(today(), 3)))}."
 
   
     frappe.sendmail(recipients = notify_list,
