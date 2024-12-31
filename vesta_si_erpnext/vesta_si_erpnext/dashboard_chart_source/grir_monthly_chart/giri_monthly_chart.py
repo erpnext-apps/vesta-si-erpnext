@@ -11,7 +11,8 @@ def get_giri_data(filters):
                                     'fiscal_year' : f"{filters.get('year')}"
                                 },
                                 fields=['month', 'fiscal_year', 'date', 'purchase_receipts_to_be_billed'],
-                                order_by='date'
+                                order_by='date',
+                                ignore_permissions=True
                             )
 
     labels = [ row.month for row in data]
