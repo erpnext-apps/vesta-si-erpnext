@@ -1,0 +1,13 @@
+{
+ "creation": "2024-12-31 06:43:36.020851",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart Source",
+ "idx": 0,
+ "modified": "2024-12-31 06:43:36.020851",
+ "modified_by": "Administrator",
+ "module": "Vesta Si Erpnext",
+ "name": "GRIR Monthly Chart",
+ "owner": "Administrator",
+ "source_name": "GRIR Monthly Chart",
+ "timeseries": 0
+}
