@@ -57,7 +57,7 @@ def install_pandas():
 @frappe.whitelist()
 def get_penalty_cost_paid_suppliers(filters):
     from erpnext.accounts.utils import get_fiscal_year
-    current_year = get_fiscal_year(nowdate(),as_dict =1)
+    current_year = get_fiscal_year(getdate(),as_dict =1)
 
     from_date = str(current_year.year_start_date)
     to_date = str(current_year.year_end_date)
@@ -288,7 +288,7 @@ def get_purchase_receipt():
 
     number_of_pr_to_billed = len(pr)
     from erpnext.accounts.utils import get_fiscal_year
-    current_year = get_fiscal_year(nowdate(),as_dict =1)
+    current_year = get_fiscal_year(getdate(),as_dict =1)
     if doc_name := frappe.db.exists("GRIR Purchase Receipts to be Billed", current_year.name):
         doc = frappe.get_doc("GRIR Purchase Receipts to be Billed", doc_name)
         doc.append("grir_to_bill", {
