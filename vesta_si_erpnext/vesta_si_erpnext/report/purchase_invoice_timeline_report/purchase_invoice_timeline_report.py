@@ -107,20 +107,20 @@ def get_version_data(filters):
 	data = list(version.values())
 
 	# chart  = prepare_chart_data(data)
-
-	average_row = {
-			"processing_days": "<b>Average : {0}</b>".format(round(average_processing_days/len(data),2)),
-			"days_to_First_approve": "<b>Average : {0}</b>".format(round(days_to_First_approve/len(data))),
-			"days_to_Second_approve": "<b>Average : {0}</b>".format(round(days_to_Second_approve/len(data))),
-			"days_to_Fourth_approve": "<b>Average : {0}</b>".format(round(days_to_Fourth_approve/len(data))),
-			"days_to_Third_approve": "<b>Average : {0}</b>".format(round(days_to_Third_approve/len(data))),
-			"days_to_Fifth_approve": "<b>Average : {0}</b>".format(round(days_to_Fifth_approve/len(data))),
-			"days_to_Sixth_approve": "<b>Average : {0}</b>".format(round(days_to_Sixth_approve/len(data))),
-			"days_to_Seventh_approve": "<b>Average : {0}</b>".format(round(days_to_Seventh_approve/len(data))),
-			"days_to_Eighth_approve": "<b>Average : {0}</b>".format(round(days_to_Eighth_approve/len(data))),
-			"days_to_Ninth_approve": "<b>Average : {0}</b>".format(round(days_to_Ninth_approve/len(data))),
-			"days_to_Tenth_approve": "<b>Average : {0}</b>".format(round(days_to_Tenth_approve/len(data))),
-	}
+	if data:
+		average_row = {
+				"processing_days": "<b>Average : {0}</b>".format(round(average_processing_days/len(data),2)),
+				"days_to_First_approve": "<b>Average : {0}</b>".format(round(days_to_First_approve/len(data))),
+				"days_to_Second_approve": "<b>Average : {0}</b>".format(round(days_to_Second_approve/len(data))),
+				"days_to_Fourth_approve": "<b>Average : {0}</b>".format(round(days_to_Fourth_approve/len(data))),
+				"days_to_Third_approve": "<b>Average : {0}</b>".format(round(days_to_Third_approve/len(data))),
+				"days_to_Fifth_approve": "<b>Average : {0}</b>".format(round(days_to_Fifth_approve/len(data))),
+				"days_to_Sixth_approve": "<b>Average : {0}</b>".format(round(days_to_Sixth_approve/len(data))),
+				"days_to_Seventh_approve": "<b>Average : {0}</b>".format(round(days_to_Seventh_approve/len(data))),
+				"days_to_Eighth_approve": "<b>Average : {0}</b>".format(round(days_to_Eighth_approve/len(data))),
+				"days_to_Ninth_approve": "<b>Average : {0}</b>".format(round(days_to_Ninth_approve/len(data))),
+				"days_to_Tenth_approve": "<b>Average : {0}</b>".format(round(days_to_Tenth_approve/len(data))),
+		}
 	
 	
 	columns = get_columns(state_list, state_counter)
