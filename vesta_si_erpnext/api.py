@@ -284,7 +284,7 @@ def get_purchase_receipt():
     account_list = frappe.db.get_list("Account", {"account_type" : "Stock Received But Not Billed"}, pluck="name")
     pr = [] 
     for account in account_list:
-        pr += execute( filters = { "to_date" : add_days(today(), -1), "account" :  account} )[1]
+        pr += execute( filters = { "to_date" : add_days(today(), -1), "account" :  "222503 - Goods & services received/Invoice received - non SKF - 9150"} )[1]
 
     number_of_pr_to_billed = len(pr)
     from erpnext.accounts.utils import get_fiscal_year
