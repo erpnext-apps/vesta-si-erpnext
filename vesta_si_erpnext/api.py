@@ -281,10 +281,10 @@ def get_tax_template(doctype, txt, searchfield, start, page_len, filters):
 def get_purchase_receipt():
     from frappe.utils import add_days, today
     from vesta_si_erpnext.vesta_si_erpnext.report.received_items_to_be_billed___vesta_si.received_items_to_be_billed___vesta_si import execute
-    account_list = frappe.db.get_list("Account", {"account_type" : "Stock Received But Not Billed"}, pluck="name")
+
     pr = [] 
-    for account in account_list:
-        pr += execute( filters = { "to_date" : add_days(today(), -1), "account" :  "222503 - Goods & services received/Invoice received - non SKF - 9150"} )[1]
+
+    pr += execute( filters = { "to_date" : add_days(today(), -1), "account" :  "222503 - Goods & services received/Invoice received - non SKF - 9150"} )[1]
 
     number_of_pr_to_billed = len(pr)
     from erpnext.accounts.utils import get_fiscal_year
