@@ -59,8 +59,12 @@ def get_penalty_cost_paid_suppliers(filters):
     from erpnext.accounts.utils import get_fiscal_year
     current_year = get_fiscal_year(getdate(),as_dict =1)
 
-    from_date = str(current_year.year_start_date)
-    to_date = str(current_year.year_end_date)
+    if not filters.get("from_date") and not filters.get("to_date"):
+        from_date = str(current_year.year_start_date)
+        to_date = str(current_year.year_end_date)
+    else:
+        from_date = filters.get("from_date")
+        to_date = filters.get("to_date")
 
     filters = json.loads(filters)
     cond = ''
@@ -87,9 +91,12 @@ def get_total_penalty_cost_remitted_to_suppliers(filters):
 
     from erpnext.accounts.utils import get_fiscal_year
     current_year = get_fiscal_year(nowdate(),as_dict =1)
-
-    from_date = str(current_year.year_start_date)
-    to_date = str(current_year.year_end_date)
+    if not filters.get("from_date") and not filters.get("to_date"):
+        from_date = str(current_year.year_start_date)
+        to_date = str(current_year.year_end_date)
+    else:
+        from_date = filters.get("from_date")
+        to_date = filters.get("to_date")
 
     cond = ''
     if filters.get('company'):
@@ -127,12 +134,14 @@ def get_total_penalty_cost_remitted_to_suppliers_monthly(filters):
     cond += f" and pi.posting_date >= '{from_date}'"
 
     cond += f" and pi.posting_date <= '{to_date}'"
+
     data = frappe.db.sql(f"""
             Select sum(pii.base_net_amount) as base_net_amount, pi.name
             From `tabPurchase Invoice` as pi
             left Join `tabPurchase Invoice Item` as pii ON pii.parent = pi.name
             Where pi.docstatus = 1 {cond}
     """,as_dict = 1)
+
     return {
                 "value": data[0].get('base_net_amount') if data and data[0].get('base_net_amount') else 0,
                 "fieldtype": "Currency",
@@ -312,3 +321,5 @@ def get_purchase_receipt():
         })
         doc.insert()
         frappe.db.commit()
+
+
