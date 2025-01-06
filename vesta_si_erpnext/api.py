@@ -56,6 +56,7 @@ def install_pandas():
 
 @frappe.whitelist()
 def get_penalty_cost_paid_suppliers(filters):
+    filters = json.loads(str(filters))
     from erpnext.accounts.utils import get_fiscal_year
     current_year = get_fiscal_year(getdate(),as_dict =1)
 
@@ -66,7 +67,6 @@ def get_penalty_cost_paid_suppliers(filters):
         from_date = filters.get("from_date")
         to_date = filters.get("to_date")
 
-    filters = json.loads(str(filters))
     cond = ''
     if filters.get('expense_account'):
         cond += f" and pii.expense_account = '{filters.get('expense_account')}'"
