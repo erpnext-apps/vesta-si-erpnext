@@ -276,7 +276,7 @@ def execute(filters=None):
 					'labels': label,
 					'datasets': [
 						{
-							'name': 'Delay in invoice c reation (days)',
+							'name': 'Delay in invoice creation (days)',
 							'values': value1,
 							'chartType': 'bar',
 						},
