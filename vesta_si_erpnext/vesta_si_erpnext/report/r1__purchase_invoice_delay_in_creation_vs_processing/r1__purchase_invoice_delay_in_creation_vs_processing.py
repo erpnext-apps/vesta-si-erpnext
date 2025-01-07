@@ -276,12 +276,12 @@ def execute(filters=None):
 					'labels': label,
 					'datasets': [
 						{
-							'name': 'Month wise number of delay invoices',
+							'name': 'Delay in invoice c reation (days)',
 							'values': value1,
 							'chartType': 'bar',
 						},
 						{
-							'name': 'Month wise total delay days',
+							'name': 'Delay in invoice processing (days)',
 							'values': value2,
 							'chartType': 'bar',
 						}
