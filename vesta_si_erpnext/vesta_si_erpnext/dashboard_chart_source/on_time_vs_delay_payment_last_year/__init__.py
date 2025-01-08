@@ -39,6 +39,8 @@ def get_data(filters):
     ]
 
     fiscal_year = int(filters.get("fiscal_year"))
+    if fiscal_year == getdate().year:
+        fiscal_year = fiscal_year - 1
     on_time_values = []
     delay_values = []
     for row in labels:
