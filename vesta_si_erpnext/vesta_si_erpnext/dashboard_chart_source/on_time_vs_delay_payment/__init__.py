@@ -4,8 +4,9 @@ from frappe.utils import getdate
 from datetime import datetime
 import calendar
 
+
 @frappe.whitelist()
-def get_data(filters=None):
+def get_data(filters):
     filters = json.loads(filters)
     from vesta_si_erpnext.vesta_si_erpnext.report.pi_on_payment.pi_on_payment import execute
     month_number = {
@@ -38,9 +39,12 @@ def get_data(filters=None):
     ]
 
     fiscal_year = int(filters.get("fiscal_year"))
-    values = []
+    on_time_values = []
+    delay_values = []
     for row in labels:
+
         start_date, end_date = get_month_dates(fiscal_year, int(month_number.get(row)))
+
         filters.update({
             "from_date" : str(getdate(start_date)), 
             "to_date" : str(getdate(end_date)),
@@ -50,15 +54,18 @@ def get_data(filters=None):
             "range4" : 120
             })
 
-        columns, data, A, charts = execute(filters)
-        if filters.get("chart_type") == "Payments On Delay":
-            values.append(sum(charts.get("data").get("datasets")[0].get("values")[1:]))
-        if filters.get("chart_type") == "Payments On Time":
-            values.append(charts.get("data").get("datasets")[0].get("values")[0])
+        filters.update( {"chart_type" : "Payments On Time"} )
+        columns, data, A, on_time_charts = execute(filters)
+        on_time_values.append(on_time_charts.get("data").get("datasets")[0].get("values")[0])
+
+        filters.update( {"chart_type" : "Payments On Delay"} )
+        columns, data, A, delay_charts = execute(filters)
+        delay_values.append(sum(delay_charts.get("data").get("datasets")[0].get("values")[1:]))
+
     
     return {
-			"labels": labels,
-			"datasets": [{"name": "Delay", "values": values}],
+			"labels": ["On Time Payment", "Delay Time Payment"],
+			"datasets": [{"name": "Delay", "values": [sum(on_time_values), sum(delay_values)]}],
 		}
 
 def get_month_dates(year, month):
