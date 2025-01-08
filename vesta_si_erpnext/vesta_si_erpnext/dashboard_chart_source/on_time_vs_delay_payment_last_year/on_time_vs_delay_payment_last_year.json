@@ -1,0 +1,13 @@
+{
+ "creation": "2025-01-08 07:55:41.967583",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart Source",
+ "idx": 0,
+ "modified": "2025-01-08 07:55:41.967583",
+ "modified_by": "Administrator",
+ "module": "Vesta Si Erpnext",
+ "name": "On Time Vs Delay payment Last Year",
+ "owner": "Administrator",
+ "source_name": "On Time Vs Delay payment Last Year",
+ "timeseries": 0
+}
