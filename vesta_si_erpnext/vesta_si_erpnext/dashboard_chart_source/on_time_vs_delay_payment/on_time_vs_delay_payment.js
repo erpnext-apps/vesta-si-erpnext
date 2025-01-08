@@ -1,5 +1,5 @@
-frappe.dashboards.chart_sources["Month Vs Delay"] = {
-	method: "vesta_si_erpnext.vesta_si_erpnext.dashboard_chart_source.month_vs_delay.month_vs_delay.get_data",
+frappe.dashboards.chart_sources["On Time Vs Delay payment"] = {
+	method: "vesta_si_erpnext.vesta_si_erpnext.dashboard_chart_source.on_time_vs_delay_payment.get_data",
 	filters: [
 		{
 			fieldname: "company",
@@ -15,12 +15,5 @@ frappe.dashboards.chart_sources["Month Vs Delay"] = {
 			options: "Fiscal Year",
 			default: frappe.sys_defaults.fiscal_year
         },
-		{
-			fieldname : "chart_type",
-			label : "Chart Type",
-			fieldtype : "Select",
-			options : ["Payments On Time", "Payments On Delay"],
-			default : "Payments On Time"
-		}
 	]
 };

@@ -19,8 +19,8 @@ frappe.dashboards.chart_sources["Month Vs On Time Payment"] = {
 			fieldname : "chart_type",
 			label : "Chart Type",
 			fieldtype : "Select",
-			options : ["Payment On Time", "Payments On Delay"],
-			default : "Payment On Time"
+			options : ["Payments On Time", "Payments On Delay"],
+			default : "Payments On Time"
 		}
 	]
 };

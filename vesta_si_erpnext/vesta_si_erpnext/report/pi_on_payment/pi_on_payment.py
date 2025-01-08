@@ -80,7 +80,7 @@ def get_data_from_pe(filters):
 		if flt(filters.get('range4')) < flt(row.delay):
 			range5 += 1
 		
-		if filters.get("chart_type") == "Payment On Time":
+		if filters.get("chart_type") == "Payments On Time":
 			if flt(delay) <= 0:
 				month_wise_data.update({getdate(row.posting_date).strftime("%B_%Y") : month_wise_data.get(str(getdate(row.posting_date).strftime("%B_%Y"))) + 1})
 				on_time_row.append(row)
@@ -152,7 +152,7 @@ def get_data_from_pe(filters):
 		}
 
 	]
-	if filters.get("chart_type") == "Payment On Time":
+	if filters.get("chart_type") == "Payments On Time":
 		return on_time_row, columns , chart
 
 	if filters.get("chart_type") == "Payments On Delay":
