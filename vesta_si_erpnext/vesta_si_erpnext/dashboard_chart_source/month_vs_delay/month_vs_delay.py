@@ -49,7 +49,8 @@ def get_data(filters=None):
             "range3" :  90,
             "range4" : 120
             })
-
+        if not filters.get("chart_type"):
+            filters.update({"chart_type" : "Payments On Delay"})
         columns, data, A, charts = execute(filters)
         if filters.get("chart_type") == "Payments On Delay":
             values.append(sum(charts.get("data").get("datasets")[0].get("values")[1:]))
