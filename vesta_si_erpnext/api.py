@@ -50,6 +50,7 @@ def install_pandas():
         try:
             import subprocess
             subprocess.check_call(["pip", "install", "pandas"])
+            subprocess.check_call(["pip", "install", "pysftp"])
             print("Pandas has been successfully installed.")
         except Exception as e:
             print("Error occurred while installing Pandas:", e)
