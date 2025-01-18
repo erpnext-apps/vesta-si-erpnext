@@ -97,3 +97,44 @@ def set_exchange_rate(self,method):
 	default_currency = frappe.db.get_value('Company', self.company, "default_currency")
 	exchange_rate = get_exchange_rate(self.currency, default_currency, transaction_date = self.posting_date, args=None)
 	self.conversion_rate = exchange_rate
+
+@frappe.whitelist()
+def check_any_advance_payment(self):
+
+	self = frappe._dict(json.loads(self))
+
+	get_advance_entries_w(self)
+
+	party_account_currency = frappe.db.get_value("Account", self.credit_to, 'account_currency')
+	company_currency = frappe.db.get_value("Company", self.company, 'default_currency')
+	data = get_negative_outstanding_invoices(
+				"Supplier", 
+				self.supplier, 
+				self.credit_to, 
+				party_account_currency, 
+				company_currency,
+				condition = '')
+	final_data = []
+	for row in data:
+		if not row.voucher_no in ["ACC-PINV-2024-00250-1", "ACC-PINV-2024-00251-1"]:
+			final_data.append(row)
+	if len(final_data):
+		message = "Debit Note and Payment Entry available against this supplier <b>{0}</b><br>".format(get_link_to_form("Supplier",self.supplier))
+		message +="First reconcile those entry, reference available as mentioned below"
+		message += "<br><br>"
+		message += """<table width='100%'>"""
+		for row in data:
+			message += "<tr><td>{0}</td><td>{1} {2}</td></tr>".format(get_link_to_form(row.voucher_type, row.voucher_no),self.currency, row.outstanding_amount)
+		message += "</table>"
+		
+		if message:
+			return frappe.get_doc(row.voucher_type, row.voucher_no)
+
+def get_advance_entries_w(self):
+	doc = frappe.get_doc(self.doctype, self.name)
+	res = doc.get_advance_entries(
+			include_unallocated=not cint(doc.get("only_include_allocated_payments"))
+		)
+	if res and not doc.allocate_advances_automatically:
+		if not len(doc.advances):
+			frappe.throw("Advance payments available against supplier <b>{0}</b> <br> Enable <b>'Set Advances and Allocate (FIFO)'</b> or click on the <b>'Get Advances Paid'</b> button under the payments section.".format(doc.supplier))

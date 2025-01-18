@@ -18,22 +18,22 @@ from frappe.utils import (
 
 def validate(self, method):
     ## remove After Update
-    if self.party_type and self.payment_type == "Pay":
-        if self.difference_amount:
-            from erpnext.accounts.doctype.payment_entry.payment_entry import get_company_defaults
-            r = get_company_defaults(self.company)
-            difference_amount = flt(self.difference_amount, self.precision("difference_amount"))
-            if difference_amount > 1 or difference_amount < -1:
-                account =  r.get('exchange_gain_loss_account')
-            else:
-                account = r.get("write_off_account")
-            self.deductions = []
-            self.append("deductions", {
-                "account":account,
-                "amount":difference_amount,
-                "cost_center":r.get('cost_center')
-            })
-            self.difference_amount = 0
+    # if self.party_type and self.payment_type == "Pay":
+    #     if self.difference_amount:
+    #         from erpnext.accounts.doctype.payment_entry.payment_entry import get_company_defaults
+    #         r = get_company_defaults(self.company)
+    #         difference_amount = flt(self.difference_amount, self.precision("difference_amount"))
+    #         if difference_amount > 1 or difference_amount < -1:
+    #             account =  r.get('exchange_gain_loss_account')
+    #         else:
+    #             account = r.get("write_off_account")
+    #         self.deductions = []
+    #         self.append("deductions", {
+    #             "account":account,
+    #             "amount":difference_amount,
+    #             "cost_center":r.get('cost_center')
+    #         })
+    #         self.difference_amount = 0
     ## till this line
     currency_list = []    
     if self.party_type == "Supplier":

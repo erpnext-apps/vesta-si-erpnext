@@ -150,102 +150,102 @@ def get_total_penalty_cost_remitted_to_suppliers_monthly(filters):
 
 #Remove After Update
 #Override from asset.py
-def get_straight_line_or_manual_depr_amount(
-    asset, row, schedule_idx, number_of_pending_depreciations
-):
-    if row.shift_based:
-        return get_shift_depr_amount(asset, row, schedule_idx)
+# def get_straight_line_or_manual_depr_amount(
+#     asset, row, schedule_idx, number_of_pending_depreciations
+# ):
+#     if row.shift_based:
+#         return get_shift_depr_amount(asset, row, schedule_idx)
 
-    # if the Depreciation Schedule is being modified after Asset Repair due to increase in asset life and value
-    if asset.flags.increase_in_asset_life:
-        return (flt(row.value_after_depreciation) - flt(row.expected_value_after_useful_life)) / (
-            date_diff(asset.to_date, asset.available_for_use_date) / 365
-        )
-    # if the Depreciation Schedule is being modified after Asset Repair due to increase in asset value
-    elif asset.flags.increase_in_asset_value_due_to_repair:
-        return (flt(row.value_after_depreciation) - flt(row.expected_value_after_useful_life)) / flt(
-            number_of_pending_depreciations
-        )
-    # if the Depreciation Schedule is being modified after Asset Value Adjustment due to decrease in asset value
-    elif asset.flags.decrease_in_asset_value_due_to_value_adjustment:
-        if row.daily_prorata_based:
-            daily_depr_amount = (
-                flt(row.value_after_depreciation) - flt(row.expected_value_after_useful_life)
-            ) / date_diff(get_last_day(add_months(
-                        row.depreciation_start_date,
-                        flt(row.total_number_of_depreciations - asset.number_of_depreciations_booked - 1)
-                        * row.frequency_of_depreciation,
-                    )
-                ),
-                add_days(
-                    get_last_day(
-                        add_months(
-                            row.depreciation_start_date,
-                            flt(
-                                row.total_number_of_depreciations
-                                - asset.number_of_depreciations_booked
-                                - number_of_pending_depreciations
-                                - 1
-                            )
-                            * row.frequency_of_depreciation,
-                        )
-                    ),
-                    1,
-                ),
-            )
+#     # if the Depreciation Schedule is being modified after Asset Repair due to increase in asset life and value
+#     if asset.flags.increase_in_asset_life:
+#         return (flt(row.value_after_depreciation) - flt(row.expected_value_after_useful_life)) / (
+#             date_diff(asset.to_date, asset.available_for_use_date) / 365
+#         )
+#     # if the Depreciation Schedule is being modified after Asset Repair due to increase in asset value
+#     elif asset.flags.increase_in_asset_value_due_to_repair:
+#         return (flt(row.value_after_depreciation) - flt(row.expected_value_after_useful_life)) / flt(
+#             number_of_pending_depreciations
+#         )
+#     # if the Depreciation Schedule is being modified after Asset Value Adjustment due to decrease in asset value
+#     elif asset.flags.decrease_in_asset_value_due_to_value_adjustment:
+#         if row.daily_prorata_based:
+#             daily_depr_amount = (
+#                 flt(row.value_after_depreciation) - flt(row.expected_value_after_useful_life)
+#             ) / date_diff(get_last_day(add_months(
+#                         row.depreciation_start_date,
+#                         flt(row.total_number_of_depreciations - asset.number_of_depreciations_booked - 1)
+#                         * row.frequency_of_depreciation,
+#                     )
+#                 ),
+#                 add_days(
+#                     get_last_day(
+#                         add_months(
+#                             row.depreciation_start_date,
+#                             flt(
+#                                 row.total_number_of_depreciations
+#                                 - asset.number_of_depreciations_booked
+#                                 - number_of_pending_depreciations
+#                                 - 1
+#                             )
+#                             * row.frequency_of_depreciation,
+#                         )
+#                     ),
+#                     1,
+#                 ),
+#             )
 
-            to_date = get_last_day(
-                add_months(row.depreciation_start_date, schedule_idx * row.frequency_of_depreciation)
-            )
-            from_date = add_days(
-                get_last_day(
-                    add_months(row.depreciation_start_date, (schedule_idx - 1) * row.frequency_of_depreciation)
-                ),
-                1,
-            )
+#             to_date = get_last_day(
+#                 add_months(row.depreciation_start_date, schedule_idx * row.frequency_of_depreciation)
+#             )
+#             from_date = add_days(
+#                 get_last_day(
+#                     add_months(row.depreciation_start_date, (schedule_idx - 1) * row.frequency_of_depreciation)
+#                 ),
+#                 1,
+#             )
 
-            return daily_depr_amount * (date_diff(to_date, from_date) + 1)
-        else:
-            return (
-                flt(row.value_after_depreciation) - flt(row.expected_value_after_useful_life)
-            ) / number_of_pending_depreciations
-    # if the Depreciation Schedule is being prepared for the first time
-    else:
-        if row.daily_prorata_based:
-            daily_depr_amount = (
-                flt(asset.gross_purchase_amount)
-                - flt(asset.opening_accumulated_depreciation)
-                - flt(row.expected_value_after_useful_life)
-            ) / date_diff(
-                get_last_day(
-                    add_months(
-                        row.depreciation_start_date,
-                        flt(row.total_number_of_depreciations - asset.number_of_depreciations_booked - 1)
-                        * row.frequency_of_depreciation,
-                    )
-                ),
-                add_days(
-                    get_last_day(add_months(row.depreciation_start_date, -1 * row.frequency_of_depreciation)), 1
-                ),
-            )
+#             return daily_depr_amount * (date_diff(to_date, from_date) + 1)
+#         else:
+#             return (
+#                 flt(row.value_after_depreciation) - flt(row.expected_value_after_useful_life)
+#             ) / number_of_pending_depreciations
+#     # if the Depreciation Schedule is being prepared for the first time
+#     else:
+#         if row.daily_prorata_based:
+#             daily_depr_amount = (
+#                 flt(asset.gross_purchase_amount)
+#                 - flt(asset.opening_accumulated_depreciation)
+#                 - flt(row.expected_value_after_useful_life)
+#             ) / date_diff(
+#                 get_last_day(
+#                     add_months(
+#                         row.depreciation_start_date,
+#                         flt(row.total_number_of_depreciations - asset.number_of_depreciations_booked - 1)
+#                         * row.frequency_of_depreciation,
+#                     )
+#                 ),
+#                 add_days(
+#                     get_last_day(add_months(row.depreciation_start_date, -1 * row.frequency_of_depreciation)), 1
+#                 ),
+#             )
 
-            to_date = get_last_day(
-                add_months(row.depreciation_start_date, schedule_idx * row.frequency_of_depreciation)
-            )
-            from_date = add_days(
-                get_last_day(
-                    add_months(row.depreciation_start_date, (schedule_idx - 1) * row.frequency_of_depreciation)
-                ),
-                1,
-            )
+#             to_date = get_last_day(
+#                 add_months(row.depreciation_start_date, schedule_idx * row.frequency_of_depreciation)
+#             )
+#             from_date = add_days(
+#                 get_last_day(
+#                     add_months(row.depreciation_start_date, (schedule_idx - 1) * row.frequency_of_depreciation)
+#                 ),
+#                 1,
+#             )
 
-            return daily_depr_amount * (date_diff(to_date, from_date) + 1)
-        else:
-            return (
-                flt(asset.gross_purchase_amount)
-                - flt(asset.opening_accumulated_depreciation)
-                - flt(row.expected_value_after_useful_life)
-            ) / flt(row.total_number_of_depreciations - asset.number_of_depreciations_booked)
+#             return daily_depr_amount * (date_diff(to_date, from_date) + 1)
+#         else:
+#             return (
+#                 flt(asset.gross_purchase_amount)
+#                 - flt(asset.opening_accumulated_depreciation)
+#                 - flt(row.expected_value_after_useful_life)
+#             ) / flt(row.total_number_of_depreciations - asset.number_of_depreciations_booked)
 
 
 #This Function help to filter a item tax template in update item child table
