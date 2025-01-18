@@ -38,7 +38,8 @@ doctype_js = {
 	"Stock Entry": "public/js/stock_entry.js",
 	"Quality Inspection Parameter": "public/js/quality_inspection_parameter.js",
 	"Sales Invoice":"public/js/sales_invoice.js",
-	"Item" : "public/js/item.js"
+	"Item" : "public/js/item.js",
+	"Purchase Invoice" : "public/js/purchase_invoice.js"
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -188,7 +189,7 @@ override_whitelisted_methods = {
 override_doctype_class = {
 	"Stock Entry": "vesta_si_erpnext.vesta_si_erpnext.stock_entry.CustomStockEntry",
 	"Purchase Invoice": "vesta_si_erpnext.overrides.purchase_invoice.CustomPurchaseInvoice",
-	"Asset" : "vesta_si_erpnext.vesta_si_erpnext.asset.CustomAsset",
+	# "Asset" : "vesta_si_erpnext.vesta_si_erpnext.asset.CustomAsset", # should not 
 	# "Payment Reconciliation": "vesta_si_erpnext.overrides.payment_reconciliation.customPaymentReconciliation"
 	}
 
