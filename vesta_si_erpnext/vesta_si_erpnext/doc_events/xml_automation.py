@@ -32,7 +32,7 @@ def get_payment_entry(payments, payment_export_settings, posting_date, payment_t
         xml_content = generate_payment_file(payments, payment_export_settings, posting_date, payment_type, bank_account)
         content = xml_content.get("content")
         url = get_url().replace("https://", '')
-        file_name = "{1}/private/files/s{0}.xml".format(str(getdate()).replace("_", "").replace(" ", "").replace("-", ''), url)
+        file_name = "{1}/private/files/payments{0}.xml".format(str(getdate()).replace("_", "").replace(" ", "").replace("-", ''), url)
         file_name = file_name.replace(" ", "-").replace("_", "")
         try:
             with open(file_name, "w", encoding="utf-8") as file:
