@@ -8,5 +8,6 @@ requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]
 dependencies = [
-    "pandas"
+    "pandas",
+    "pysftp
 ]
