@@ -208,8 +208,9 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 				and tax_template_unchange   #changed by fosserp
 			):
 				continue
-		if not child_item.get("item_tax_template") and d.get("item_tax_template"):  #changed by fosserp
-			child_item.item_tax_template = d.get("item_tax_template") #changed by fosserp
+		# if not child_item.get("item_tax_template") and d.get("item_tax_template"):  #changed by fosserp
+		child_item.item_tax_template = d.get("item_tax_template") #changed by fosserp
+
 		validate_quantity(child_item, d)
 		if flt(child_item.get("qty")) != flt(d.get("qty")):
 			any_qty_changed = True
