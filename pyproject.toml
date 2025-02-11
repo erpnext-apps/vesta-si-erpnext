@@ -9,5 +9,5 @@ readme = "README.md"
 dynamic = ["version"]
 dependencies = [
     "pandas",
-    "pysftp
+    "pysftp"
 ]
