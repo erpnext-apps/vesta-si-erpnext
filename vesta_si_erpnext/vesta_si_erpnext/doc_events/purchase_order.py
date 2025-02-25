@@ -18,3 +18,26 @@ def validate(self , method):
         self.custom_approved_and_reviewed = now()
     if not self.custom_rejected and self.workflow_state == "Rejected":
         self.custom_rejected = now()
+
+
+def on_update_after_submit(self, method):
+    old_doc = self.get_doc_before_save()
+    allow_overbill_amount = frappe.db.get_single_value("Accounts Settings", "overbill_allow_by_amount")
+    
+    different = self.base_net_total - old_doc.base_net_total
+    if different > allow_overbill_amount:
+        frappe.throw("Overbilling is not allowed beyond {0} SEK.".format(allow_overbill_amount))
+
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def item_query(doctype, txt, searchfield, start, page_len, filters, as_dict=False):
+    if isinstance(filters, str):
+        filters = json.loads(filters)
+
+    return frappe.db.sql("""
+        Select aoi.item, item.item_group, item.stock_uom
+        From `tabAllow Overbill Item`  as aoi
+        Left Join `tabItem` as item ON aoi.item = item.name
+        Where aoi.parenttype = 'Accounts Settings' and aoi.parentfield = 'overbill_items'
+    """, as_dict = as_dict)

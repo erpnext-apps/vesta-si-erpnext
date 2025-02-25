@@ -39,7 +39,8 @@ doctype_js = {
 	"Quality Inspection Parameter": "public/js/quality_inspection_parameter.js",
 	"Sales Invoice":"public/js/sales_invoice.js",
 	"Item" : "public/js/item.js",
-	"Purchase Invoice" : "public/js/purchase_invoice.js"
+	"Purchase Invoice" : "public/js/purchase_invoice.js",
+	"Purchase Order" : "public/js/purchase_order.js"
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -132,7 +133,8 @@ doc_events = {
 		"validate" : "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.validate"
 	},
 	"Purchase Order":{
-		"validate":"vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_order.validate"
+		"validate":"vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_order.validate",
+		"on_update_after_submit" : "vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_order.on_update_after_submit"
 	},
 	"Payment Entry": {
 		"validate": "vesta_si_erpnext.vesta_si_erpnext.doc_events.payment_entry.validate",
