@@ -167,7 +167,6 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 			continue
 
 		if not d.get("docname"):
-			frappe.msgprint("Entries")
 			new_child_flag = True
 			items_added_or_removed = True
 			check_doc_permissions(parent, "create")
