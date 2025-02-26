@@ -42,7 +42,10 @@ def remove_items_(items):
     if isinstance(items, str):
         items = json.loads(items)
 
-    ac_items = frappe.db.get_list("Allow Overbill Item", {"parent" : "Accounts Settings", "parentfield" : "overbill_items"}, "item", pluck="item")
+    ac_doc = frappe.get_doc("Accounts Settings", "Accounts Settings")
+    ac_items = []
+    for row in ac_doc.overbill_items:
+        ac_items.append(row.item)
     new_items = []
     for row in items:
         if row.get("item_code") not in ac_items:
