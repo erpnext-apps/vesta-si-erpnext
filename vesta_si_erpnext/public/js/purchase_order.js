@@ -6,6 +6,7 @@ frappe.ui.form.on("Purchase Order", {
     },
     refresh:function(frm){
         erpnext.utils.update_child_items = function(opts) {
+            console.log("Hello")
             if (opts.frm.doc.docstatus == 1 && !frappe.user.has_role("Over Billing Approver")){
                 frappe.throw("Insufficient permission for this operation")
             }
@@ -161,46 +162,54 @@ frappe.ui.form.on("Purchase Order", {
                     precision: get_precision('conversion_factor')
                 })
             }
-            
 
-            new frappe.ui.Dialog({
-                title: __("Update Items"),
-                fields: [
-                    {
-                        fieldname: "trans_items",
-                        fieldtype: "Table",
-                        label: "Items",
-                        cannot_add_rows: cannot_add_row,
-                        in_place_edit: false,
-                        reqd: 1,
-                        data: this.data,
-                        size: "extra-large", // small, large, extra-large 
-                        get_data: () => {
-                            return this.data;
-                        },
-                        fields: fields,
-                    },
-                ],
-                primary_action: function() {
-                    const trans_items = this.get_values()["trans_items"].filter((item) => !!item.item_code);
-                    frappe.call({
-                        method: 'erpnext.controllers.accounts_controller.update_child_qty_rate',
-                        freeze: true,
-                        args: {
-                            'parent_doctype': frm.doc.doctype,
-                            'trans_items': trans_items,
-                            'parent_doctype_name': frm.doc.name,
-                            'child_docname': child_docname
-                        },
-                        callback: function() {
-                            frm.reload_doc();
-                        }
-                    });
-                    this.hide();
-                    refresh_field("items");
+            frappe.call({
+                method : "vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_order.remove_items_",
+                args:{
+                    items : this.data
                 },
-                primary_action_label: __('Update')
-            }).show();
+                callback:(r)=>{
+                    this.data = r.message
+                    new frappe.ui.Dialog({
+                        title: __("Update Items"),
+                        fields: [
+                            {
+                                fieldname: "trans_items",
+                                fieldtype: "Table",
+                                label: "Items",
+                                cannot_add_rows: cannot_add_row,
+                                in_place_edit: false,
+                                reqd: 1,
+                                data: this.data,
+                                size: "extra-large", // small, large, extra-large 
+                                get_data: () => {
+                                    return this.data;
+                                },
+                                fields: fields,
+                            },
+                        ],
+                        primary_action: function() {
+                            const trans_items = this.get_values()["trans_items"].filter((item) => !!item.item_code);
+                            frappe.call({
+                                method: 'erpnext.controllers.accounts_controller.update_child_qty_rate',
+                                freeze: true,
+                                args: {
+                                    'parent_doctype': frm.doc.doctype,
+                                    'trans_items': trans_items,
+                                    'parent_doctype_name': frm.doc.name,
+                                    'child_docname': child_docname
+                                },
+                                callback: function() {
+                                    frm.reload_doc();
+                                }
+                            });
+                            this.hide();
+                            refresh_field("items");
+                        },
+                        primary_action_label: __('Update')
+                    }).show();
+                }
+            })
         }
         if (frm.doc.docstatus == 1 && !frappe.user.has_role("Over Billing Approver")){
             frm.remove_custom_button(__("Update Items"));

@@ -134,7 +134,6 @@ doc_events = {
 	},
 	"Purchase Order":{
 		"validate":"vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_order.validate",
-		"on_update_after_submit" : "vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_order.on_update_after_submit"
 	},
 	"Payment Entry": {
 		"validate": "vesta_si_erpnext.vesta_si_erpnext.doc_events.payment_entry.validate",
