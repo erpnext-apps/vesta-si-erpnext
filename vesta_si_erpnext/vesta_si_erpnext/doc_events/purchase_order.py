@@ -21,27 +21,6 @@ def validate(self , method):
         self.custom_rejected = now()
 
 
-# def on_update_after_submit(self, method):
-#     old_doc = self.get_doc_before_save()
-#     allow_overbill_amount = frappe.db.get_single_value("Accounts Settings", "overbill_allow_by_amount")
-    
-#     old_items_map = {}
-#     old_amount = 0
-#     for row in old_doc.items:
-#         old_amount += (row.base_rate * row.qty)
-#         old_items_map[row.name] = row
-
-#     ac_items = frappe.db.get_list("Allow Overbill Item", {"parent" : "Accounts Settings", "parentfield" : "overbill_items"}, "item", pluck="item")
-#     new_amount = 0 
-#     for row in self.items:
-#         new_amount += (row.base_rate * row.qty)
-#         if row.item_code not in ac_items:
-#             if row.qty != old_items_map.get(row.name).get("qty"):
-#                 frappe.throw("Hello")
-#     frappe.throw(str(new_amount) + " " +str(old_doc.base_net_total))
-#     if old_doc.base_net_total - new_amount > allow_overbill_amount:
-#         frappe.throw("Overbilling is not allowed beyond {0} SEK.".format(allow_overbill_amount))
-
 
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
