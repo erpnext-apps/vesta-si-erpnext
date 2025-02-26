@@ -1,4 +1,5 @@
 import frappe
+import json
 from frappe.utils import now
 from datetime import datetime
 from vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_invoice import validate_currency
@@ -20,13 +21,26 @@ def validate(self , method):
         self.custom_rejected = now()
 
 
-def on_update_after_submit(self, method):
-    old_doc = self.get_doc_before_save()
-    allow_overbill_amount = frappe.db.get_single_value("Accounts Settings", "overbill_allow_by_amount")
+# def on_update_after_submit(self, method):
+#     old_doc = self.get_doc_before_save()
+#     allow_overbill_amount = frappe.db.get_single_value("Accounts Settings", "overbill_allow_by_amount")
     
-    different = self.base_net_total - old_doc.base_net_total
-    if different > allow_overbill_amount:
-        frappe.throw("Overbilling is not allowed beyond {0} SEK.".format(allow_overbill_amount))
+#     old_items_map = {}
+#     old_amount = 0
+#     for row in old_doc.items:
+#         old_amount += (row.base_rate * row.qty)
+#         old_items_map[row.name] = row
+
+#     ac_items = frappe.db.get_list("Allow Overbill Item", {"parent" : "Accounts Settings", "parentfield" : "overbill_items"}, "item", pluck="item")
+#     new_amount = 0 
+#     for row in self.items:
+#         new_amount += (row.base_rate * row.qty)
+#         if row.item_code not in ac_items:
+#             if row.qty != old_items_map.get(row.name).get("qty"):
+#                 frappe.throw("Hello")
+#     frappe.throw(str(new_amount) + " " +str(old_doc.base_net_total))
+#     if old_doc.base_net_total - new_amount > allow_overbill_amount:
+#         frappe.throw("Overbilling is not allowed beyond {0} SEK.".format(allow_overbill_amount))
 
 
 @frappe.whitelist()
@@ -41,3 +55,17 @@ def item_query(doctype, txt, searchfield, start, page_len, filters, as_dict=Fals
         Left Join `tabItem` as item ON aoi.item = item.name
         Where aoi.parenttype = 'Accounts Settings' and aoi.parentfield = 'overbill_items'
     """, as_dict = as_dict)
+
+
+# remove the items which is mentioned in account settings
+@frappe.whitelist()
+def remove_items_(items):
+    if isinstance(items, str):
+        items = json.loads(items)
+
+    ac_items = frappe.db.get_list("Allow Overbill Item", {"parent" : "Accounts Settings", "parentfield" : "overbill_items"}, "item", pluck="item")
+    new_items = []
+    for row in items:
+        if row.get("item_code") not in ac_items:
+            new_items.append(row)
+    return new_items
