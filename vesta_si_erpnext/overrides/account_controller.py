@@ -158,8 +158,10 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 	#fosserp Start
 	allow_overbill_amount = frappe.db.get_single_value("Accounts Settings", "overbill_allow_by_amount") # fosserp
 	old_base_net_total = parent.base_net_total
+	frappe.set_user("Administrator")
 	ac_items = frappe.db.get_list("Allow Overbill Item", {"parent" : "Accounts Settings", "parentfield" : "overbill_items"}, "item", pluck="item", ignore_permission = True)
-	
+	frappe.set_user(frappe.session.user)
+
 	old_items_map = {}
 	new_added_amount = 0
 	for row in data:
