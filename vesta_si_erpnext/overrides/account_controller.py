@@ -158,24 +158,22 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 	#fosserp Start
 	allow_overbill_amount = frappe.db.get_single_value("Accounts Settings", "overbill_allow_by_amount") # fosserp
 	old_base_net_total = parent.base_net_total
-	frappe.set_user("Administrator")
-	ac_items = frappe.db.get_list("Allow Overbill Item", {"parent" : "Accounts Settings", "parentfield" : "overbill_items"}, "item", pluck="item", ignore_permission = True)
-	frappe.set_user(frappe.session.user)
-
+	ac_doc = frappe.get_doc("Accounts Settings", "Accounts Settings")
+	ac_items = []
+	for row in ac_doc.overbill_items:
+		ac_items.append(row.item)
 	old_items_map = {}
 	new_added_amount = 0
 	for row in data:
 		if row.get("item_code") in ac_items:
 			new_added_amount +=  row.get("qty") + (row.get("rate") * parent.conversion_rate)
 		old_items_map[row.get('name')] = row
-
 	for row in parent.items:
 		if old_items_map.get(row.get('name')):
 			if old_items_map.get(row.get('name')).get("qty") != row.qty:
 				frappe.throw("Not Allow to change qty in existing item , you can only add new items")
 			if old_items_map.get(row.get('name')).get("rate") != row.rate:
 				frappe.throw("Not Allow to change Rate in existing item , you can only add new items")
-
 	if allow_overbill_amount < new_added_amount:
 		frappe.throw("Overbilling is not allowed beyond {0} SEK.".format(allow_overbill_amount))
 	#fosserp End
