@@ -1,6 +1,26 @@
 frappe.ui.form.on("Purchase Invoice", {
+    setup:()=>{
+    },
+    onload:(frm)=>{
+        frm.doc.items.forEach(element => {
+            if (element.purchase_receipt){
+                console.log("HHHH")
+                cur_frm.get_field("items").grid.wrapper.find(".grid-add-multiple-rows").addClass("hidden");
+                frm.get_field('items').grid.cannot_add_rows = true;
+            }
+        });
+    },
     refresh:function(frm){
         frm.trigger("add_unreconcile_btn")
+        frm.doc.items.forEach(element => {
+            if (element.purchase_receipt){
+                console.log("HHHH")
+                frm.get_field('items').grid.cannot_add_rows = true;
+                cur_frm.get_field("items").grid.wrapper.find(".grid-add-multiple-rows").addClass("hidden");
+                document.querySelectorAll(".grid-add-multiple-rows").forEach(el => el.classList.add("hidden"));
+
+            }
+        });
     },
     add_unreconcile_btn:function(frm) {
 		if (frm.doc.docstatus == 0 && !frm.is_new()) {
