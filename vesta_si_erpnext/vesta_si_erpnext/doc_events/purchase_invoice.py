@@ -54,7 +54,7 @@ def validate(self, method):
 	if not self.is_return:
 		set_exchange_rate(self, method)
 		self.validate()
-	
+	check_item_level_changes(self)
 	validate_currency(self) #Do not deploy
 
 def get_advance_entries(self):
@@ -138,3 +138,20 @@ def get_advance_entries_w(self):
 	if res and not doc.allocate_advances_automatically:
 		if not len(doc.advances):
 			frappe.throw("Advance payments available against supplier <b>{0}</b> <br> Enable <b>'Set Advances and Allocate (FIFO)'</b> or click on the <b>'Get Advances Paid'</b> button under the payments section.".format(doc.supplier))
+
+# Not allow to change item code , qty and not allow to add row
+def check_item_level_changes(self):
+	pr_flage = False
+	for row in self.items:
+		if row.purchase_receipt:
+			pr_flage = True
+			pr_data = frappe.db.sql(f"""
+						Select item_code, name, qty, base_amount
+						From `tabPurchase Receipt Item`
+						Where name = '{row.pr_detail}'
+			""", as_dict = 1)
+			item_allownce = frappe.db.get_value("Item", row.item_code, "overbill_allow_by_amount")
+			if row.qty != pr_data[0].get("qty"):
+				frappe.throw(f"Row #{row.idx} : Accepted Qty should be same as purchase receipt quantiy")
+			if item_allownce and (row.base_amount - pr_data[0].get("base_amount")) > item_allownce:
+				frappe.throw(f"Row #{row.idx} : Row #1: Overbilling is not allowed beyond {item_allownce} SEK.")
