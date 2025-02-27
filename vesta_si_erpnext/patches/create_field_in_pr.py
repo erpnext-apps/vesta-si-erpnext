@@ -1,7 +1,7 @@
 import frappe
 
 
-def execute()
+def execute():
     #create a custom field in purchase receipt
     doc = frappe.new_doc("Custom Field")
     doc.dt = "Item"
