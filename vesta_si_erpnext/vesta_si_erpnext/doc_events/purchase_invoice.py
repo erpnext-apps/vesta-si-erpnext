@@ -151,8 +151,8 @@ def check_item_level_changes(self):
 						Where name = '{row.pr_detail}'
 			""", as_dict = 1)
 			item_allownce = frappe.db.get_value("Item", row.item_code, "overbill_allow_by_amount")
-			if not item_allownce:
-				frappe.throw(f"Row #{row.idx} : Overbilling allow for Item <b>{row.item_code}</b>")
+			if not item_allownce and not self.is_new():
+				frappe.throw(f"Row #{row.idx} : Overbilling not allow for Item <b>{row.item_code}</b>")
 			if row.qty != pr_data[0].get("qty"):
 				frappe.throw(f"Row #{row.idx} : Accepted Qty should be same as purchase receipt quantiy")
 			if item_allownce > 0  and (row.base_amount - pr_data[0].get("base_amount")) > item_allownce:
