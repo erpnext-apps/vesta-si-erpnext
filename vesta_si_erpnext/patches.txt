@@ -5,5 +5,5 @@ vesta_si_erpnext.patches.create_field_custom_apply_putaway_rule
 vesta_si_erpnext.patches.install_pandas
 
 [post_model_sync]
-vesta_si_erpnext.patches.create_field_in_accounting_setting
-vesta_si_erpnext.patches.create_field_in_pr
+#vesta_si_erpnext.patches.create_field_in_accounting_setting
+#vesta_si_erpnext.patches.create_field_in_pr

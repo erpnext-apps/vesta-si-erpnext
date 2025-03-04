@@ -24,7 +24,6 @@ def set_due_date_after_submit(self, method):
 			self.reload()
 
 def validate(self, method):
-	# pass
 	get_advance_entries(self)
 
 	party_account_currency = frappe.db.get_value("Account", self.credit_to, 'account_currency')
@@ -54,7 +53,7 @@ def validate(self, method):
 	if not self.is_return:
 		set_exchange_rate(self, method)
 		self.validate()
-	check_item_level_changes(self)
+	# check_item_level_changes(self) # Not Confirm to deploye and available on Latest branch
 	validate_currency(self) #Do not deploy
 
 def get_advance_entries(self):
@@ -65,7 +64,7 @@ def get_advance_entries(self):
 		if not len(self.advances):
 			frappe.throw("Advance payments available against supplier <b>{0}</b> <br> Enable <b>'Set Advances and Allocate (FIFO)'</b> or click on the <b>'Get Advances Paid'</b> button under the payments section.".format(self.supplier))
 
-#validate the currency based on supplier payment type (Do Not Deploy)
+#validate the currency based on supplier payment type 
 def validate_currency(self):
 	payment_type = frappe.db.get_value("Supplier", self.supplier, "custom_payment_type")
 	flags = False
@@ -151,8 +150,7 @@ def check_item_level_changes(self):
 						Where name = '{row.pr_detail}'
 			""", as_dict = 1)
 			item_allownce = frappe.db.get_value("Item", row.item_code, "overbill_allow_by_amount")
-			# frappe.msgprint(str(row.base_amount)) 
-			# frappe.msgprint(str((pr_data[0].get("base_amount"))))
+		
 			if not item_allownce and not self.is_new() and (row.base_amount - pr_data[0].get("base_amount")) > item_allownce:
 				frappe.throw(f"Row #{row.idx} : Overbilling not allow for Item <b>{row.item_code}</b>")
 			if row.qty != pr_data[0].get("qty"):
