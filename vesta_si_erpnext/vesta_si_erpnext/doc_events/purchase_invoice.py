@@ -53,7 +53,7 @@ def validate(self, method):
 	if not self.is_return:
 		set_exchange_rate(self, method)
 		self.validate()
-	# check_item_level_changes(self) # Not Confirm to deploye and available on Latest branch
+	check_item_level_changes(self) 
 	validate_currency(self) #Do not deploy
 
 def get_advance_entries(self):
@@ -157,3 +157,5 @@ def check_item_level_changes(self):
 				frappe.throw(f"Row #{row.idx} : Accepted Qty should be same as purchase receipt quantiy")
 			if item_allownce > 0  and (row.base_amount - pr_data[0].get("base_amount")) > item_allownce:
 				frappe.throw(f"Row #{row.idx} : Overbilling is not allowed beyond {item_allownce} SEK.")
+		if pr_flage and not row.purchase_order:
+			frappe.throw(f"Row #{row.idx}: Not Allow to add Item, It should be available in purchase order")
