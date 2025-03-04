@@ -37,6 +37,7 @@ def item_query(doctype, txt, searchfield, start, page_len, filters, as_dict=Fals
 
 
 # remove the items which is mentioned in account settings
+#Js Code is disabled
 @frappe.whitelist()
 def remove_items_(items):
     if isinstance(items, str):

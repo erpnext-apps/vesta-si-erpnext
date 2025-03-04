@@ -63,10 +63,10 @@ def send_email_():
     from datetime import datetime
     currenct_day = getdate().strftime("%A")
     if currenct_day == "Monday":
-        due_date = add_days(today(), 2)
+        due_date = add_days(today(), 3)
         get_purchase_invoice_no(due_date)
     if currenct_day == "Thursday":
-        due_date = add_days(today(), 3)
+        due_date = add_days(today(), 4)
         get_purchase_invoice_no(due_date)
 
 
