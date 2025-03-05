@@ -140,6 +140,8 @@ def get_advance_entries_w(self):
 
 # Not allow to change item code , qty and not allow to add row
 def check_item_level_changes(self):
+	buying_setting =  frappe.get_doc("Buying Settings")
+	allow_extra_item =[ row.item for row in buying_setting.allow_extra_item]
 	po_flage = False
 	for row in self.items:
 		if row.purchase_receipt:
@@ -157,5 +159,5 @@ def check_item_level_changes(self):
 				frappe.throw(f"Row #{row.idx} : Accepted Qty should be same as purchase receipt quantiy")
 			if item_allownce > 0  and (row.base_amount - po_data[0].get("base_amount")) > item_allownce:
 				frappe.throw(f"Row #{row.idx} : Overbilling is not allowed beyond {item_allownce} SEK.")
-		if po_flage and not row.purchase_order:
+		if po_flage and not row.purchase_order and row.item_code not in allow_extra_item:
 			frappe.throw(f"Row #{row.idx}: Not Allow to add Item, It should be available in purchase order")
