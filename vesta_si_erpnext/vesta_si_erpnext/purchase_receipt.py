@@ -52,3 +52,18 @@ def set_exchange_rate(self):
 	default_currency = frappe.db.get_value('Company', self.company, "default_currency")
 	exchange_rate = get_exchange_rate(self.currency, default_currency, transaction_date = self.posting_date, args=None)
 	self.conversion_rate = exchange_rate
+
+def check_same_rate_cycle(self):
+	for row in self.items:
+		if row.purchase_order:
+			po_details = frappe.db.sql(f"""
+						Select item_code, qty, base_rate, rate
+						From `tabPurchase Order Item`
+						Where name = {row.purchase_order_item}
+			""", as_dict = 1)
+			if po_details[0].get("qty") != row.qty:
+				frappe.throw(f"Row #{row.idx}: Quantity not allow to change, It should be same as PO")
+			if po_details[0].get("rate") != row.rate:
+				frappe.throw(f"Row #{row.idx}: Rate not allow to change, It should be same as PO")
+
+
