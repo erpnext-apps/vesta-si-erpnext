@@ -38,5 +38,5 @@ def execute():
 
     #create a new role
     doc = frappe.new_doc("Role")
-    doc.role_name = "Over Billing Approver_"
+    doc.role_name = "Over Billing Approver"
     doc.insert()
