@@ -9,6 +9,7 @@ def validate(self, method):
 	if not self.is_return:
 		set_exchange_rate(self)
 		self.validate()
+	check_same_rate_cycle(self)
 
 def link_supplier_bag_to_batch(doc, method=None):
 	for item in doc.items:
@@ -54,12 +55,15 @@ def set_exchange_rate(self):
 	self.conversion_rate = exchange_rate
 
 def check_same_rate_cycle(self):
+	same_rate_v = frappe.db.get_singles_value("Buying Settings", "enable_same_rate_validation" )
+	if not same_rate_v:
+		return
 	for row in self.items:
 		if row.purchase_order:
 			po_details = frappe.db.sql(f"""
 						Select item_code, qty, base_rate, rate
 						From `tabPurchase Order Item`
-						Where name = {row.purchase_order_item}
+						Where name = '{row.purchase_order_item}'
 			""", as_dict = 1)
 			if po_details[0].get("qty") != row.qty:
 				frappe.throw(f"Row #{row.idx}: Quantity not allow to change, It should be same as PO")
