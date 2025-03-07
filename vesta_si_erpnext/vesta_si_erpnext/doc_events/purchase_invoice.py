@@ -53,7 +53,7 @@ def validate(self, method):
 	if not self.is_return:
 		set_exchange_rate(self, method)
 		self.validate()
-	# check_item_level_changes(self) # Not Confirm to deploye and available on Latest branch
+	check_item_level_changes(self) 
 	validate_currency(self) #Do not deploy
 
 def get_advance_entries(self):
@@ -140,20 +140,24 @@ def get_advance_entries_w(self):
 
 # Not allow to change item code , qty and not allow to add row
 def check_item_level_changes(self):
-	pr_flage = False
+	buying_setting =  frappe.get_doc("Buying Settings")
+	allow_extra_item =[ row.item for row in buying_setting.allow_extra_item]
+	po_flage = False
 	for row in self.items:
 		if row.purchase_receipt:
-			pr_flage = True
-			pr_data = frappe.db.sql(f"""
+			po_flage = True
+			po_data = frappe.db.sql(f"""
 						Select item_code, name, qty, base_amount
-						From `tabPurchase Receipt Item`
-						Where name = '{row.pr_detail}'
+						From `tabPurchase Order Item`
+						Where name = '{row.po_detail}'
 			""", as_dict = 1)
 			item_allownce = frappe.db.get_value("Item", row.item_code, "overbill_allow_by_amount")
 		
-			if not item_allownce and not self.is_new() and (row.base_amount - pr_data[0].get("base_amount")) > item_allownce:
+			if not item_allownce and not self.is_new() and (row.base_amount - po_data[0].get("base_amount")) > item_allownce:
 				frappe.throw(f"Row #{row.idx} : Overbilling not allow for Item <b>{row.item_code}</b>")
-			if row.qty != pr_data[0].get("qty"):
+			if row.qty != po_data[0].get("qty"):
 				frappe.throw(f"Row #{row.idx} : Accepted Qty should be same as purchase receipt quantiy")
-			if item_allownce > 0  and (row.base_amount - pr_data[0].get("base_amount")) > item_allownce:
+			if item_allownce > 0  and (row.base_amount - po_data[0].get("base_amount")) > item_allownce:
 				frappe.throw(f"Row #{row.idx} : Overbilling is not allowed beyond {item_allownce} SEK.")
+		if po_flage and not row.purchase_order and row.item_code not in allow_extra_item:
+			frappe.throw(f"Row #{row.idx}: Not Allow to add Item, It should be available in purchase order")
