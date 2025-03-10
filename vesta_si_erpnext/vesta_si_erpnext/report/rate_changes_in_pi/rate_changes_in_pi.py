@@ -138,8 +138,8 @@ def get_data(filters):
 								"supplier" : row.get("supplier"),
 								"old_value" : flt(old_value),
 								"currenct_value" : flt(currenct_value),
-								"difference" : flt(old_value) - flt(currenct_value),
-								"percentage" : round((flt(old_value) - flt(currenct_value)) * 100 / flt(old_value), 2) if old_value !=0 else 0,
+								"difference" : flt(currenct_value) - flt(old_value),
+								"percentage" : round((flt(currenct_value) - flt(old_value)) * 100 / flt(old_value), 2) if old_value !=0 else 0,
 								"idx" : data.get("row_changed")[0][1],
  							})
 	for row in value:
