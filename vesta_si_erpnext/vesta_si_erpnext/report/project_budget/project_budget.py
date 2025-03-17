@@ -17,7 +17,7 @@ def get_data(filters):
 			pro.estimated_costing, 
 			pro.total_purchase_cost, 
 			pro.percent_complete,
-			sum(pi.net_total) as pi_net_total
+			sum(pi.base_net_total) as pi_net_total
 			From `tabProject` as pro
 			left join `tabPurchase Invoice` as pi ON pi.project = pro.name
 			where pi.docstatus = 1
@@ -26,7 +26,7 @@ def get_data(filters):
 
 	po_data = frappe.db.sql("""
 			Select pro.name,
-			sum(po.net_total) as po_net_total
+			sum(po.base_net_total) as po_net_total
 			From `tabProject` as pro
 			Left Join `tabPurchase Order` as po ON po.project = pro.name
 			where po.docstatus = 1 and po.workflow_state = 'Approved'
