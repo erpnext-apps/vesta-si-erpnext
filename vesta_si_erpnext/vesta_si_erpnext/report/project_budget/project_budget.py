@@ -58,7 +58,7 @@ def get_columns(filters):
 			"width" : 250
 		},
 		{
-			"fieldname" : "estimated_cost",
+			"fieldname" : "estimated_costing",
 			"fieldtype" : "Currency",
 			"label" : "Estimated Cost"
 		},
