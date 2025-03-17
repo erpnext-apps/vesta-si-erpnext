@@ -82,7 +82,7 @@ def get_columns(filters):
 		{
 			"fieldname" : "po_net_total",
 			"fieldtype" : "Currency",
-			"label" : "PO Net Total",
+			"label" : "Approved PO Net Total",
 			"width" : 150
 		}
 	]
