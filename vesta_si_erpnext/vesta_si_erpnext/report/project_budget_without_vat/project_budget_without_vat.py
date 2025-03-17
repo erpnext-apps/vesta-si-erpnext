@@ -11,25 +11,38 @@ def execute(filters=None):
 	return columns, data
 
 def get_data(filters):
-	pi_data = frappe.db.sql("""
+	condition = ''
+	if filters.get("project"): 
+		condition += f" and pro.name = '{filters.get('project')}'"
+	
+	if filters.get("status"):
+		condition += f" and p.status = '{filters.get('status')}'"
+
+	pi_data = frappe.db.sql(f"""
 			Select pro.name, 
 			pro.project_name, 
 			pro.estimated_costing, 
 			pro.total_purchase_cost, 
 			pro.percent_complete,
-			sum(pi.base_net_total) as pi_net_total
+			sum(pi.base_net_amount) as pi_net_total
 			From `tabProject` as pro
-			left join `tabPurchase Invoice` as pi ON pi.project = pro.name
-			where pi.docstatus = 1
+			left join `tabPurchase Invoice Item` as pi ON pi.project = pro.name
+			left join `tabPurchase Invoice` as p ON p.name = pi.parent
+			where pi.docstatus = 1 {condition}
 			Group By pro.name
 	""", as_dict = 1)
 
+	po_condition = ''
+	if filters.get("project"): 
+		po_condition += f" and pro.name = '{filters.get('project')}'"
+
 	po_data = frappe.db.sql("""
 			Select pro.name,
-			sum(po.base_net_total) as po_net_total
+			sum(po.base_net_amount) as po_net_total
 			From `tabProject` as pro
-			Left Join `tabPurchase Order` as po ON po.project = pro.name
-			where po.docstatus = 1 and po.workflow_state = 'Approved'
+			Left Join `tabPurchase Order Item` as po ON po.project = pro.name
+			Left Join `tabPurchase Order` as p ON p.name = po.parent
+			where po.docstatus = 1 and p.workflow_state = 'Approved'
 			Group By pro.name
 	""", as_dict = 1)
 	
@@ -67,11 +80,6 @@ def get_columns(filters):
 			"fieldname" : "total_purchase_cost",
 			"fieldtype" : "Currency",
 			"label" : "Total Purchase Cost (via Purchase Invoice)"
-		},
-		{
-			"fieldname" : "percent_complete",
-			"fieldtype" : "Percentage",
-			"label" : "Completed"
 		},
 		{
 			"fieldname" : "pi_net_total",
