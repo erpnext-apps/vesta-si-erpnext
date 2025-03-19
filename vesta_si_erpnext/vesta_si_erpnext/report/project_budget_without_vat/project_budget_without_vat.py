@@ -53,6 +53,10 @@ def get_data(filters):
 	for row in pi_data:
 		if po_data_map.get(row.name):
 			row.update(po_data_map.get(row.name))
+		estimated_costing = row.get("estimated_costing") or 0
+		total_purchase_cost = row.get("total_purchase_cost") or 0
+		po_net_total = row.get("po_net_total") or 0
+		row.update({"project_balance" : estimated_costing - total_purchase_cost - po_net_total })
 	return pi_data
 
 def get_columns(filters):
@@ -82,16 +86,16 @@ def get_columns(filters):
 			"label" : "Total Purchase Cost (via Purchase Invoice)"
 		},
 		{
-			"fieldname" : "pi_net_total",
-			"fieldtype" : "Currency",
-			"label" : "PI Net Total",
-			"width" : 150
-		},
-		{
 			"fieldname" : "po_net_total",
 			"fieldtype" : "Currency",
 			"label" : "Approved PO Net Total",
 			"width" : 150
-		}
+		},
+		{
+			"fieldname" : "project_balance",
+			"fieldtype" : "Currency",
+			"label" : "Project Balance",
+			"width" : 150
+		},
 	]
 	return columns
