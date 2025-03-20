@@ -82,6 +82,8 @@ def get_data(filters):
 	for row in pi_data:
 		if pending_amount_map.get(row.name):
 			row.update(pending_amount_map.get(row.name))
+		pending_amount = row.get("pending_amount") or 0
+		row.update({"net_balance" : row.estimated_costing - total_purchase_cost - pending_amount})
 	return pi_data
 
 def get_columns(filters):
@@ -109,6 +111,12 @@ def get_columns(filters):
 			"fieldname" : "total_purchase_cost",
 			"fieldtype" : "Currency",
 			"label" : "Total Purchase Cost (via Purchase Invoice)"
+		},
+		{
+			
+			"fieldname" : "net_balance",
+			"fieldtype" : "Currency",
+			"label" : "Available Balance of Project"
 		},
 		{
 			"fieldname" : "po_net_total",
