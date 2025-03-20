@@ -2,7 +2,10 @@
 # For license information, please see license.txt
 
 import frappe
-
+from erpnext.buying.report.purchase_order_analysis.purchase_order_analysis import execute as poa_execute
+from frappe.utils import today
+from itertools import groupby
+from datetime import date
 
 def execute(filters=None):
 	columns, data = [], []
@@ -57,6 +60,28 @@ def get_data(filters):
 		total_purchase_cost = row.get("total_purchase_cost") or 0
 		po_net_total = row.get("po_net_total") or 0
 		row.update({"project_balance" : estimated_costing - total_purchase_cost - po_net_total })
+
+	filters  = {
+		"company" : "Vesta Si Sweden AB",
+		"from_date" : "1998-01-01",
+		"to_date" : today()
+	}
+	columns, data, A, chart_data = poa_execute(filters)
+	
+	filtered_data = [item for item in data if item.get("project") is not None]
+	filtered_data.sort(key=lambda x: x["project"])
+
+
+		# Grouping by 'project'
+	grouped_data = {key: list(group) for key, group in groupby(filtered_data, key=lambda x: x['project'])}
+
+	pending_amount_map = {}
+	for project, items in grouped_data.items():
+		pending_amount = sum([d.pending_amount for d in items])
+		pending_amount_map[project] = {"pending_amount" :  pending_amount}
+	for row in pi_data:
+		if pending_amount_map.get(row.name):
+			row.update(pending_amount_map.get(row.name))
 	return pi_data
 
 def get_columns(filters):
@@ -90,6 +115,12 @@ def get_columns(filters):
 			"fieldtype" : "Currency",
 			"label" : "Approved PO Net Total",
 			"width" : 150
+		},
+		{
+			"fieldname" : "pending_amount",
+			"fieldtype" : "Currency",
+			"label" : "PO Total(Not Invoiced Yet)",
+			"width" : 200
 		},
 		{
 			"fieldname" : "project_balance",
