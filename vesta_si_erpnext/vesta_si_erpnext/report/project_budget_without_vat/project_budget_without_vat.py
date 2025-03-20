@@ -83,7 +83,7 @@ def get_data(filters):
 		if pending_amount_map.get(row.name):
 			row.update(pending_amount_map.get(row.name))
 		pending_amount = row.get("pending_amount") or 0
-		row.update({"net_balance" : row.estimated_costing - total_purchase_cost - pending_amount})
+		row.update({"net_balance" : row.estimated_costing - row.total_purchase_cost - pending_amount})
 	return pi_data
 
 def get_columns(filters):
@@ -107,22 +107,9 @@ def get_columns(filters):
 			"label" : "Estimated Cost"
 		},
 		{
-			
 			"fieldname" : "total_purchase_cost",
 			"fieldtype" : "Currency",
 			"label" : "Total Purchase Cost (via Purchase Invoice)"
-		},
-		{
-			
-			"fieldname" : "net_balance",
-			"fieldtype" : "Currency",
-			"label" : "Available Balance of Project"
-		},
-		{
-			"fieldname" : "po_net_total",
-			"fieldtype" : "Currency",
-			"label" : "Approved PO Net Total",
-			"width" : 150
 		},
 		{
 			"fieldname" : "pending_amount",
@@ -131,10 +118,10 @@ def get_columns(filters):
 			"width" : 200
 		},
 		{
-			"fieldname" : "project_balance",
+			"fieldname" : "net_balance",
 			"fieldtype" : "Currency",
-			"label" : "Project Balance",
-			"width" : 150
-		},
+			"label" : "Net Balance",
+			"width" : 200
+		}
 	]
 	return columns
