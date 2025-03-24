@@ -15,6 +15,7 @@ from frappe.utils import (
 	nowdate,
 	today,
 )
+from frappe.desk.form.load import get_attachments
 
 
 def set_due_date_after_submit(self, method):
@@ -55,6 +56,23 @@ def validate(self, method):
 		self.validate()
 	check_item_level_changes(self) 
 	validate_currency(self) #Do not deploy
+
+def after_insert(self, method):
+	get_attachment_from_po(self)
+
+def get_attachment_from_po(self):
+	if self.items[0].get("purchase_order"):
+		attached_files = get_attachments("Purchase Order", self.items[0].get("purchase_order"))
+		for row in attached_files:
+			new_file = frappe.get_doc({ 
+				"doctype" : "File",
+				"file_name" : row.file_name,
+				"file_url" : row.file_url,
+				"attached_to_doctype" : "Purchase Invoice",
+				"attached_to_name" : self.name
+			})
+			new_file.insert(ignore_permissions=True)
+
 
 def get_advance_entries(self):
 	res = self.get_advance_entries(
