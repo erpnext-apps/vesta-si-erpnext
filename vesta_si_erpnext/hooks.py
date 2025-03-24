@@ -131,10 +131,11 @@ doc_events = {
 		],
 		"before_validate": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.before_validate",
 		"on_update": "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.on_update",
-		"validate" : "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.validate"
+		"validate" : "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.validate",
+		"after_insert" : "vesta_si_erpnext.vesta_si_erpnext.purchase_receipt.after_insert"
 	},
 	"Purchase Order":{
-		"validate":"vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_order.validate",
+		"validate": "vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_order.validate",
 	},
 	"Payment Entry": {
 		"validate": "vesta_si_erpnext.vesta_si_erpnext.doc_events.payment_entry.validate",
@@ -144,6 +145,7 @@ doc_events = {
 	"Purchase Invoice": {
 		"on_update_after_submit": "vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_invoice.set_due_date_after_submit",
 		"validate" : "vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_invoice.validate",
+		"after_insert" :"vesta_si_erpnext.vesta_si_erpnext.doc_events.purchase_invoice.after_insert",
 	},
 	"GL Entry":{
 		'validate': "vesta_si_erpnext.vesta_si_erpnext.doc_events.sales_invoice.check_account_frozzen_date",
