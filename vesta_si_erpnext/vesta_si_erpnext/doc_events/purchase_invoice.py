@@ -61,8 +61,8 @@ def after_insert(self, method):
 	get_attachment_from_po(self)
 
 def get_attachment_from_po(self):
-	if self.items[0].get("purchase_order"):
-		attached_files = get_attachments("Purchase Order", self.items[0].get("purchase_order"))
+	if self.items[0].get("purchase_receipt"):
+		attached_files = get_attachments("Purchase Receipt", self.items[0].get("purchase_receipt"))
 		for row in attached_files:
 			new_file = frappe.get_doc({ 
 				"doctype" : "File",
