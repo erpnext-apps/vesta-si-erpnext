@@ -65,6 +65,13 @@ def execute(filters=None):
 			"label" : "Percentage",
 			"fieldtype" : "Percentage",
 			"width" : 200
+		},
+		{
+			"fieldname" : "user",
+			"label" : "User",
+			"fieldtype" : "Link",
+			"options" : "User",
+			"width" : 200
 		}
 	]
 	return columns, data
@@ -86,10 +93,12 @@ def get_data(filters):
 			pii.item_code,
 			pii.item_name,
 			pi.supplier,
+			user.full_name as user,
 			pi.posting_date
 			From `tabPurchase Invoice Item` as pii 
 			Right Join `tabPurchase Receipt Item` as pri ON pri.name = pii.pr_detail
 			Left Join `tabPurchase Invoice` as pi ON pi.name = pii.parent
+			Left Join `tabUser` as user ON user.name = pi.modified_by
 			Where pii.docstatus = 1 and (pii.base_rate - pri.base_rate) != 0 {cond}
 	""", as_dict=1 )
 
