@@ -22,16 +22,15 @@ def get_data(filters):
 		condition += f" and p.status = '{filters.get('status')}'"
 
 	pi_data = frappe.db.sql(f"""
-			Select pro.name, 
+			Select 
+			pro.name, 
 			pro.project_name, 
 			pro.estimated_costing, 
-			pro.total_purchase_cost, 
 			pro.percent_complete,
-			sum(pi.base_net_amount) as pi_net_total
+			sum(p.base_net_total) as total_purchase_cost
 			From `tabProject` as pro
-			left join `tabPurchase Invoice Item` as pi ON pi.project = pro.name
-			left join `tabPurchase Invoice` as p ON p.name = pi.parent
-			where pi.docstatus = 1 {condition}
+			left join `tabPurchase Invoice` as p ON p.project = pro.name
+			where p.docstatus = 1 {condition}
 			Group By pro.name
 	""", as_dict = 1)
 
@@ -41,14 +40,13 @@ def get_data(filters):
 
 	po_data = frappe.db.sql("""
 			Select pro.name,
-			sum(po.base_net_amount) as po_net_total
+			sum(po.base_net_total) as po_net_total
 			From `tabProject` as pro
-			Left Join `tabPurchase Order Item` as po ON po.project = pro.name
-			Left Join `tabPurchase Order` as p ON p.name = po.parent
-			where po.docstatus = 1 and p.workflow_state = 'Approved'
+			Left Join `tabPurchase Order` as po ON po.project = pro.name
+			where po.docstatus = 1 and po.workflow_state = 'Approved'
 			Group By pro.name
 	""", as_dict = 1)
-	
+
 	po_data_map = {}
 	for row in po_data:
 		po_data_map[ row.name ] = { "po_net_total" : row.po_net_total }
