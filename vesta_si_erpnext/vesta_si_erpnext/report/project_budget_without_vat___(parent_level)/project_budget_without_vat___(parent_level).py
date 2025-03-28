@@ -62,7 +62,7 @@ def get_data(filters):
 		estimated_costing = row.get("estimated_costing") or 0
 		total_purchase_cost = row.get("total_purchase_cost") or 0
 		po_net_total = row.get("po_net_total") or 0
-		row.update({"net_balance" : estimated_costing - total_purchase_cost - po_net_total ,"pending_amount" : total_purchase_cost - po_net_total } )
+		row.update({"net_balance" : estimated_costing - total_purchase_cost - po_net_total ,"pending_amount" : -1*(total_purchase_cost - po_net_total) } )
 
 	for row in po_data:
 		if not pi_data_map.get(row.name):
