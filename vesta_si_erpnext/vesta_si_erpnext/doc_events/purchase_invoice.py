@@ -16,6 +16,7 @@ from frappe.utils import (
 	today,
 )
 from frappe.desk.form.load import get_attachments
+from erpnext.accounts.utils import get_outstanding_invoices
 
 
 def set_due_date_after_submit(self, method):
@@ -29,6 +30,7 @@ def validate(self, method):
 
 	party_account_currency = frappe.db.get_value("Account", self.credit_to, 'account_currency')
 	company_currency = frappe.db.get_value("Company", self.company, 'default_currency')
+	
 	data = get_negative_outstanding_invoices(
 				"Supplier", 
 				self.supplier, 
@@ -36,20 +38,23 @@ def validate(self, method):
 				party_account_currency, 
 				company_currency,
 				condition = '')
+				
+	# frappe.throw(str(data))
+
 	final_data = []
 	for row in data:
 		if not row.voucher_no in ["ACC-PINV-2024-00250-1", "ACC-PINV-2024-00251-1"]:
 			final_data.append(row)
-	if len(final_data):
-		message = "Debit Note and Payment Entry available against this supplier <b>{0}</b><br>".format(get_link_to_form("Supplier",self.supplier))
-		message +="First reconcile those entry, reference available as mentioned below"
-		message += "<br><br>"
-		message += """<table width='100%'>"""
-		for row in data:
-			message += "<tr><td>{0}</td><td>{1} {2}</td></tr>".format(get_link_to_form(row.voucher_type, row.voucher_no),self.currency, row.outstanding_amount)
-		message += "</table>"
+	# if len(final_data):
+	# 	message = "Debit Note and Payment Entry available against this supplier <b>{0}</b><br>".format(get_link_to_form("Supplier",self.supplier))
+	# 	message +="First reconcile those entry, reference available as mentioned below"
+	# 	message += "<br><br>"
+	# 	message += """<table width='100%'>"""
+	# 	for row in data:
+	# 		message += "<tr><td>{0}</td><td>{1} {2}</td></tr>".format(get_link_to_form(row.voucher_type, row.voucher_no),self.currency, row.outstanding_amount)
+	# 	message += "</table>"
 		
-		frappe.msgprint(message)
+	# 	frappe.msgprint(message)
 		
 	if not self.is_return:
 		set_exchange_rate(self, method)
