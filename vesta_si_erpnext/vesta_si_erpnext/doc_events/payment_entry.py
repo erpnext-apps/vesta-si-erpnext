@@ -15,26 +15,10 @@ from frappe.utils import (
 	nowdate,
 	today,
 )
+from frappe.desk.form.load import get_attachments
+
 
 def validate(self, method):
-    ## remove After Update
-    # if self.party_type and self.payment_type == "Pay":
-    #     if self.difference_amount:
-    #         from erpnext.accounts.doctype.payment_entry.payment_entry import get_company_defaults
-    #         r = get_company_defaults(self.company)
-    #         difference_amount = flt(self.difference_amount, self.precision("difference_amount"))
-    #         if difference_amount > 1 or difference_amount < -1:
-    #             account =  r.get('exchange_gain_loss_account')
-    #         else:
-    #             account = r.get("write_off_account")
-    #         self.deductions = []
-    #         self.append("deductions", {
-    #             "account":account,
-    #             "amount":difference_amount,
-    #             "cost_center":r.get('cost_center')
-    #         })
-    #         self.difference_amount = 0
-    ## till this line
     currency_list = []    
     if self.party_type == "Supplier":
         for row in self.references:
@@ -76,6 +60,7 @@ def validate(self, method):
             if self.references[0].reference_doctype == "Purchase Invoice":
                 doc = frappe.get_doc("Purchase Invoice", self.references[0].reference_name)
                 get_advance_entries(doc)
+    copy_attachment_from_po_pi(self)
 
 def get_advance_entries(self):
 	res = self.get_advance_entries(
@@ -116,3 +101,17 @@ def on_cancel(self, method):
             if row.reference_doctype == "Purchase Invoice" and row.reference_name:
                 doc = frappe.get_doc("Purchase Invoice", row.reference_name)
                 frappe.db.set_value("Purchase Invoice", row.reference_name, "workflow_state", "Approved")
+
+def copy_attachment_from_po_pi(self):
+    for row in self.references:
+        if row.reference_doctype in ["Purchase Invoice", "Purchase Order"]:
+            attached_files = get_attachments(row.reference_doctype, row.reference_name)
+            for row in attached_files:
+                new_file = frappe.get_doc({ 
+                    "doctype" : "File",
+                    "file_name" : row.file_name,
+                    "file_url" : row.file_url,
+                    "attached_to_doctype" : "Payment Entry",
+                    "attached_to_name" : self.name
+                })
+                new_file.insert(ignore_permissions=True)
