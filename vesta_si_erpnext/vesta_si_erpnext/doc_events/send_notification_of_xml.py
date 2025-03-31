@@ -62,7 +62,6 @@ def get_purchase_invoice_no(due_date, weekly=False):
 
 def send_email_():
     from frappe.utils import getdate, add_days, today
-    from datetime import datetime
     currenct_day = getdate().strftime("%A")
     if currenct_day == "Monday":
         due_date = add_days(today(), 3)
@@ -74,7 +73,7 @@ def send_email_():
 def send_weekly_emails():
     currenct_day = getdate().strftime("%A")
     if currenct_day == "Monday":
-        due_date = today()
+        due_date = add_days(today(), 3)
     if currenct_day == "Sunday":
         due_date = add_days(today(), 1)
     get_purchase_invoice_no(due_date, weekly=True)
