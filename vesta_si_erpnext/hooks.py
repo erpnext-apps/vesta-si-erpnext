@@ -178,6 +178,9 @@ scheduler_events = {
     },
 	"weekly": [
 		"vesta_si_erpnext.vesta_si_erpnext.doc_events.send_notification_of_xml.send_weekly_emails"
+	],
+	"0 0 * * MON" : [
+		"vesta_si_erpnext/vesta_si_erpnext/doc_events/pending_approver_email.get_pending_invoice"
 	]
 }
 
