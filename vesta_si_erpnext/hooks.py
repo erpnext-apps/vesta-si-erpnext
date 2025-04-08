@@ -74,6 +74,7 @@ item_wise_sales_history.execute = iwsh_vesta_execute
 # ------------
 
 before_install = "vesta_si_erpnext.api.install_pandas"
+after_migrate = "vesta_si_erpnext.vesta_si_erpnext.custom_fields.custom_field_in_role.create_field"
 # after_install = "vesta_si_erpnext.install.after_install"
 
 # Desk Notifications
