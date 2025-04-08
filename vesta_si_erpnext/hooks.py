@@ -170,7 +170,8 @@ doc_events = {
 scheduler_events = {
 	"daily": [
 		"vesta_si_erpnext.vesta_si_erpnext.auto_email_report.liji_send_daily",
-		"vesta_si_erpnext.vesta_si_erpnext.auto_email_report.set_AP_report_notification_to_liji"
+		"vesta_si_erpnext.vesta_si_erpnext.auto_email_report.set_AP_report_notification_to_liji",
+		"vesta_si_erpnext.vesta_si_erpnext.doc_events.send_grir_report.send_report"
 	],
 	"cron": {
         "0 0 1 * *" : "vesta_si_erpnext.api.get_purchase_receipt",
