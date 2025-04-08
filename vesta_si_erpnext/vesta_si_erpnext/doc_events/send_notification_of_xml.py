@@ -51,7 +51,7 @@ def get_purchase_invoice_no(due_date, weekly=False):
     if getdate().strftime('%A') == "Sunday":
         subject = f"Action required 'Obetalda leverantörsfakturor' | Due By { add_to_date(getdate(),days=1).strftime('%A') } { str(add_to_date(getdate(),days=1)) } | Processing till { getdate(add_days(today(), 4)).strftime('%A') } {str(getdate(add_days(today(), 4)))}."
     if weekly:
-        notify_list = [ "viralkansodiya167@gmail.com" ]
+        notify_list = [ "p2p.vestasi@skf.com" ]
     frappe.sendmail(recipients = notify_list,
 			subject = subject,
 			message = message
