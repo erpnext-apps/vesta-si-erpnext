@@ -38,7 +38,7 @@ def send_report():
     second_day, middle_day = get_second_and_middle_working_day()
     auto_email_report = frappe.get_doc("Auto Email Report", "Received Items To Be Billed (GRIR) Vesta")
     user_list = get_users_by_role("PR Notify")
-    print(user_list)
+    user_list.append("p2p.vestasi@skf.com")
     auto_email_report.email_to = "\n".join(user_list)
     if second_day == getdate() or middle_day == getdate():
         auto_email_report.send()
