@@ -20,5 +20,12 @@ frappe.query_reports["Rate Changes in PI"] = {
 			"default": frappe.datetime.get_today(),
 			"reqd": 1
 		},
+		{
+			"fieldname" : "item_code",
+			"label" : __("Item Code"),
+			"fieldtype" : "Link",
+			"options" : "Item",
+			"width": "80",
+		}
 	]
 };

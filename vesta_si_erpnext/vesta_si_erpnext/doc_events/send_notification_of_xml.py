@@ -1,7 +1,7 @@
 import frappe
-from frappe.utils import flt, today, getdate, add_days, get_url, nowdate
+from frappe.utils import flt, today, getdate, add_days, get_url, nowdate, add_to_date
 
-def get_purchase_invoice_no(due_date):
+def get_purchase_invoice_no(due_date, weekly=False):
     data = frappe.db.sql(f"""
                 Select count(pi.name) as number_of_invoice, su.custom_payment_type
                 From `tabPurchase Invoice` as pi
@@ -48,8 +48,10 @@ def get_purchase_invoice_no(due_date):
         subject = f"Action required 'Obetalda leverantörsfakturor' | Due By { getdate().strftime('%A') } { today() } | Processing till { getdate(add_days(today(), 3)).strftime('%A') } {str(getdate(add_days(today(), 3)))}."
     if getdate().strftime('%A') == "Thursday":
         subject = f"Action required 'Obetalda leverantörsfakturor' | Due By { getdate().strftime('%A') } { today() } | Processing till { getdate(add_days(today(), 4)).strftime('%A') } {str(getdate(add_days(today(), 4)))}."
-
-  
+    if getdate().strftime('%A') == "Sunday":
+        subject = f"Action required 'Obetalda leverantörsfakturor' | Due By { add_to_date(getdate(),days=1).strftime('%A') } { str(add_to_date(getdate(),days=1)) } | Processing till { getdate(add_days(today(), 4)).strftime('%A') } {str(getdate(add_days(today(), 4)))}."
+    if weekly:
+        notify_list = [ "p2p.vestasi@skf.com" ]
     frappe.sendmail(recipients = notify_list,
 			subject = subject,
 			message = message
@@ -60,7 +62,6 @@ def get_purchase_invoice_no(due_date):
 
 def send_email_():
     from frappe.utils import getdate, add_days, today
-    from datetime import datetime
     currenct_day = getdate().strftime("%A")
     if currenct_day == "Monday":
         due_date = add_days(today(), 3)
@@ -69,5 +70,10 @@ def send_email_():
         due_date = add_days(today(), 4)
         get_purchase_invoice_no(due_date)
 
-
-# from vesta_si_erpnext.vesta_si_erpnext.doc_events.send_notification_of_xml import get_purchase_invoice_no
+def send_weekly_emails():
+    currenct_day = getdate().strftime("%A")
+    if currenct_day == "Monday":
+        due_date = add_days(today(), 3)
+    if currenct_day == "Sunday":
+        due_date = add_days(today(), 1)
+    get_purchase_invoice_no(due_date, weekly=True)

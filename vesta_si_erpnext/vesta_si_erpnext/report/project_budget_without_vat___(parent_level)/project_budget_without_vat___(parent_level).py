@@ -38,50 +38,41 @@ def get_data(filters):
 	if filters.get("project"): 
 		po_condition += f" and pro.name = '{filters.get('project')}'"
 
-	po_data = frappe.db.sql("""
+	po_data = frappe.db.sql(f"""
 			Select pro.name,
+			pro.estimated_costing,
 			sum(po.base_net_total) as po_net_total
 			From `tabProject` as pro
 			Left Join `tabPurchase Order` as po ON po.project = pro.name
-			where po.docstatus = 1 and po.workflow_state = 'Approved'
-			Group By pro.name
+			where po.docstatus = 1 and po.workflow_state = 'Approved' {po_condition}
+			Group By pro.name 
 	""", as_dict = 1)
 
 	po_data_map = {}
 	for row in po_data:
 		po_data_map[ row.name ] = { "po_net_total" : row.po_net_total }
-
+	
+	pi_data_map={}
+	for row in pi_data:
+		pi_data_map[ row.name ] = row
+	
 	for row in pi_data:
 		if po_data_map.get(row.name):
 			row.update(po_data_map.get(row.name))
 		estimated_costing = row.get("estimated_costing") or 0
 		total_purchase_cost = row.get("total_purchase_cost") or 0
 		po_net_total = row.get("po_net_total") or 0
-		row.update({"project_balance" : estimated_costing - total_purchase_cost - po_net_total })
+		pending_amount = -1*(total_purchase_cost - po_net_total) if (total_purchase_cost - po_net_total) < 0 else total_purchase_cost - po_net_total
+		row.update({"net_balance" : estimated_costing - total_purchase_cost - pending_amount ,"pending_amount" : pending_amount } )
 
-	filters  = {
-		"company" : "Vesta Si Sweden AB",
-		"from_date" : "1998-01-01",
-		"to_date" : today()
-	}
-	columns, data, A, chart_data = poa_execute(filters)
+	for row in po_data:
+		if not pi_data_map.get(row.name):
+			estimated_costing = row.get("estimated_costing") or 0
+			total_purchase_cost = row.get("total_purchase_cost") or 0
+			po_net_total = row.get("po_net_total") or 0
+			row.update({"net_balance" : estimated_costing - total_purchase_cost - po_net_total ,"pending_amount" : po_net_total } )
+			pi_data.append(row)
 	
-	filtered_data = [item for item in data if item.get("project") is not None]
-	filtered_data.sort(key=lambda x: x["project"])
-
-
-		# Grouping by 'project'
-	grouped_data = {key: list(group) for key, group in groupby(filtered_data, key=lambda x: x['project'])}
-
-	pending_amount_map = {}
-	for project, items in grouped_data.items():
-		pending_amount = sum([d.pending_amount for d in items])
-		pending_amount_map[project] = {"pending_amount" :  pending_amount}
-	for row in pi_data:
-		if pending_amount_map.get(row.name):
-			row.update(pending_amount_map.get(row.name))
-		pending_amount = row.get("pending_amount") or 0
-		row.update({"net_balance" : row.estimated_costing - row.total_purchase_cost - pending_amount})
 	return pi_data
 
 def get_columns(filters):

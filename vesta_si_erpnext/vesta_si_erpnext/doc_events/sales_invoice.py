@@ -1,5 +1,7 @@
 import frappe
 from frappe.utils import getdate
+from frappe.desk.form.load import get_attachments
+
 
 @frappe.whitelist()
 def get_items_from_stock_entry(stock_entry ):
@@ -42,3 +44,20 @@ def set_exchange_rate(self,method):
     default_currency = frappe.db.get_value('Company', self.company, "default_currency")
     exchange_rate = get_exchange_rate(self.currency, default_currency, transaction_date = self.posting_date, args=None)
     self.conversion_rate = exchange_rate
+
+
+def after_insert(self, method):
+	get_attachment_from_po(self)
+
+def get_attachment_from_po(self):
+	if self.items[0].get("sales_order"):
+		attached_files = get_attachments("Sales Order", self.items[0].get("sales_order"))
+		for row in attached_files:
+			new_file = frappe.get_doc({ 
+				"doctype" : "File",
+				"file_name" : row.file_name,
+				"file_url" : row.file_url,
+				"attached_to_doctype" : "Sales Invoice",
+				"attached_to_name" : self.name
+			})
+			new_file.insert(ignore_permissions=True)

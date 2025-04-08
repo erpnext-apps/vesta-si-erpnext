@@ -3,13 +3,31 @@
 
 from __future__ import unicode_literals
 import frappe, erpnext
-
+from frappe.desk.form.load import get_attachments
 
 def validate(self, method):
 	if not self.is_return:
 		set_exchange_rate(self)
 		self.validate()
 	check_same_rate_cycle(self)
+
+def after_insert(self, method):
+	get_attachment_from_po(self)
+
+
+
+def get_attachment_from_po(self):
+	if self.items[0].get("purchase_order"):
+		attached_files = get_attachments("Purchase Order", self.items[0].get("purchase_order"))
+		for row in attached_files:
+			new_file = frappe.get_doc({ 
+				"doctype" : "File",
+				"file_name" : row.file_name,
+				"file_url" : row.file_url,
+				"attached_to_doctype" : "Purchase Receipt",
+				"attached_to_name" : self.name
+			})
+			new_file.insert(ignore_permissions=True)
 
 def link_supplier_bag_to_batch(doc, method=None):
 	for item in doc.items:

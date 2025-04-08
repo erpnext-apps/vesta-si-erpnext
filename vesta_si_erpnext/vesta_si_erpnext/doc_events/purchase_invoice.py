@@ -15,6 +15,8 @@ from frappe.utils import (
 	nowdate,
 	today,
 )
+from frappe.desk.form.load import get_attachments
+from erpnext.accounts.utils import get_outstanding_invoices
 
 
 def set_due_date_after_submit(self, method):
@@ -28,6 +30,7 @@ def validate(self, method):
 
 	party_account_currency = frappe.db.get_value("Account", self.credit_to, 'account_currency')
 	company_currency = frappe.db.get_value("Company", self.company, 'default_currency')
+	
 	data = get_negative_outstanding_invoices(
 				"Supplier", 
 				self.supplier, 
@@ -35,26 +38,46 @@ def validate(self, method):
 				party_account_currency, 
 				company_currency,
 				condition = '')
+				
+	# frappe.throw(str(data))
+
 	final_data = []
 	for row in data:
 		if not row.voucher_no in ["ACC-PINV-2024-00250-1", "ACC-PINV-2024-00251-1"]:
 			final_data.append(row)
-	if len(final_data):
-		message = "Debit Note and Payment Entry available against this supplier <b>{0}</b><br>".format(get_link_to_form("Supplier",self.supplier))
-		message +="First reconcile those entry, reference available as mentioned below"
-		message += "<br><br>"
-		message += """<table width='100%'>"""
-		for row in data:
-			message += "<tr><td>{0}</td><td>{1} {2}</td></tr>".format(get_link_to_form(row.voucher_type, row.voucher_no),self.currency, row.outstanding_amount)
-		message += "</table>"
+	# if len(final_data):
+	# 	message = "Debit Note and Payment Entry available against this supplier <b>{0}</b><br>".format(get_link_to_form("Supplier",self.supplier))
+	# 	message +="First reconcile those entry, reference available as mentioned below"
+	# 	message += "<br><br>"
+	# 	message += """<table width='100%'>"""
+	# 	for row in data:
+	# 		message += "<tr><td>{0}</td><td>{1} {2}</td></tr>".format(get_link_to_form(row.voucher_type, row.voucher_no),self.currency, row.outstanding_amount)
+	# 	message += "</table>"
 		
-		frappe.msgprint(message)
+	# 	frappe.msgprint(message)
 		
 	if not self.is_return:
 		set_exchange_rate(self, method)
 		self.validate()
 	check_item_level_changes(self) 
 	validate_currency(self) #Do not deploy
+
+def after_insert(self, method):
+	get_attachment_from_po(self)
+
+def get_attachment_from_po(self):
+	if self.items[0].get("purchase_receipt"):
+		attached_files = get_attachments("Purchase Receipt", self.items[0].get("purchase_receipt"))
+		for row in attached_files:
+			new_file = frappe.get_doc({ 
+				"doctype" : "File",
+				"file_name" : row.file_name,
+				"file_url" : row.file_url,
+				"attached_to_doctype" : "Purchase Invoice",
+				"attached_to_name" : self.name
+			})
+			new_file.insert(ignore_permissions=True)
+
 
 def get_advance_entries(self):
 	res = self.get_advance_entries(
