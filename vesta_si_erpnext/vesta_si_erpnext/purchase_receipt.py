@@ -74,7 +74,9 @@ def set_exchange_rate(self):
 
 def check_same_rate_cycle(self):
 	same_rate_v = frappe.db.get_singles_value("Buying Settings", "enable_same_rate_validation" )
-	if not same_rate_v or self.is_return:
+	if self.is_return:
+		return
+	if not same_rate_v:
 		return
 	for row in self.items:
 		if row.purchase_order:
