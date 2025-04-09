@@ -3,6 +3,14 @@ from frappe.utils import (
 	get_link_to_form
 )
 
+
+def send_email_on_wed():
+    get_pending_invoice()
+
+def send_email_on_fri():
+    get_pending_invoice()
+
+
 def get_pending_invoice():
     workflow_details = frappe.db.get_list("Workflow", {'is_active' : 1, "document_type" : 'Purchase Invoice'}, "name")
 
