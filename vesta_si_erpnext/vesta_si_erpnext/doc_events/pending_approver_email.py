@@ -58,7 +58,7 @@ def get_pending_invoice():
             
             """.format(get_link_to_form("Purchase Invoice", pi.name), pi.due_date, pi.supplier_name, pi.grand_total, pi.workflow_state)
         html += "</table>"
-        html += "<p>Your timely approval will help us ensure smooth processing of vendor payments and avoid any delays.</p>"
+        html += "<p>Your timely approval will help us ensure that vendor payments are processed smoothly and on time to avoid any interest cost or penalty cost.</p>"
         html += "<p>Thank you for your attention to this matter.</p>"
         email_recipient = [row.user for row in role_doc.users]
         
