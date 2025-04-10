@@ -3,6 +3,7 @@ from vesta_si_erpnext.vesta_si_erpnext.page.payment_export.payment_export import
 from frappe.utils import flt, today, getdate, add_days, get_url, nowdate, now
 from frappe.desk.form.load import get_attachments
 from vesta_si_erpnext.vesta_si_erpnext.doc_events.sftp_transfer import Sftp
+import os
 
 
 # # Create an instance of the Sftp class
