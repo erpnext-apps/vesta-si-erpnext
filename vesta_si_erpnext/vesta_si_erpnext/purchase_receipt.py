@@ -85,9 +85,9 @@ def check_same_rate_cycle(self):
 						From `tabPurchase Order Item`
 						Where name = '{row.purchase_order_item}'
 			""", as_dict = 1)
-			if po_details[0].get("qty") != row.qty:
+			if po_details[0].get("qty") != row.qty and row.is_stock_item:
 				frappe.throw(f"Row #{row.idx}: Quantity not allow to change, It should be same as PO")
-			if po_details[0].get("rate") != row.rate:
+			if po_details[0].get("rate") != row.rate and row.is_stock_item:
 				frappe.throw(f"Row #{row.idx}: Rate not allow to change, It should be same as PO")
 
 
