@@ -23,12 +23,6 @@ def get_payment_entry(payments, payment_export_settings, posting_date, payment_t
         "Cross Border Payments (EUR)",
     ]
 
-    # for row in payment_type:
-    #     data = get_payments(row, payment_export_settings)
-    #     payments = data.get("payments")
-    #     payments_ = []
-    #     for d in payments:
-    #         payments_.append(d.get("name"))
 
     if payments:
         xml_content = generate_payment_file(payments, payment_export_settings, posting_date, payment_type, bank_account)
