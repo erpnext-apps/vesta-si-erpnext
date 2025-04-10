@@ -22,12 +22,8 @@ def get_payment_entry(payments, payment_export_settings, posting_date, payment_t
         "Cross Border Payments (USD)",
         "Cross Border Payments (EUR)",
     ]
-    # for row in payment_type:
-        # data = get_payments(row, payment_export_settings)
-        # payments = data.get("payments")
-        # payments_ = []
-        # for d in payments:
-        #     payments_.append(d.get("name"))
+
+
     if payments:
         xml_content = generate_payment_file(payments, payment_export_settings, posting_date, payment_type, bank_account)
         content = xml_content.get("content")
@@ -51,8 +47,7 @@ def get_payment_entry(payments, payment_export_settings, posting_date, payment_t
         if sftp.enabled:
             main_path = "/home/frappe/frappe-bench/sites/{0}".format(url)
             file_url = get_attechment_paths(pel)
-            local_file = main_path + file_url
-            frappe.throw(str(local_file))
+            local_file = os.path.join(main_path, file_url)
             remote_path = "/in/payments/" 
             sftp_instance = Sftp(
                 hostname=hostname,
