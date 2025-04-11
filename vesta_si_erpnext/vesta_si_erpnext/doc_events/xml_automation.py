@@ -3,6 +3,7 @@ from vesta_si_erpnext.vesta_si_erpnext.page.payment_export.payment_export import
 from frappe.utils import flt, today, getdate, add_days, get_url, nowdate, now
 from frappe.desk.form.load import get_attachments
 from vesta_si_erpnext.vesta_si_erpnext.doc_events.sftp_transfer import Sftp
+import os
 
 
 # # Create an instance of the Sftp class
@@ -47,7 +48,7 @@ def get_payment_entry(payments, payment_export_settings, posting_date, payment_t
         if sftp.enabled:
             main_path = "/home/frappe/frappe-bench/sites/{0}".format(url)
             file_url = get_attechment_paths(pel)
-            local_file = os.path.join(main_path, file_url)
+            local_file = os.path.join(main_path, file_url[1:])
             remote_path = "/in/payments/" 
             sftp_instance = Sftp(
                 hostname=hostname,
