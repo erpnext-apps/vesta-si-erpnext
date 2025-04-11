@@ -61,7 +61,8 @@ def get_pending_invoice():
         html += "<p>Your timely approval will help us ensure that vendor payments are processed smoothly and <span style='background-color:03ffff;'>on time to avoid any interest cost or penalty cost.</span></p>"
         html += "<p>Thank you for your attention to this matter.</p>"
         email_recipient = [row.user for row in role_doc.users]
-        
+        email_recipient.append("vignesh@fosserp.com")
+        email_recipient.append("p2p.vestasi@skf.com")
         frappe.sendmail(
             recipients=email_recipient,
             subject="Reminder: Pending Approval for Purchase Invoices",
