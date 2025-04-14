@@ -1,7 +1,7 @@
 import frappe
 import json
 from erpnext.stock.doctype.putaway_rule.putaway_rule import (
-	add_row, show_unassigned_items_message, get_serial_nos_to_allocate
+	add_row, show_unassigned_items_message
 )
 
 import copy
