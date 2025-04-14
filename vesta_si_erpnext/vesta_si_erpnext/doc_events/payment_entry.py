@@ -103,15 +103,18 @@ def on_cancel(self, method):
                 frappe.db.set_value("Purchase Invoice", row.reference_name, "workflow_state", "Approved")
 
 def copy_attachment_from_po_pi(self):
-    for row in self.references:
-        if row.reference_doctype in ["Purchase Invoice", "Purchase Order"]:
-            attached_files = get_attachments(row.reference_doctype, row.reference_name)
-            for row in attached_files:
-                new_file = frappe.get_doc({ 
-                    "doctype" : "File",
-                    "file_name" : row.file_name,
-                    "file_url" : row.file_url,
-                    "attached_to_doctype" : "Payment Entry",
-                    "attached_to_name" : self.name
-                })
-                new_file.insert(ignore_permissions=True)
+    try:
+        for row in self.references:
+            if row.reference_doctype in ["Purchase Invoice", "Purchase Order"]:
+                attached_files = get_attachments(row.reference_doctype, row.reference_name)
+                for row in attached_files:
+                    new_file = frappe.get_doc({ 
+                        "doctype" : "File",
+                        "file_name" : row.file_name,
+                        "file_url" : row.file_url,
+                        "attached_to_doctype" : "Payment Entry",
+                        "attached_to_name" : self.name
+                    })
+                    new_file.insert(ignore_permissions=True)
+    except:
+        print("Its Okay")

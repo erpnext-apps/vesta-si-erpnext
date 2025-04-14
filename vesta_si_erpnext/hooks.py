@@ -74,6 +74,7 @@ item_wise_sales_history.execute = iwsh_vesta_execute
 # ------------
 
 before_install = "vesta_si_erpnext.api.install_pandas"
+after_migrate = "vesta_si_erpnext.vesta_si_erpnext.custom_fields.custom_field_in_role.create_field"
 # after_install = "vesta_si_erpnext.install.after_install"
 
 # Desk Notifications
@@ -169,15 +170,19 @@ doc_events = {
 scheduler_events = {
 	"daily": [
 		"vesta_si_erpnext.vesta_si_erpnext.auto_email_report.liji_send_daily",
-		"vesta_si_erpnext.vesta_si_erpnext.auto_email_report.set_AP_report_notification_to_liji"
+		"vesta_si_erpnext.vesta_si_erpnext.auto_email_report.set_AP_report_notification_to_liji",
+		"vesta_si_erpnext.vesta_si_erpnext.doc_events.send_grir_report.send_report"
 	],
 	"cron": {
         "0 0 1 * *" : "vesta_si_erpnext.api.get_purchase_receipt",
-		"0 1 * * *" : "vesta_si_erpnext.vesta_si_erpnext.doc_events.send_notification_of_xml.send_email_"
+		"0 1 * * *" : "vesta_si_erpnext.vesta_si_erpnext.doc_events.send_notification_of_xml.send_email_",
+		"0 0 * * WED" : "vesta_si_erpnext.vesta_si_erpnext.doc_events.pending_approver_email.send_email_on_wed",
+		"0 0 * * FRI" : "vesta_si_erpnext.vesta_si_erpnext.doc_events.pending_approver_email.send_email_on_fri"
     },
 	"weekly": [
 		"vesta_si_erpnext.vesta_si_erpnext.doc_events.send_notification_of_xml.send_weekly_emails"
-	]
+	],
+	
 }
 
 # Testing
