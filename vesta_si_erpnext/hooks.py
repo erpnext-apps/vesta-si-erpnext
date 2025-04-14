@@ -176,8 +176,7 @@ scheduler_events = {
 	"cron": {
         "0 0 1 * *" : "vesta_si_erpnext.api.get_purchase_receipt",
 		"0 1 * * *" : "vesta_si_erpnext.vesta_si_erpnext.doc_events.send_notification_of_xml.send_email_",
-		"0 0 * * WED" : "vesta_si_erpnext.vesta_si_erpnext.doc_events.pending_approver_email.send_email_on_wed",
-		"0 0 * * FRI" : "vesta_si_erpnext.vesta_si_erpnext.doc_events.pending_approver_email.send_email_on_fri"
+		"0 14 * * 3,5": "vesta_si_erpnext.vesta_si_erpnext.doc_events.pending_approver_email.get_pending_invoice",
     },
 	"weekly": [
 		"vesta_si_erpnext.vesta_si_erpnext.doc_events.send_notification_of_xml.send_weekly_emails"
