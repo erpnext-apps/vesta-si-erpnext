@@ -165,8 +165,7 @@ def get_advance_entries_w(self):
 def check_item_level_changes(self):
 	buying_setting =  frappe.get_doc("Buying Settings")
 	allow_extra_item =[ row.item for row in buying_setting.allow_extra_item]
-	po_flage = False
-	for row in self.items:
+cd 	for row in self.items:
 		if row.purchase_receipt:
 			po_flage = True
 			po_data = frappe.db.sql(f"""

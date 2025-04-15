@@ -248,7 +248,8 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 			qty_unchanged = prev_qty == new_qty
 			fg_qty_unchanged = prev_fg_qty == new_fg_qty
 			uom_unchanged = prev_uom == new_uom
-			tax_template_unchange = prev_tax_template == new_tax_template #changed by fosserp
+			if parent_doctype == "Purchase Order":
+				tax_template_unchange = prev_tax_template == new_tax_template #changed by fosserp
 			conversion_factor_unchanged = prev_con_fac == new_con_fac
 			any_conversion_factor_changed |= not conversion_factor_unchanged
 			date_unchanged = (
