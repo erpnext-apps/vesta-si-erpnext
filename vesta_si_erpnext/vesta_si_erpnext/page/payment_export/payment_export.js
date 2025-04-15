@@ -17,7 +17,7 @@ frappe.pages['payment-export'].on_page_load = function(wrapper) {
         label: __('Required Execution Date'),
         fieldtype:'Date',
         default:"Today",
-        read_only:1
+        read_only:0
     });
     page.payment_type_field = page.add_field({
         fieldname: 'payment_type',
