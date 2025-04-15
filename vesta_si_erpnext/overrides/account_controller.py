@@ -255,6 +255,10 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 			date_unchanged = (
 				prev_date == getdate(new_date) if prev_date and new_date else False
 			)  # in case of delivery note etc
+			
+			if parent_doctype == "Sales Order":
+				tax_template_unchange = True
+
 			if (
 				rate_unchanged
 				and qty_unchanged
