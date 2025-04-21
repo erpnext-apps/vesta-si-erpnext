@@ -774,6 +774,7 @@ def gen_payment_export_log(content, total_no_of_payments, total_paid_amount, pay
             data_ = {}
             data_["Payment Entry"] = row.get('payment_entry')
             data_["Posting date"] = frappe.db.get_value("Payment Entry", row.get('payment_entry'), "posting_date")
+            data_["Due Date"] = row.due_date
             data_["Supplier"] = row.get('supplier')
             data_["Supplier Name"] = frappe.db.get_value("Supplier", row.get('supplier'), 'supplier_name')
             data_["Paid Amount"] = row.get('paid_amount')

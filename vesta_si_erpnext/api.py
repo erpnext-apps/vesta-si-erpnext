@@ -324,3 +324,12 @@ def get_purchase_receipt():
         frappe.db.commit()
 
 
+def validate_on_delete(self):
+    users = frappe.db.sql(f"""
+        SELECT parent as name 
+        FROM `tabHas Role` 
+        WHERE role = 'Tag Delete' and parent = '{frappe.session.user}'
+    """, as_dict=True)
+    frappe.throw(str(users))
+    if not users:
+        frappe.throw("Not enough permission to Delete")
