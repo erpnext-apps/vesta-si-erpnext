@@ -47,8 +47,20 @@ def get_user_wise_todo():
                 """.format(get_link_to_form("ToDo", d.name), get_link_to_form(d.reference_type, d.reference_name), d.description)
 
             html_msg +="</tbody></table>"
-            print(html_msg)
+            recipients = [row]
+            
+            if get_users_by_role:
+                recipients.append("vignesh@fosserp.com")
+
             count+=1
-            frappe.sendmail(recipients=["viral@fosserp.com"], subject="Pending ToDo List", message=html_msg)
+            frappe.sendmail(recipients=recipients, subject="Pending ToDo List", message=html_msg)
             if count ==2:
                 break
+
+def get_users_by_role():
+    users = frappe.db.sql("""
+        SELECT parent as name 
+        FROM `tabHas Role` 
+        WHERE role = %s and parent = "vignesh@fosserp.com"
+    """, ("PR Notify",), as_dict=True)
+    return [user["name"] for user in users]
