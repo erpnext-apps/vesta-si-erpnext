@@ -104,35 +104,35 @@ frappe.payment_export = {
             }
             
         });
-        page.add_inner_button(__("Transfer To Nomentia"), function () {
-            page.remove_inner_button("Transfer To Nomentia");
-            page.main.find(".btn-create-file").addClass("hide");
-            page.main.find(".btn-refresh").removeClass("hide");
-            var me = frappe.payment_export;
+        // page.add_inner_button(__("Transfer To Nomentia"), function () {
+        //     page.remove_inner_button("Transfer To Nomentia");
+        //     page.main.find(".btn-create-file").addClass("hide");
+        //     page.main.find(".btn-refresh").removeClass("hide");
+        //     var me = frappe.payment_export;
             
-            // find selected payments
-            var checkedPayments = findSelected();
-            if (checkedPayments.length > 0) {
-                var payments = [];
-                for (var i = 0; i < checkedPayments.length; i++) {
-                    payments.push(checkedPayments[i].name);
-                }
-                frappe.call({
-                    method: "vesta_si_erpnext.vesta_si_erpnext.doc_events.xml_automation.get_payment_entry",
-                    args: { 
-                        "payments": payments,
-                        "payment_export_settings": page.payment_export_settings_field.get_value(),
-                        "posting_date": page.posting_date_field.get_value(),
-                        "payment_type": page.payment_type_field.get_value(),
-                        "bank_account": page.bank_account_field.get_value()
+        //     // find selected payments
+        //     var checkedPayments = findSelected();
+        //     if (checkedPayments.length > 0) {
+        //         var payments = [];
+        //         for (var i = 0; i < checkedPayments.length; i++) {
+        //             payments.push(checkedPayments[i].name);
+        //         }
+        //         frappe.call({
+        //             method: "vesta_si_erpnext.vesta_si_erpnext.doc_events.xml_automation.get_payment_entry",
+        //             args: { 
+        //                 "payments": payments,
+        //                 "payment_export_settings": page.payment_export_settings_field.get_value(),
+        //                 "posting_date": page.posting_date_field.get_value(),
+        //                 "payment_type": page.payment_type_field.get_value(),
+        //                 "bank_account": page.bank_account_field.get_value()
                        
-                    },
-                    callback:(r)=>{
+        //             },
+        //             callback:(r)=>{
     
-                    }
-                })
-            }   
-        }).addClass("btn btn-primary");
+        //             }
+        //         })
+        //     }   
+        // }).addClass("btn btn-primary");
 
         this.page.main.find(".btn-refresh").on('click', function() {
             // refresh
