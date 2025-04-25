@@ -24,7 +24,7 @@ def get_pending_invoice():
         data = frappe.db.sql(f""" 
                     Select name, workflow_state, supplier_name, grand_total, due_date
                     From `tabPurchase Invoice`
-                    Where workflow_state = '{row}'
+                    Where workflow_state = '{row}' and workflow_state != 'Blocked'
         """, as_dict=1)
         if not data:
             continue
