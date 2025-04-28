@@ -177,7 +177,7 @@ scheduler_events = {
         "0 0 1 * *" : "vesta_si_erpnext.api.get_purchase_receipt",
 		"0 6 * * 1,4" : "vesta_si_erpnext.vesta_si_erpnext.doc_events.send_notification_of_xml.send_email_",
 		"0 15 * * 3,5": "vesta_si_erpnext.vesta_si_erpnext.doc_events.pending_approver_email.get_pending_invoice",
-		"0 15 * * 2,5": "vesta_si_erpnext.vesta_si_erpnext.doc_events.auto_email_for_todo.get_user_wise_todo"
+		# "0 15 * * 2,5": "vesta_si_erpnext.vesta_si_erpnext.doc_events.auto_email_for_todo.get_user_wise_todo"
     },
 	
 }
