@@ -19,6 +19,12 @@ def get_user_wise_todo():
     user_list = frappe.db.get_list("User", pluck="name")
     data_map = {}
     for row in data:
+        if row.reference_type and row.reference_name:
+            doc = frappe.get_doc(row.reference_type, row.reference_no)
+            if doc.docstatus == 1:
+                continue
+        else:
+            continue
         if not data_map.get(row.allocated_to):
             data_map[row.allocated_to] = []
             data_map[row.allocated_to].append(row)
