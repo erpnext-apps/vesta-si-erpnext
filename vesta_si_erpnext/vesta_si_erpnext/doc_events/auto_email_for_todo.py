@@ -59,7 +59,7 @@ def get_user_wise_todo():
             
             if get_users_by_role:
                 recipients.append("vignesh@fosserp.com")
-            recipients = ["vignesh@fosserp.com"]
+            recipients = ["viral@fosserp.com"]
             count+=1
             frappe.sendmail(recipients=recipients, subject="Pending ToDo List", message=html_msg)
             if count ==2:
