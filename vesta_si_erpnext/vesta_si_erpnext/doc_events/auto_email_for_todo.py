@@ -2,6 +2,8 @@ import frappe
 from frappe.utils import (get_link_to_form)
 
 def get_user_wise_todo():
+    if not frappe.db.get_single_value('Buying Settings', 'enable_todo_email_for_purchase_invoice'):
+        return
     data = frappe.db.sql(f"""Select 
                                     name, 
                                     allocated_to, 
@@ -57,7 +59,7 @@ def get_user_wise_todo():
             
             if get_users_by_role:
                 recipients.append("vignesh@fosserp.com")
-
+            recipients = ["vignesh@fosserp.com"]
             count+=1
             frappe.sendmail(recipients=recipients, subject="Pending ToDo List", message=html_msg)
             if count ==2:

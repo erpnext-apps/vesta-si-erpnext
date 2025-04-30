@@ -11,6 +11,14 @@ def create_field():
                 'options' : 'User Bucket',
                 'insert_after' : 'restrict_to_domain'
             }
+        ],
+        "Buying Settings" : [
+            {
+                'fieldname' : "enable_todo_email_for_purchase_invoice",
+                'label' : "Enable ToDo Emails for Purchase Invoice",
+                'fieldtype' : "Check",
+                'insert_after' : 'use_transaction_date_exchange_rate'
+            }
         ]
     }  
     create_custom_fields(create_field) 
