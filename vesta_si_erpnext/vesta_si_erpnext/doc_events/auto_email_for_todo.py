@@ -23,7 +23,7 @@ def get_user_wise_todo():
     for row in data:
         if frappe.db.exists(row.reference_type , row.reference_name):
             doc = frappe.get_doc(row.reference_type, row.reference_no)
-            if doc.docstatus == 1:
+            if doc.docstatus != 0:
                 continue
         else:
             continue
@@ -59,7 +59,6 @@ def get_user_wise_todo():
             
             if get_users_by_role:
                 recipients.append("vignesh@fosserp.com")
-            recipients = ["viral@fosserp.com"]
             count+=1
             frappe.sendmail(recipients=recipients, subject="Pending ToDo List", message=html_msg)
             if count ==2:
