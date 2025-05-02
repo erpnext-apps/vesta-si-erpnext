@@ -21,7 +21,7 @@ def get_user_wise_todo():
     user_list = frappe.db.get_list("User", pluck="name")
     data_map = {}
     for row in data:
-        if frappe.db.exists(row.reference_type , row.reference_name):
+        if row.reference_name and frappe.db.exists(row.reference_type , row.reference_name):
             doc = frappe.get_doc(row.reference_type, row.reference_no)
             if doc.docstatus != 0:
                 continue
