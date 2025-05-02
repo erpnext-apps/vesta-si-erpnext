@@ -22,7 +22,7 @@ def get_user_wise_todo():
     data_map = {}
     for row in data:
         if row.reference_name and frappe.db.exists(row.reference_type , row.reference_name):
-            doc = frappe.get_doc(row.reference_type, row.reference_no)
+            doc = frappe.get_doc(row.reference_type, row.reference_name)
             if doc.docstatus != 0:
                 continue
         else:
