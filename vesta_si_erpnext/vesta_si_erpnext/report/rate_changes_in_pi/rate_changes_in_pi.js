@@ -40,6 +40,13 @@ frappe.query_reports["Rate Changes in PI"] = {
 			"fieldtype" : "Link",
 			"options" : "Supplier",
 			"width": "80",
+		},
+		{
+			"fieldname" : "group_by",
+			"label" : __("Group By"),
+			"fieldtype" : "Select",
+			"options" : "\nItem Code\nPurchase Invoice\nSupplier",
+			"width": "80",
 		}
 	]
 };
