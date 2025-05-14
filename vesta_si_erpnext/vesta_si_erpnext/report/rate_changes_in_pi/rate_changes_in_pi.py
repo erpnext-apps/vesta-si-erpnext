@@ -85,6 +85,12 @@ def get_data(filters):
 		cond += f" AND pi.posting_date <= '{filters.get('to_date')}'"
 	if filters.get("item_code"):
 		cond += f" AND pii.item_code = '{filters.get('item_code')}'"
+	if filters.get("purchase_invoice"):
+		cond += f" AND pi.name = '{filters.get('purchase_invoice')}'"
+	if filters.get("supplier"):
+		cond += f" AND pi.supplier = '{filters.get('supplier')}'"
+
+
 
 	data = frappe.db.sql(f"""
 			Select pi.name as purchase_invoice,
