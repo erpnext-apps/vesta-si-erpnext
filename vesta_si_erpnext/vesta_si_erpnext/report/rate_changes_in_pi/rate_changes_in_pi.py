@@ -8,40 +8,57 @@ from frappe.utils import flt
 def execute(filters=None):
 	columns, data = [], []
 	data = get_data(filters)
-	columns = [
-		{
-			"fieldname" : "purchase_invoice",
-			"label" : "Purchase Invoice",
-			"options" : "Purchase Invoice",
-			"fieldtype" : "Link",
-			"width" : 200
-		},
-		{
+	if filters.get("group_by") not in ["Item Code", "Supplier"]:
+		columns.append(
+			{
+				"fieldname" : "purchase_invoice",
+				"label" : "Purchase Invoice",
+				"options" : "Purchase Invoice",
+				"fieldtype" : "Link",
+				"width" : 200
+			}
+		)
+	if filters.get("group_by") not in ["Item Code", "Supplier", "Purchase Invoice"]:
+		columns.append(
+			{
 			"fieldname" : "posting_date",
 			"label" : "Date",
 			"fieldtype" : "Date",
 			"width" : 200
-		},
-		{
+			}	
+		)
+	if filters.get("group_by") not in ["Item Code", "Purchase Invoice"]:
+		columns.append(
+			{
 			"fieldname" : "supplier",
 			"label" : "Supplier",
 			"options" : "Supplier",
 			"fieldtype" : "Link",
 			"width" : 200
-		},
-		{
-			"fieldname" : "item_code",
-			"label" : "Item Code",
-			"options" : "Item",
-			"fieldtype" : "Link",
-			"width" : 200
-		},
-		{
-			"fieldname" : "item_name",
-			"label" : "Item Name",
-			"fieldtype" : "Data",
-			"width" : 200
-		},
+			}	
+		)
+	if filters.get("group_by") not in ["Supplier", "Purchase Invoice"]:
+		columns.append(
+			{
+				"fieldname" : "item_code",
+				"label" : "Item Code",
+				"options" : "Item",
+				"fieldtype" : "Link",
+				"width" : 200
+			}
+		)
+	if filters.get("group_by") not in ["Supplier", "Purchase Invoice"]:
+		columns.append(
+			{
+				"fieldname" : "item_name",
+				"label" : "Item Name",
+				"fieldtype" : "Data",
+				"width" : 200
+			}
+		)
+
+
+	columns += [
 		{
 			"fieldname" : "old_rate",
 			"label" : "Old Value",
@@ -65,15 +82,18 @@ def execute(filters=None):
 			"label" : "Percentage",
 			"fieldtype" : "Percentage",
 			"width" : 200
-		},
-		{
+		}
+	]
+	if not filters.get("group_by"):
+		columns.append(
+			{
 			"fieldname" : "user",
 			"label" : "User",
 			"fieldtype" : "Link",
 			"options" : "User",
 			"width" : 200
-		}
-	]
+			}
+		)
 	return columns, data
 
 
@@ -107,6 +127,7 @@ def get_data(filters):
 			pii.item_code,
 			pii.item_name,
 			pi.supplier,
+			pi.posting_date,
 			user.full_name as user
 		"""
 	elif filters.get("group_by") == "Supplier":
@@ -120,6 +141,7 @@ def get_data(filters):
 			NULL as item_code,
 			NULL as item_name,
 			pi.supplier,
+			pi.posting_date,
 			user.full_name as user
 		"""
 	elif filters.get("group_by") == "Purchase Invoice":
@@ -133,6 +155,7 @@ def get_data(filters):
 			NULL as item_code,
 			NULL as item_name,
 			pi.supplier,
+			pi.posting_date,
 			user.full_name as user
 		"""
 	else:
