@@ -8,3 +8,4 @@ vesta_si_erpnext.patches.install_pandas
 vesta_si_erpnext.patches.create_field_in_accounting_setting
 vesta_si_erpnext.patches.create_field_in_pr
 vesta_si_erpnext.patches.create_field_in_buying_settings
+vesta_si_erpnext.patches.set_property_setter
