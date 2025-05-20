@@ -19,6 +19,14 @@ def create_field():
                 'fieldtype' : "Check",
                 'insert_after' : 'use_transaction_date_exchange_rate'
             }
+        ],
+        "Item" : [
+            {
+                'fieldname' : "max_amount_allow",
+                'label' : "Maximum Amount Allow in Purchase Order (Update Item)",
+                'fieldtype' : "Currency",
+                'insert_after' : 'overbill_allow_by_amount'
+            }
         ]
     }  
     create_custom_fields(create_field) 
