@@ -176,6 +176,7 @@ def check_item_level_changes(self):
 			""", as_dict = 1)
 			
 			item_allownce_percentage = 0
+			item_allownce =0
 
 			allow_overbill_by = frappe.db.get_value("Item", row.item_code, "allow_overbill_by")
 			if (not allow_overbill_by or allow_overbill_by == '') and row.base_amount > po_data[0].get("base_amount") and self.currency == "SEK":
