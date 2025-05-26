@@ -177,7 +177,7 @@ def check_item_level_changes(self):
 			item_allownce = frappe.db.get_value("Item", row.item_code, "overbill_allow_by_amount")
 			item_allownce_percentage = frappe.db.get_value("Item", row.item_code, "over_billing_allowance")
 			if item_allownce_percentage:
-				item_allownce = row.base_amount * flt(item_allownce_percentage) / 100
+				item_allownce = po_data[0].get("base_amount") * flt(item_allownce_percentage) / 100
 		
 			if not item_allownce and not self.is_new() and (row.base_amount - po_data[0].get("base_amount")) > item_allownce and self.currency == "SEK":
 				frappe.throw(f"Row #{row.idx} : Overbilling not allow for Item <b>{row.item_code}</b>")
