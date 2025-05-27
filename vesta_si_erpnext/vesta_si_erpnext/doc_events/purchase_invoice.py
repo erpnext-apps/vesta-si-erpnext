@@ -179,7 +179,7 @@ def check_item_level_changes(self):
 			item_allownce =0
 
 			allow_overbill_by = frappe.db.get_value("Item", row.item_code, "allow_overbill_by")
-			if (not allow_overbill_by or allow_overbill_by == '') and row.base_amount > po_data[0].get("base_amount") and self.currency == "SEK":
+			if (allow_overbill_by == "Don't Allow Overbilling") and row.base_amount > po_data[0].get("base_amount") and self.currency == "SEK":
 				frappe.throw(f"Row #{row.idx} : Not allow to change a rate for item <b>{row.item_code}</b>")
 
 			if allow_overbill_by == "Amount":

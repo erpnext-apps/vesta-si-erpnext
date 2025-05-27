@@ -23,9 +23,9 @@ def create_field():
         "Item" : [
             {
                 'fieldname' : 'allow_overbill_by',
-                'label' : 'Allow Overbill By',
+                'label' : 'Overbilling Type',
                 'fieldtype' : 'Select',
-                'options' : '\nPercentage\nAmount',
+                'options' : 'Don\'t Allow Overbilling\nPercentage\nAmount',
                 'insert_after' : 'over_delivery_receipt_allowance'
             },
             {
