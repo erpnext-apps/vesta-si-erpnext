@@ -22,10 +22,23 @@ def create_field():
         ],
         "Item" : [
             {
+                'fieldname' : 'allow_overbill_by',
+                'label' : 'Overbilling Type',
+                'fieldtype' : 'Select',
+                'options' : 'Don\'t Allow Overbilling\nPercentage\nAmount',
+                'insert_after' : 'over_delivery_receipt_allowance'
+            },
+            {
                 'fieldname' : "max_amount_allow",
                 'label' : "Maximum Amount Allow in Purchase Order (Update Item)",
                 'fieldtype' : "Currency",
                 'insert_after' : 'overbill_allow_by_amount'
+            },
+            {
+                'fieldname' : 'overbill_allow_by_amount',
+                'label' : 'Allowed Overbilling Amount (SEK) (Purchase Invoice Level)',
+                'fieldtype' : 'Currency',
+                'insert_after' : 'over_billing_allowance'
             }
         ]
     }  

@@ -174,13 +174,29 @@ def check_item_level_changes(self):
 						From `tabPurchase Order Item`
 						Where name = '{row.po_detail}'
 			""", as_dict = 1)
-			item_allownce = frappe.db.get_value("Item", row.item_code, "overbill_allow_by_amount")
-		
+			
+			item_allownce_percentage = 0
+			item_allownce =0
+
+			allow_overbill_by = frappe.db.get_value("Item", row.item_code, "allow_overbill_by")
+			if (allow_overbill_by == "Don't Allow Overbilling") and row.base_amount > po_data[0].get("base_amount") and self.currency == "SEK":
+				frappe.throw(f"Row #{row.idx} : Not allow to change a rate for item <b>{row.item_code}</b>")
+
+			if allow_overbill_by == "Amount":
+				item_allownce = frappe.db.get_value("Item", row.item_code, "overbill_allow_by_amount")
+			if allow_overbill_by == "Percentage":
+				item_allownce_percentage = frappe.db.get_value("Item", row.item_code, "over_billing_allowance")
+				if item_allownce_percentage:
+					item_allownce = po_data[0].get("base_amount") * flt(item_allownce_percentage) / 100
+			
 			if not item_allownce and not self.is_new() and (row.base_amount - po_data[0].get("base_amount")) > item_allownce and self.currency == "SEK":
 				frappe.throw(f"Row #{row.idx} : Overbilling not allow for Item <b>{row.item_code}</b>")
 			if row.qty != po_data[0].get("qty") and frappe.db.get_value("Item", row.item_code, "is_stock_item"):
 				frappe.throw(f"Row #{row.idx} : Accepted Qty should be same as purchase receipt quantiy")
 			if item_allownce > 0  and (row.base_amount - po_data[0].get("base_amount")) > item_allownce and self.currency == "SEK":
-				frappe.throw(f"Row #{row.idx} : Overbilling is not allowed beyond {item_allownce} SEK.")
+				if not item_allownce_percentage:
+					frappe.throw(f"Row #{row.idx} : Overbilling is not allowed beyond {item_allownce} SEK.")
+				else:
+					frappe.throw(f"Row #{row.idx} : Overbilling is not allowed beyond {item_allownce} SEK ({item_allownce_percentage} %) .")
 		if po_flage and not row.purchase_order and row.item_code not in allow_extra_item:
 			frappe.throw(f"Row #{row.idx}: Not Allow to add Item, It should be available in purchase order")
