@@ -59,7 +59,7 @@ def validate(self, method):
 	if not self.is_return:
 		set_exchange_rate(self, method)
 		self.validate()
-	check_item_level_changes(self) 
+		check_item_level_changes(self) 
 	validate_currency(self) #Do not deploy
 
 def after_insert(self, method):
