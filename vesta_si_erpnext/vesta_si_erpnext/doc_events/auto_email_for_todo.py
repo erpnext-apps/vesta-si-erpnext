@@ -34,7 +34,7 @@ def get_user_wise_todo():
             data_map[row.allocated_to].append(row)
     count = 0
     for row in user_list:
-        if row == "lijee.twinkle@skf.com":
+        if row in ["lijee.twinkle@skf.com", "advait.mehta@skf.com"]:
             continue
         if data_map.get(row):
             html_msg = f"""

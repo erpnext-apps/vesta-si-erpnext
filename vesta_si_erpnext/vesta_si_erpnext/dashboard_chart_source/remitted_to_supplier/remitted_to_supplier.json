@@ -1,0 +1,13 @@
+{
+ "creation": "2025-05-27 12:12:40.692377",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart Source",
+ "idx": 0,
+ "modified": "2025-05-27 12:12:40.692377",
+ "modified_by": "Administrator",
+ "module": "Vesta Si Erpnext",
+ "name": "Remitted To Supplier",
+ "owner": "Administrator",
+ "source_name": "Remitted To Supplier",
+ "timeseries": 0
+}
