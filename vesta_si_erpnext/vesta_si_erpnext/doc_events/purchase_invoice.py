@@ -191,8 +191,8 @@ def check_item_level_changes(self):
 			
 			if not item_allownce and not self.is_new() and (row.base_amount - po_data[0].get("base_amount")) > item_allownce and self.currency == "SEK":
 				frappe.throw(f"Row #{row.idx} : Overbilling not allow for Item <b>{row.item_code}</b>")
-			if row.qty != po_data[0].get("qty") and frappe.db.get_value("Item", row.item_code, "is_stock_item"):
-				frappe.throw(f"Row #{row.idx} : Accepted Qty should be same as purchase receipt quantiy")
+			# if row.qty != po_data[0].get("qty") and frappe.db.get_value("Item", row.item_code, "is_stock_item"):
+			# 	frappe.throw(f"Row #{row.idx} : Accepted Qty should be same as purchase receipt quantiy")
 			if item_allownce > 0  and (row.base_amount - po_data[0].get("base_amount")) > item_allownce and self.currency == "SEK":
 				if not item_allownce_percentage:
 					frappe.throw(f"Row #{row.idx} : Overbilling is not allowed beyond {item_allownce} SEK.")
