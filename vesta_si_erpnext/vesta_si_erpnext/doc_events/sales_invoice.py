@@ -35,6 +35,7 @@ def check_account_frozzen_date(self, method):
 from erpnext.setup.utils import get_exchange_rate
 
 def validate(self, method):
+    frappe.throw(str(self.conversion_rate))
     if not self.is_return:
         set_exchange_rate(self, method)
         self.validate()
