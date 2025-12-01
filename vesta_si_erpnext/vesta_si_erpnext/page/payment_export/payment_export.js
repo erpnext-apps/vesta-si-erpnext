@@ -36,6 +36,11 @@ frappe.pages['payment-export'].on_page_load = function(wrapper) {
         label: __('Bank Account'),
         fieldtype:'Link',
         options: "Bank Account",
+        get_query: function () {
+            return {
+                filters: [["name", "!=", "F-girot 57461039628 (N) - Skandinaviska Enskilda Banken AB"]],
+            };
+        },
     });
     frappe.payment_export.run(page);
     getfindSelected()
