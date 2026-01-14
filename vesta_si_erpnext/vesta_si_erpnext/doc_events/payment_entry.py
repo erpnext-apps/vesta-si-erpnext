@@ -102,19 +102,55 @@ def on_cancel(self, method):
                 doc = frappe.get_doc("Purchase Invoice", row.reference_name)
                 frappe.db.set_value("Purchase Invoice", row.reference_name, "workflow_state", "Approved")
 
+import os
+import frappe
+from frappe.desk.form.load import get_attachments
+from frappe.utils import get_site_path
+
+
+def file_exists_on_disk(file_url):
+	if not file_url:
+		return False
+
+	file_url = file_url.lstrip("/")  # remove leading slash
+	file_path = get_site_path(file_url)
+	return os.path.exists(file_path)
+
+
 def copy_attachment_from_po_pi(self):
-    try:
-        for row in self.references:
-            if row.reference_doctype in ["Purchase Invoice", "Purchase Order"]:
-                attached_files = get_attachments(row.reference_doctype, row.reference_name)
-                for row in attached_files:
-                    new_file = frappe.get_doc({ 
-                        "doctype" : "File",
-                        "file_name" : row.file_name,
-                        "file_url" : row.file_url,
-                        "attached_to_doctype" : "Payment Entry",
-                        "attached_to_name" : self.name
-                    })
-                    new_file.insert(ignore_permissions=True)
-    except:
-        print("Its Okay")
+	if not self.references:
+		return
+
+	for ref in self.references:
+		if ref.reference_doctype not in ("Purchase Invoice", "Purchase Order"):
+			continue
+
+		attached_files = get_attachments(
+			ref.reference_doctype,
+			ref.reference_name
+		)
+
+		for file_row in attached_files:
+			# 1️⃣ Check if File record already exists for this Payment Entry
+			exists_in_pe = frappe.db.exists(
+				"File",
+				{
+					"file_url": file_row.file_url,
+					"attached_to_doctype": "Payment Entry",
+					"attached_to_name": self.name,
+				},
+			)
+
+			# 2️⃣ If record exists AND physical file exists → skip
+			if exists_in_pe and file_exists_on_disk(file_row.file_url):
+				continue
+
+			# 3️⃣ Attach file again (missing on disk or not linked)
+			new_file = frappe.get_doc({
+				"doctype": "File",
+				"file_name": file_row.file_name,
+				"file_url": file_row.file_url,
+				"attached_to_doctype": "Payment Entry",
+				"attached_to_name": self.name,
+			})
+			new_file.insert(ignore_permissions=True)
