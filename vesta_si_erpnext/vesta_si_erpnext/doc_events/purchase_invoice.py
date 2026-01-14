@@ -212,7 +212,8 @@ def check_item_level_changes(self):
 						From `tabPurchase Order Item`
 						Where name = '{row.po_detail}'
 			""", as_dict = 1)
-			
+			if not po_data:
+				continue
 			item_allownce_percentage = 0
 			item_allownce =0
 
