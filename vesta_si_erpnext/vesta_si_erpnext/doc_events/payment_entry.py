@@ -2,18 +2,18 @@ import frappe
 from erpnext.accounts.doctype.payment_entry.payment_entry import get_negative_outstanding_invoices
 from frappe.utils import get_link_to_form, comma_and, flt
 from frappe.utils import (
-	add_days,
-	add_months,
-	cint,
-	comma_and,
-	flt,
-	fmt_money,
-	formatdate,
-	get_last_day,
-	get_link_to_form,
-	getdate,
-	nowdate,
-	today,
+    add_days,
+    add_months,
+    cint,
+    comma_and,
+    flt,
+    fmt_money,
+    formatdate,
+    get_last_day,
+    get_link_to_form,
+    getdate,
+    nowdate,
+    today,
 )
 from frappe.desk.form.load import get_attachments
 
@@ -63,12 +63,12 @@ def validate(self, method):
     copy_attachment_from_po_pi(self)
 
 def get_advance_entries(self):
-	res = self.get_advance_entries(
-			include_unallocated=not cint(self.get("only_include_allocated_payments"))
-		)
-	if res and not self.allocate_advances_automatically:
-		if not len(self.advances):
-			frappe.throw("Advance payments available against supplier <b>{0}</b> <br> Enable <b>'Set Advances and Allocate (FIFO)'</b> or click on the <b>'Get Advances Paid'</b> button under the payments section.".format(self.supplier))
+    res = self.get_advance_entries(
+            include_unallocated=not cint(self.get("only_include_allocated_payments"))
+        )
+    if res and not self.allocate_advances_automatically:
+        if not len(self.advances):
+            frappe.throw("Advance payments available against supplier <b>{0}</b> <br> Enable <b>'Set Advances and Allocate (FIFO)'</b> or click on the <b>'Get Advances Paid'</b> button under the payments section.".format(self.supplier))
 
 def on_submit(self, method):
     if self.party_type == "Supplier" and self.payment_type == "Pay":
@@ -109,48 +109,51 @@ from frappe.utils import get_site_path
 
 
 def file_exists_on_disk(file_url):
-	if not file_url:
-		return False
+    if not file_url:
+        return False
 
-	file_url = file_url.lstrip("/")  # remove leading slash
-	file_path = get_site_path(file_url)
-	return os.path.exists(file_path)
+    file_url = file_url.lstrip("/")  # remove leading slash
+    file_path = get_site_path(file_url)
+    return os.path.exists(file_path)
 
 
 def copy_attachment_from_po_pi(self):
-	if not self.references:
-		return
+    if not self.references:
+        return
 
-	for ref in self.references:
-		if ref.reference_doctype not in ("Purchase Invoice", "Purchase Order"):
-			continue
+    for ref in self.references:
+        if ref.reference_doctype not in ("Purchase Invoice", "Purchase Order"):
+            continue
 
-		attached_files = get_attachments(
-			ref.reference_doctype,
-			ref.reference_name
-		)
+        attached_files = get_attachments(
+            ref.reference_doctype,
+            ref.reference_name
+        )
 
-		for file_row in attached_files:
-			# 1️⃣ Check if File record already exists for this Payment Entry
-			exists_in_pe = frappe.db.exists(
-				"File",
-				{
-					"file_url": file_row.file_url,
-					"attached_to_doctype": "Payment Entry",
-					"attached_to_name": self.name,
-				},
-			)
+        for file_row in attached_files:
+            # 1️⃣ Check if File record already exists for this Payment Entry
+            exists_in_pe = frappe.db.exists(
+                "File",
+                {
+                    "file_url": file_row.file_url,
+                    "attached_to_doctype": "Payment Entry",
+                    "attached_to_name": self.name,
+                },
+            )
 
-			# 2️⃣ If record exists AND physical file exists → skip
-			if exists_in_pe and file_exists_on_disk(file_row.file_url):
-				continue
+            # 2️⃣ If record exists AND physical file exists → skip
+            if exists_in_pe and file_exists_on_disk(file_row.file_url):
+                continue
 
-			# 3️⃣ Attach file again (missing on disk or not linked)
-			new_file = frappe.get_doc({
-				"doctype": "File",
-				"file_name": file_row.file_name,
-				"file_url": file_row.file_url,
-				"attached_to_doctype": "Payment Entry",
-				"attached_to_name": self.name,
-			})
-			new_file.insert(ignore_permissions=True)
+            # 3️⃣ Attach file again (missing on disk or not linked)
+            try:
+                new_file = frappe.get_doc({
+                    "doctype": "File",
+                    "file_name": file_row.file_name,
+                    "file_url": file_row.file_url,
+                    "attached_to_doctype": "Payment Entry",
+                    "attached_to_name": self.name,
+                })
+                new_file.insert(ignore_permissions=True)
+            except:
+                frappe.log_error("File is not exists", self.name)

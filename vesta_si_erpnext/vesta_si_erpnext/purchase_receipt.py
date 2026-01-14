@@ -59,14 +59,17 @@ def get_attachment_from_po(self):
 				continue
 
 		# 3️⃣ Attach again (file missing on disk or not attached)
-		new_file = frappe.get_doc({
-			"doctype": "File",
-			"file_name": row.file_name,
-			"file_url": row.file_url,
-			"attached_to_doctype": "Purchase Receipt",
-			"attached_to_name": self.name,
-		})
-		new_file.insert(ignore_permissions=True)
+		try:
+			new_file = frappe.get_doc({
+				"doctype": "File",
+				"file_name": row.file_name,
+				"file_url": row.file_url,
+				"attached_to_doctype": "Purchase Receipt",
+				"attached_to_name": self.name,
+			})
+			new_file.insert(ignore_permissions=True)
+		except:
+			frappe.log_error("File is not exists", self.name)
 
 
 def link_supplier_bag_to_batch(doc, method=None):
