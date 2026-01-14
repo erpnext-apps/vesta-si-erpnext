@@ -16,18 +16,58 @@ def after_insert(self, method):
 
 
 
+import os
+import frappe
+from frappe.utils.file_manager import get_attachments
+from frappe.utils import get_site_path
+
+def file_exists_on_disk(file_url):
+	"""
+	Check whether file exists physically in public/private folder
+	"""
+	if not file_url:
+		return False
+
+	# Remove leading slash
+	file_url = file_url.lstrip("/")
+
+	file_path = get_site_path(file_url)
+	return os.path.exists(file_path)
+
+
 def get_attachment_from_po(self):
-	if self.items[0].get("purchase_order"):
-		attached_files = get_attachments("Purchase Order", self.items[0].get("purchase_order"))
-		for row in attached_files:
-			new_file = frappe.get_doc({ 
-				"doctype" : "File",
-				"file_name" : row.file_name,
-				"file_url" : row.file_url,
-				"attached_to_doctype" : "Purchase Receipt",
-				"attached_to_name" : self.name
-			})
-			new_file.insert(ignore_permissions=True)
+	if not self.items or not self.items[0].get("purchase_order"):
+		return
+
+	attached_files = get_attachments(
+		"Purchase Order",
+		self.items[0].get("purchase_order")
+	)
+
+	for row in attached_files:
+		# 1️⃣ Check if file already attached to this Purchase Receipt
+		if frappe.db.exists(
+			"File",
+			{
+				"file_url": row.file_url,
+				"attached_to_doctype": "Purchase Receipt",
+				"attached_to_name": self.name,
+			},
+		):
+			# 2️⃣ Even if record exists, ensure file exists physically
+			if file_exists_on_disk(row.file_url):
+				continue
+
+		# 3️⃣ Attach again (file missing on disk or not attached)
+		new_file = frappe.get_doc({
+			"doctype": "File",
+			"file_name": row.file_name,
+			"file_url": row.file_url,
+			"attached_to_doctype": "Purchase Receipt",
+			"attached_to_name": self.name,
+		})
+		new_file.insert(ignore_permissions=True)
+
 
 def link_supplier_bag_to_batch(doc, method=None):
 	for item in doc.items:
