@@ -18,7 +18,7 @@ def after_insert(self, method):
 
 import os
 import frappe
-from frappe.utils.file_manager import get_attachments
+from frappe.desk.form.load import get_attachments
 from frappe.utils import get_site_path
 
 def file_exists_on_disk(file_url):
