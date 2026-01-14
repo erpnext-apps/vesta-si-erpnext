@@ -47,7 +47,7 @@ def set_exchange_rate(self,method):
 
 
 def after_insert(self, method):
-	get_attachment_from_po(self)
+    get_attachment_from_po(self)
 
 import os
 import frappe
@@ -56,45 +56,48 @@ from frappe.utils import get_site_path
 
 
 def file_exists_on_disk(file_url):
-	if not file_url:
-		return False
+    if not file_url:
+        return False
 
-	file_url = file_url.lstrip("/")
-	file_path = get_site_path(file_url)
-	return os.path.exists(file_path)
+    file_url = file_url.lstrip("/")
+    file_path = get_site_path(file_url)
+    return os.path.exists(file_path)
 
 
 def get_attachment_from_po(self):
-	if not self.items or not self.items[0].get("sales_order"):
-		return
+    if not self.items or not self.items[0].get("sales_order"):
+        return
 
-	attached_files = get_attachments(
-		"Sales Order",
-		self.items[0].get("sales_order")
-	)
+    attached_files = get_attachments(
+        "Sales Order",
+        self.items[0].get("sales_order")
+    )
 
-	for file_row in attached_files:
-		# 1️⃣ Check if already attached to this Sales Invoice
-		exists_in_si = frappe.db.exists(
-			"File",
-			{
-				"file_url": file_row.file_url,
-				"attached_to_doctype": "Sales Invoice",
-				"attached_to_name": self.name,
-			},
-		)
+    for file_row in attached_files:
+        # 1️⃣ Check if already attached to this Sales Invoice
+        exists_in_si = frappe.db.exists(
+            "File",
+            {
+                "file_url": file_row.file_url,
+                "attached_to_doctype": "Sales Invoice",
+                "attached_to_name": self.name,
+            },
+        )
 
-		# 2️⃣ If record exists AND file exists physically → skip
-		if exists_in_si and file_exists_on_disk(file_row.file_url):
-			continue
+        # 2️⃣ If record exists AND file exists physically → skip
+        if exists_in_si and file_exists_on_disk(file_row.file_url):
+            continue
 
-		# 3️⃣ Attach again if missing
-		new_file = frappe.get_doc({
-			"doctype": "File",
-			"file_name": file_row.file_name,
-			"file_url": file_row.file_url,
-			"attached_to_doctype": "Sales Invoice",
-			"attached_to_name": self.name,
-		})
-		new_file.insert(ignore_permissions=True)
+        # 3️⃣ Attach again if missing
+        try:
+            new_file = frappe.get_doc({
+                "doctype": "File",
+                "file_name": file_row.file_name,
+                "file_url": file_row.file_url,
+                "attached_to_doctype": "Sales Invoice",
+                "attached_to_name": self.name,
+            })
+            new_file.insert(ignore_permissions=True)
+        except:
+            frappe.log_error("File is not exists", self.name)
 

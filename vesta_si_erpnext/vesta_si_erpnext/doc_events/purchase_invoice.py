@@ -103,15 +103,17 @@ def get_attachment_from_po(self):
 		if exists_in_pi and file_exists_on_disk(file_row.file_url):
 			continue
 
-		# 3️⃣ Attach again if missing
-		new_file = frappe.get_doc({
-			"doctype": "File",
-			"file_name": file_row.file_name,
-			"file_url": file_row.file_url,
-			"attached_to_doctype": "Purchase Invoice",
-			"attached_to_name": self.name,
-		})
-		new_file.insert(ignore_permissions=True)
+		try:
+			new_file = frappe.get_doc({
+				"doctype": "File",
+				"file_name": file_row.file_name,
+				"file_url": file_row.file_url,
+				"attached_to_doctype": "Purchase Invoice",
+				"attached_to_name": self.name,
+			})
+			new_file.insert(ignore_permissions=True)
+		except:
+			frappe.log_error("File is not exists", self.name)
 
 
 
