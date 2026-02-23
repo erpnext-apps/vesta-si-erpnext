@@ -1,3 +1,4 @@
+NewXML
 # Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
@@ -129,12 +130,12 @@ def get_invoices(invoices, payment_type, bank_account=None):
 			account_paid_from = row.account_paid_from
 			break
 	Error = []
-	frappe.enqueue(create_payment_entry_in_background, invoices=invoices,account_paid_from=account_paid_from, queue="long")
+	frappe.enqueue(create_payment_entry_in_background, invoices=invoices,account_paid_from=account_paid_from,payment_run_type=payment_type, queue="long")
 
-def create_payment_entry_in_background(invoices=[] , account_paid_from=None):
+def create_payment_entry_in_background(invoices=[] , account_paid_from=None, payment_run_type=None):
 	Error = []
 	for row in invoices:
-		doc = get_payment_entry('Purchase Invoice', row, account_paid_from = account_paid_from)
+		doc = get_payment_entry('Purchase Invoice', row, account_paid_from = account_paid_from, payment_run_type=payment_run_type)
 		try:
 			doc.save()
 		except Exception as e:
@@ -151,7 +152,8 @@ def get_payment_entry(
 	party_type=None,
 	payment_type=None,
 	reference_date=None,
-	account_paid_from = None
+	account_paid_from = None,
+	payment_run_type = None
 ):
 	doc = frappe.get_doc(dt, dn)
 	over_billing_allowance = frappe.db.get_single_value("Accounts Settings", "over_billing_allowance")
