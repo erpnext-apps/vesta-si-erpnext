@@ -68,6 +68,12 @@ from erpnext.stock.get_item_details import (
 )
 from erpnext.utilities.regional import temporary_flag
 from erpnext.utilities.transaction_base import TransactionBase
+from erpnext.controllers.accounts_controller import (
+	add_taxes_from_tax_template,
+	update_bin_on_delete,
+	validate_child_on_delete,
+	validate_and_delete_children
+)
 
 # Compare During the update
 
@@ -134,7 +140,7 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 
 		1. Change rate of subcontracting - regardless of other changes.
 		2. Change qty and/or add new items and/or remove items
-				Exception: Transfer/Consumption is already made, qty change not allowed.
+		        Exception: Transfer/Consumption is already made, qty change not allowed.
 		"""
 
 		supplied_items_processed = any(
@@ -146,6 +152,29 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 			frappe.throw(_("Item qty can not be updated as raw materials are already processed."))
 
 		return update_supplied_items
+
+	def validate_fg_item_for_subcontracting(new_data, is_new):
+		if is_new:
+			if not new_data.get("fg_item"):
+				frappe.throw(
+					_("Finished Good Item is not specified for service item {0}").format(
+						new_data["item_code"]
+					)
+				)
+			else:
+				is_sub_contracted_item, default_bom = frappe.db.get_value(
+					"Item", new_data["fg_item"], ["is_sub_contracted_item", "default_bom"]
+				)
+
+				if not is_sub_contracted_item:
+					frappe.throw(
+						_("Finished Good Item {0} must be a sub-contracted item").format(new_data["fg_item"])
+					)
+				elif not default_bom:
+					frappe.throw(_("Default BOM not found for FG Item {0}").format(new_data["fg_item"]))
+
+		if not new_data.get("fg_item_qty"):
+			frappe.throw(_("Finished Good Item {0} Qty can not be zero").format(new_data["fg_item"]))
 
 	data = json.loads(trans_items)
 
@@ -204,6 +233,7 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 
 			prev_rate, new_rate = flt(child_item.get("rate")), flt(d.get("rate"))
 			prev_qty, new_qty = flt(child_item.get("qty")), flt(d.get("qty"))
+			prev_fg_qty, new_fg_qty = flt(child_item.get("fg_item_qty")), flt(d.get("fg_item_qty"))
 			prev_con_fac, new_con_fac = (
 				flt(child_item.get("conversion_factor")),
 				flt(d.get("conversion_factor")),
@@ -218,16 +248,23 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 
 			rate_unchanged = prev_rate == new_rate
 			qty_unchanged = prev_qty == new_qty
+			fg_qty_unchanged = prev_fg_qty == new_fg_qty
 			uom_unchanged = prev_uom == new_uom
-			tax_template_unchange = prev_tax_template == new_tax_template #changed by fosserp
+			if parent_doctype == "Purchase Order":
+				tax_template_unchange = prev_tax_template == new_tax_template #changed by fosserp
 			conversion_factor_unchanged = prev_con_fac == new_con_fac
 			any_conversion_factor_changed |= not conversion_factor_unchanged
 			date_unchanged = (
 				prev_date == getdate(new_date) if prev_date and new_date else False
 			)  # in case of delivery note etc
+			
+			if parent_doctype == "Sales Order":
+				tax_template_unchange = True
+
 			if (
 				rate_unchanged
 				and qty_unchanged
+				and fg_qty_unchanged
 				and conversion_factor_unchanged
 				and uom_unchanged
 				and date_unchanged
@@ -235,11 +272,23 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 			):
 				continue
 		# if not child_item.get("item_tax_template") and d.get("item_tax_template"):  #changed by fosserp
-		child_item.item_tax_template = d.get("item_tax_template") #changed by fosserp
+		if parent.doctype == "Purchase Order":
+			child_item.item_tax_template = d.get("item_tax_template") #changed by fosserp
 
 		validate_quantity(child_item, d)
 		if flt(child_item.get("qty")) != flt(d.get("qty")):
 			any_qty_changed = True
+
+		if (
+			parent.doctype == "Purchase Order"
+			and parent.is_subcontracted
+			and not parent.is_old_subcontracting_flow
+		):
+			validate_fg_item_for_subcontracting(d, new_child_flag)
+			child_item.fg_item_qty = flt(d["fg_item_qty"])
+
+			if new_child_flag:
+				child_item.fg_item = d["fg_item"]
 
 		child_item.qty = flt(d.get("qty"))
 		rate_precision = child_item.precision("rate") or 2
@@ -281,6 +330,9 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 		if d.get("schedule_date") and parent_doctype == "Purchase Order":
 			child_item.schedule_date = d.get("schedule_date")
 
+		if d.get("bom_no") and parent_doctype == "Sales Order":
+			child_item.bom_no = d.get("bom_no")
+
 		if flt(child_item.price_list_rate):
 			if flt(child_item.rate) > flt(child_item.price_list_rate):
 				#  if rate is greater than price_list_rate, set margin
@@ -301,7 +353,7 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 				child_item.margin_type = ""
 				child_item.margin_rate_or_amount = 0
 				child_item.rate_with_margin = 0
-		
+
 		child_item.flags.ignore_validate_update_after_submit = True
 		if new_child_flag:
 			parent.load_from_db()
@@ -347,12 +399,22 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 		parent.update_ordered_qty()
 		parent.update_ordered_and_reserved_qty()
 		parent.update_receiving_percentage()
-		if parent.is_old_subcontracting_flow:
-			if should_update_supplied_items(parent):
-				parent.update_reserved_qty_for_subcontract()
-				parent.create_raw_materials_supplied()
-			parent.save()
+
+		if parent.is_subcontracted:
+			if parent.is_old_subcontracting_flow:
+				if should_update_supplied_items(parent):
+					parent.update_reserved_qty_for_subcontract()
+					parent.create_raw_materials_supplied()
+				parent.save()
+			else:
+				if not parent.can_update_items():
+					frappe.throw(
+						_(
+							"Items cannot be updated as Subcontracting Order is created against the Purchase Order {0}."
+						).format(frappe.bold(parent.name))
+					)
 	else:  # Sales Order
+		parent.validate_for_duplicate_items()
 		parent.validate_warehouse()
 		parent.update_reserved_qty()
 		parent.update_project()
@@ -369,87 +431,18 @@ def update_child_qty_rate(parent_doctype, trans_items, parent_doctype_name, chil
 	parent.validate_uom_is_integer("uom", "qty")
 	parent.validate_uom_is_integer("stock_uom", "stock_qty")
 
-def validate_and_delete_children(parent, data) -> bool:
-	deleted_children = []
-	updated_item_names = [d.get("docname") for d in data]
-	for item in parent.items:
-		if item.name not in updated_item_names:
-			deleted_children.append(item)
-
-	for d in deleted_children:
-		validate_child_on_delete(d, parent)
-		d.cancel()
-		d.delete()
-
-	if parent.doctype == "Purchase Order":
-		parent.update_ordered_qty_in_so_for_removed_items(deleted_children)
-
-	# need to update ordered qty in Material Request first
-	# bin uses Material Request Items to recalculate & update
-	parent.update_prevdoc_status()
-
-	for d in deleted_children:
-		update_bin_on_delete(d, parent.doctype)
-
-	return bool(deleted_children)
-
-def validate_child_on_delete(row, parent):
-	"""Check if partially transacted item (row) is being deleted."""
-	if parent.doctype == "Sales Order":
-		if flt(row.delivered_qty):
-			frappe.throw(
-				_("Row #{0}: Cannot delete item {1} which has already been delivered").format(
-					row.idx, row.item_code
-				)
-			)
-		if flt(row.work_order_qty):
-			frappe.throw(
-				_("Row #{0}: Cannot delete item {1} which has work order assigned to it.").format(
-					row.idx, row.item_code
-				)
-			)
-		if flt(row.ordered_qty):
-			frappe.throw(
-				_("Row #{0}: Cannot delete item {1} which is assigned to customer's purchase order.").format(
-					row.idx, row.item_code
-				)
-			)
-
-	if parent.doctype == "Purchase Order" and flt(row.received_qty):
-		frappe.throw(
-			_("Row #{0}: Cannot delete item {1} which has already been received").format(
-				row.idx, row.item_code
-			)
+	# Cancel and Recreate Stock Reservation Entries.
+	if parent_doctype == "Sales Order":
+		from erpnext.stock.doctype.stock_reservation_entry.stock_reservation_entry import (
+			cancel_stock_reservation_entries,
+			has_reserved_stock,
 		)
 
-	if flt(row.billed_amt):
-		frappe.throw(
-			_("Row #{0}: Cannot delete item {1} which has already been billed.").format(
-				row.idx, row.item_code
-			)
-		)
+		if has_reserved_stock(parent.doctype, parent.name):
+			cancel_stock_reservation_entries(parent.doctype, parent.name)
 
-def update_bin_on_delete(row, doctype):
-	"""Update bin for deleted item (row)."""
-	from erpnext.stock.stock_balance import (
-		get_indented_qty,
-		get_ordered_qty,
-		get_reserved_qty,
-		update_bin_qty,
-	)
-
-	qty_dict = {}
-
-	if doctype == "Sales Order":
-		qty_dict["reserved_qty"] = get_reserved_qty(row.item_code, row.warehouse)
-	else:
-		if row.material_request_item:
-			qty_dict["indented_qty"] = get_indented_qty(row.item_code, row.warehouse)
-
-		qty_dict["ordered_qty"] = get_ordered_qty(row.item_code, row.warehouse)
-
-	if row.warehouse:
-		update_bin_qty(row.item_code, row.warehouse, qty_dict)
+			if parent.per_picked == 0:
+				parent.create_stock_reservation_entries()
 
 
 def set_order_defaults(parent_doctype, parent_doctype_name, child_doctype, child_docname, trans_item):
@@ -457,7 +450,7 @@ def set_order_defaults(parent_doctype, parent_doctype_name, child_doctype, child
 	Returns a Sales/Purchase Order Item child item containing the default values
 	"""
 	p_doc = frappe.get_doc(parent_doctype, parent_doctype_name)
-	child_item = frappe.new_doc(child_doctype, p_doc, child_docname)
+	child_item = frappe.new_doc(child_doctype, parent_doc=p_doc, parentfield=child_docname)
 	item = frappe.get_doc("Item", trans_item.get("item_code"))
 
 	for field in ("item_code", "item_name", "description", "item_group"):
@@ -489,32 +482,6 @@ def set_order_defaults(parent_doctype, parent_doctype_name, child_doctype, child
 	add_taxes_from_tax_template(child_item, p_doc)
 	return child_item
 
-def add_taxes_from_tax_template(child_item, parent_doc, db_insert=True):
-	add_taxes_from_item_tax_template = frappe.db.get_single_value(
-		"Accounts Settings", "add_taxes_from_item_tax_template"
-	)
-
-	if child_item.get("item_tax_rate") and add_taxes_from_item_tax_template:
-		tax_map = json.loads(child_item.get("item_tax_rate"))
-		for tax_type in tax_map:
-			tax_rate = flt(tax_map[tax_type])
-			taxes = parent_doc.get("taxes") or []
-			# add new row for tax head only if missing
-			found = any(tax.account_head == tax_type for tax in taxes)
-			if not found:
-				tax_row = parent_doc.append("taxes", {})
-				tax_row.update(
-					{
-						"description": str(tax_type).split(" - ")[0],
-						"charge_type": "On Net Total",
-						"account_head": tax_type,
-						"rate": tax_rate,
-					}
-				)
-				if parent_doc.doctype == "Purchase Order":
-					tax_row.update({"category": "Total", "add_deduct_tax": "Add"})
-				if db_insert:
-					tax_row.db_insert()
 					
 def set_child_tax_template_and_map(item, child_item, parent_doc):
 	args = {
@@ -525,8 +492,8 @@ def set_child_tax_template_and_map(item, child_item, parent_doc):
 	}
 
 	item_tax_template = _get_item_tax_template(args, item.taxes)
-	if item_tax_template:
-		child_item.item_tax_template = item_tax_template
+	if item_tax_template: # change by foss erp
+		child_item.item_tax_template = item_tax_template # change by foss erp
 	if child_item.get("item_tax_template"):
 		child_item.item_tax_rate = get_item_tax_map(
 			parent_doc.get("company"), child_item.item_tax_template, as_json=True
