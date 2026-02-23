@@ -26,7 +26,7 @@ def validate(self, method):
 
         if len(list(set(currency_list))) > 1:
             frappe.throw("Purchase Invoices have different currencies. All selected purchase invoices must have the same currency.")
-        elif list(set(currency_list)) and self.paid_from_account_currency != list(set(currency_list))[0]:
+        elif list(set(currency_list)) and self.paid_from_account_currency != list(set(currency_list))[0] and self.custom_payment_run_type != 'Cross Border Payments (OTHER)':
             frappe.throw(f"Account Paid From should be in <b>{list(set(currency_list))[0]}<b>")
         party_account_currency = frappe.db.get_value("Account", self.paid_to, 'account_currency')
         
