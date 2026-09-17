@@ -397,6 +397,7 @@ def add_creditor_info(payment_record):
         if supplier_address == None:
             return None
         street = get_street_name(supplier_address.address_line1)
+        building = get_building_number(supplier_address.address_line1)
         plz = supplier_address.pincode
         city = supplier_address.city 
         # country (has to be a two-digit code)
@@ -427,14 +428,15 @@ def add_creditor_info(payment_record):
         # unknown supplier type
         return None
     payment_content += make_line("          <PstlAdr>")
-    # street name
+    # street name (fully structured, ISO 20022 Nov-2026 target state)
     payment_content += make_line("            <StrtNm>" + street + "</StrtNm>")
+    if building:
+        payment_content += make_line("            <BldgNb>" + building + "</BldgNb>")
     # postal code
     payment_content += make_line("            <PstCd>{0}</PstCd>".format(plz))
     # town name
     payment_content += make_line("            <TwnNm>" + city + "</TwnNm>")
     payment_content += make_line("            <Ctry>" + country_code + "</Ctry>")
-    payment_content += make_line("            <AdrLine>" + street + "</AdrLine>")
     payment_content += make_line("          </PstlAdr>")
     payment_content += make_line("        </Cdtr>") 
     return payment_content
@@ -506,6 +508,24 @@ def get_billing_address(supplier_name, supplier_type="Supplier"):
     else:
         # no address found
         return None
+
+# fully structured PstlAdr block for Cdtr (ISO 20022 Nov-2026 target state)
+def get_structured_creditor_address(party, party_type="Supplier"):
+    address = get_billing_address(party, party_type)
+    if not address or not address.country_code:
+        return None
+    street = get_street_name(address.address_line1)
+    building = get_building_number(address.address_line1)
+    country_code = address.country_code.upper()
+    content = make_line("              <PstlAdr>")
+    content += make_line("                  <StrtNm>{0}</StrtNm>".format(street))
+    if building:
+        content += make_line("                  <BldgNb>{0}</BldgNb>".format(building))
+    content += make_line("                  <PstCd>{0}</PstCd>".format(address.pincode or ''))
+    content += make_line("                  <TwnNm>{0}</TwnNm>".format(address.city or ''))
+    content += make_line("                  <Ctry>{0}</Ctry>".format(country_code))
+    content += make_line("              </PstlAdr>")
+    return content
 
 def get_building_number(address_line):
     parts = address_line.strip().split(" ")
@@ -669,6 +689,9 @@ def genrate_file_for_sepa( payments, payment_export_settings, posting_date, paym
                     new_name = name.replace('&',' ')
                 name = new_name
         content += make_line("                  <Nm>{0}</Nm>".format(name))
+        creditor_address = get_structured_creditor_address(payment_record.party, payment_record.party_type)
+        if creditor_address:
+            content += creditor_address
         content += make_line("              </Cdtr>")
         content += make_line("              <CdtrAcct>")
         content += make_line("                  <Id>")
